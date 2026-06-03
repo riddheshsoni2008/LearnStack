@@ -70,7 +70,16 @@ const submitQuiz = async (req, res) => {
     const xpEarned = passed ? (lesson?.xpReward || 10) : 0;
 
     // Save progress
+    let isFirstTimePass = false;
+    let actualXpEarned = 0;
+
     if (passed) {
+      const existingProgress = await Progress.findOne({ userId: req.user._id, lessonId: req.params.lessonId });
+      if (!existingProgress || !existingProgress.completed) {
+        isFirstTimePass = true;
+        actualXpEarned = xpEarned;
+      }
+
       await Progress.findOneAndUpdate(
         { userId: req.user._id, lessonId: req.params.lessonId },
         {
@@ -79,7 +88,7 @@ const submitQuiz = async (req, res) => {
           lessonId: req.params.lessonId,
           completed: true,
           quizScore: score,
-          xpEarned,
+          xpEarned: actualXpEarned,
           completedAt: new Date()
         },
         { upsert: true, new: true }
@@ -87,7 +96,10 @@ const submitQuiz = async (req, res) => {
 
       // Update user XP and streak
       const user = await User.findById(req.user._id);
-      user.xp += xpEarned;
+      
+      if (isFirstTimePass) {
+        user.xp += actualXpEarned;
+      }
 
       // Streak logic: if last active was yesterday, increment streak
       const today = new Date().toDateString();
@@ -119,7 +131,7 @@ const submitQuiz = async (req, res) => {
         passed,
         correct,
         total: quiz.questions.length,
-        xpEarned,
+        xpEarned: actualXpEarned,
         results
       }
     });

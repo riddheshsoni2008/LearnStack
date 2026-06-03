@@ -44,8 +44,15 @@ const LessonSchema = new mongoose.Schema({
     default: 0
   },
   challenge: {
-    type: String,     // Optional mini coding challenge description
+    type: String,
     default: ''
+  },
+  codingChallenge: {
+    title: { type: String, default: '' },
+    description: { type: String, default: '' },
+    starterCode: { type: String, default: '' },
+    expectedOutput: { type: String, default: '' },
+    hint: { type: String, default: '' }
   },
   resources: [{
     title: { type: String },

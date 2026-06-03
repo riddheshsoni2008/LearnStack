@@ -34,6 +34,27 @@ const getTrack = async (req, res) => {
   }
 };
 
+// @desc    Get single track by slug with its lessons
+// @route   GET /api/tracks/slug/:slug
+// @access  Public
+const getTrackBySlug = async (req, res) => {
+  try {
+    const track = await Track.findOne({ slug: req.params.slug });
+    if (!track) {
+      return res.status(404).json({ success: false, message: 'Track not found' });
+    }
+
+    // Get all lessons for this track, grouped by week
+    const lessons = await Lesson.find({ trackId: track._id, isPublished: true })
+      .sort({ weekNumber: 1, order: 1 })
+      .select('-codeSnippet -content'); // Don't send full content in listing
+
+    res.status(200).json({ success: true, data: { track, lessons } });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 // @desc    Create a track (admin)
 // @route   POST /api/tracks
 // @access  Private/Admin
@@ -81,4 +102,4 @@ const deleteTrack = async (req, res) => {
   }
 };
 
-module.exports = { getTracks, getTrack, createTrack, updateTrack, deleteTrack };
+module.exports = { getTracks, getTrack, getTrackBySlug, createTrack, updateTrack, deleteTrack };

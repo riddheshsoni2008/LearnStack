@@ -2,27 +2,24 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import AuthNavbar from "@/components/AuthNavbar";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const { user, loading, logout } = useAuth();
 
   useEffect(() => {
-    const userData = localStorage.getItem("user");
-    if (!userData) {
+    if (!loading && !user) {
       router.push("/login");
-      return;
     }
-    setUser(JSON.parse(userData));
-  }, [router]);
+  }, [user, loading, router]);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    router.push("/login");
+    logout();
   };
 
-  if (!user) {
+  if (loading || !user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-[var(--text-muted)]">Loading...</div>
@@ -32,27 +29,11 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
-      {/* Top nav */}
-      <nav className="glass border-b border-[var(--border)] px-6 py-4">
-        <div className="max-w-7xl mx-auto flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-white font-bold text-sm">L</div>
-            <span className="text-lg font-bold">Learn<span className="gradient-text">Stack</span></span>
-          </Link>
-          <div className="flex items-center gap-4">
-            <div className="text-sm text-[var(--text-muted)]">
-              Welcome, <span className="text-[var(--foreground)] font-medium">{user.name}</span>
-            </div>
-            <button onClick={handleLogout} className="text-sm text-red-400 hover:text-red-300 transition-colors">
-              Logout
-            </button>
-          </div>
-        </div>
-      </nav>
+      <AuthNavbar />
 
       {/* Dashboard content */}
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <h1 className="text-3xl font-bold mb-2">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2">
           Hello, <span className="gradient-text">{user.name}</span> 👋
         </h1>
         <p className="text-[var(--text-muted)] mb-10">Here is your learning progress</p>

@@ -1,11 +1,13 @@
 "use client";
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 // ─── Navbar ─────────────────────────────────────────────
 function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -15,9 +17,8 @@ function Navbar() {
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled ? "glass py-3" : "bg-transparent py-5"
-      }`}
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "glass py-3" : "bg-transparent py-5"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group">
@@ -37,12 +38,25 @@ function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
-          <Link href="/login" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors px-4 py-2">
-            Log In
-          </Link>
-          <Link href="/register" className="btn-primary text-sm !py-2.5 !px-6">
-            Start Learning — Free
-          </Link>
+          {!loading && user ? (
+            <>
+              <Link href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">
+                Profile
+              </Link>
+              <Link href="/dashboard" className="btn-primary text-sm !py-2.5 !px-6">
+                Go to Dashboard
+              </Link>
+            </>
+          ) : (
+            <>
+              <Link href="/login" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors px-4 py-2">
+                Log In
+              </Link>
+              <Link href="/register" className="btn-primary text-sm !py-2.5 !px-6">
+                Start Learning — Free
+              </Link>
+            </>
+          )}
         </div>
 
         <button className="md:hidden text-[var(--foreground)] p-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
@@ -61,8 +75,17 @@ function Navbar() {
             <a href="#tracks" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium" onClick={() => setMobileOpen(false)}>Tracks</a>
             <a href="#how-it-works" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium" onClick={() => setMobileOpen(false)}>How It Works</a>
             <hr className="border-[var(--border)]" />
-            <Link href="/login" className="text-[var(--text-muted)] font-medium">Log In</Link>
-            <Link href="/register" className="btn-primary text-center text-sm !py-3">Start Learning — Free</Link>
+            {!loading && user ? (
+              <>
+                <Link href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium">Profile</Link>
+                <Link href="/dashboard" className="btn-primary text-center text-sm !py-3">Go to Dashboard</Link>
+              </>
+            ) : (
+              <>
+                <Link href="/login" className="text-[var(--text-muted)] font-medium">Log In</Link>
+                <Link href="/register" className="btn-primary text-center text-sm !py-3">Start Learning — Free</Link>
+              </>
+            )}
           </div>
         </div>
       )}
@@ -171,13 +194,13 @@ function FeaturesSection() {
 
 // ─── Tracks Section ─────────────────────────────────────
 const tracks = [
-  { icon: "🌐", title: "HTML & CSS", weeks: 3, lessons: 15, level: "Beginner", color: "#e17055", desc: "Build the foundation of every website" },
-  { icon: "⚡", title: "JavaScript", weeks: 4, lessons: 20, level: "Beginner", color: "#fdcb6e", desc: "Make websites interactive and dynamic" },
-  { icon: "⚛️", title: "React.js", weeks: 4, lessons: 20, level: "Intermediate", color: "#74b9ff", desc: "Build modern single-page applications" },
-  { icon: "🚀", title: "Next.js", weeks: 3, lessons: 15, level: "Intermediate", color: "#a29bfe", desc: "Full-stack React framework for production" },
-  { icon: "🛠️", title: "Node.js & Express", weeks: 3, lessons: 15, level: "Intermediate", color: "#55efc4", desc: "Build powerful backend APIs" },
-  { icon: "🗄️", title: "MongoDB", weeks: 2, lessons: 10, level: "Intermediate", color: "#00b894", desc: "Store and manage data like a pro" },
-  { icon: "💼", title: "Full Stack Project", weeks: 4, lessons: 20, level: "Advanced", color: "#fd79a8", desc: "Build a complete real-world application" },
+  { slug: "html-css", icon: "🌐", title: "HTML & CSS", weeks: 3, lessons: 15, level: "Beginner", color: "#e17055", desc: "Build the foundation of every website" },
+  { slug: "javascript", icon: "⚡", title: "JavaScript", weeks: 4, lessons: 20, level: "Beginner", color: "#fdcb6e", desc: "Make websites interactive and dynamic" },
+  { slug: "react-js", icon: "⚛️", title: "React.js", weeks: 4, lessons: 20, level: "Intermediate", color: "#74b9ff", desc: "Build modern single-page applications" },
+  { slug: "next-js", icon: "🚀", title: "Next.js", weeks: 3, lessons: 15, level: "Intermediate", color: "#a29bfe", desc: "Full-stack React framework for production" },
+  { slug: "node-js-express", icon: "🛠️", title: "Node.js & Express", weeks: 3, lessons: 15, level: "Intermediate", color: "#55efc4", desc: "Build powerful backend APIs" },
+  { slug: "mongodb", icon: "🗄️", title: "MongoDB", weeks: 2, lessons: 10, level: "Intermediate", color: "#00b894", desc: "Store and manage data like a pro" },
+  { slug: "full-stack-project", icon: "💼", title: "Full Stack Project", weeks: 4, lessons: 20, level: "Advanced", color: "#fd79a8", desc: "Build a complete real-world application" },
 ];
 
 function TracksSection() {
@@ -198,7 +221,7 @@ function TracksSection() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {tracks.map((track) => (
-            <div key={track.title} className="glass rounded-2xl p-6 card-hover group relative overflow-hidden">
+            <Link href={`/course/${track.slug}`} key={track.title} className="glass rounded-2xl p-6 card-hover group relative overflow-hidden block">
               <div className="absolute top-0 left-0 right-0 h-1 opacity-60 group-hover:opacity-100 transition-opacity" style={{ background: track.color }} />
               <div className="text-3xl mb-4">{track.icon}</div>
               <h3 className="text-lg font-semibold mb-1">{track.title}</h3>
@@ -212,7 +235,7 @@ function TracksSection() {
                   {track.level}
                 </span>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
         <div className="text-center mt-12">

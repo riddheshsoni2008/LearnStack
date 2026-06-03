@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const { getTracks, getTrack, createTrack, updateTrack, deleteTrack } = require('../controllers/track.controller');
+const { getTracks, getTrack, getTrackBySlug, createTrack, updateTrack, deleteTrack } = require('../controllers/track.controller');
 const { protect } = require('../middleware/auth.middleware');
 const { admin } = require('../middleware/admin.middleware');
 
 router.get('/', getTracks);
+router.get('/slug/:slug', getTrackBySlug);
 router.get('/:id', getTrack);
 router.post('/', protect, admin, createTrack);
 router.put('/:id', protect, admin, updateTrack);

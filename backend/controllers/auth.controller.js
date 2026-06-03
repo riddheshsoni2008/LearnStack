@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Badge = require('../models/Badge');
 
 // Generate JWT Token
 const generateToken = (id) => {
@@ -140,6 +141,12 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate('badges');
+    
+    if (user) {
+      user.lastActive = new Date();
+      await user.save({ validateBeforeSave: false });
+    }
+
     res.status(200).json({
       success: true,
       data: user
