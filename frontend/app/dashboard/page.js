@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -7,17 +7,13 @@ import AuthNavbar from "@/components/AuthNavbar";
 
 export default function DashboardPage() {
   const router = useRouter();
-  const { user, loading, logout } = useAuth();
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
     }
   }, [user, loading, router]);
-
-  const handleLogout = () => {
-    logout();
-  };
 
   if (loading || !user) {
     return (

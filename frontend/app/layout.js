@@ -3,7 +3,7 @@ import "./globals.css";
 import { Providers } from "./providers";
 
 const inter = Inter({
-  variable: "--font-geist-sans",
+  variable: "--font-inter",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
 });

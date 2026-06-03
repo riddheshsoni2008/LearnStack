@@ -10,7 +10,7 @@ export default function LessonPage({ params }) {
   const router = useRouter();
   const { id: lessonId } = use(params);
 
-  const { user, setUser, loading: authLoading, logout } = useAuth();
+  const { user, setUser, loading: authLoading } = useAuth();
   const [lesson, setLesson] = useState(null);
   const [quiz, setQuiz] = useState(null);
   const [nextLesson, setNextLesson] = useState(null);
@@ -34,7 +34,7 @@ export default function LessonPage({ params }) {
     // 2. Fetch lesson detail & progress status
     const fetchLessonData = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/lessons/${lessonId}`);
+        const res = await fetch(`/api/lessons/${lessonId}`, { cache: "no-store" });
         const data = await res.json();
 
         if (!data.success) {
@@ -49,9 +49,7 @@ export default function LessonPage({ params }) {
         setPrevLesson(data.data.prevLesson);
 
         // Fetch user progress to check if completed
-        const progressRes = await fetch("http://localhost:5000/api/progress/me", {
-          credentials: "include"
-        });
+        const progressRes = await fetch("/api/progress/me", { cache: "no-store" });
         const progressData = await progressRes.json();
 
         if (progressData.success) {
@@ -72,9 +70,7 @@ export default function LessonPage({ params }) {
     }
   }, [lessonId, user, authLoading, router]);
 
-  const handleLogout = () => {
-    logout();
-  };
+
 
   const handleOptionSelect = (questionId, optionIndex) => {
     if (quizResult) return; // Disable changes after submission
@@ -97,7 +93,7 @@ export default function LessonPage({ params }) {
 
     setSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/quiz/${lessonId}/submit`, {
+      const res = await fetch(`/api/quiz/${lessonId}/submit`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -130,7 +126,7 @@ export default function LessonPage({ params }) {
 
     setSubmitting(true);
     try {
-      const res = await fetch(`http://localhost:5000/api/progress/complete/${lessonId}`, {
+      const res = await fetch(`/api/progress/complete/${lessonId}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json"

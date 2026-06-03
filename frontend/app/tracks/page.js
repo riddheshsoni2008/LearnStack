@@ -1,14 +1,13 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import CourseCard from "@/components/CourseCard";
 import AuthNavbar from "@/components/AuthNavbar";
 
 export default function TracksPage() {
   const router = useRouter();
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [tracks, setTracks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -43,9 +42,6 @@ export default function TracksPage() {
     fetchTracks();
   }, [user, authLoading, router]);
 
-  const handleLogout = () => {
-    logout();
-  };
 
   if (loading) {
     return (

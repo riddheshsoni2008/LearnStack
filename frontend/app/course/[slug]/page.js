@@ -11,7 +11,7 @@ export default function CourseDetailPage() {
   const router = useRouter();
   const params = useParams();
   const { slug } = params;
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   
   const [track, setTrack] = useState(null);
   const [lessons, setLessons] = useState([]);
@@ -54,8 +54,6 @@ export default function CourseDetailPage() {
 
     fetchData();
   }, [slug, user, authLoading, router]);
-
-  const handleLogout = () => logout();
 
   if (loading) {
     return (
