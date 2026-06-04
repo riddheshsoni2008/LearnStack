@@ -7,7 +7,7 @@ import AuthNavbar from "@/components/AuthNavbar";
 
 export default function ProfilePage() {
   const router = useRouter();
-  const { user, loading: authLoading, logout } = useAuth();
+  const { user, loading: authLoading, logout, fetchUser } = useAuth();
   
   const [progress, setProgress] = useState([]);
   const [tracks, setTracks] = useState([]);
@@ -22,6 +22,9 @@ export default function ProfilePage() {
     const fetchData = async () => {
       if (!user) return;
       try {
+        // Force refresh user data to get latest XP, Level, and Last Active
+        await fetchUser();
+        
         // Fetch user progress
         const progRes = await fetch("/api/progress/me", { cache: "no-store" });
         const progData = await progRes.json();

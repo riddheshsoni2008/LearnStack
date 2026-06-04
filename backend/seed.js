@@ -29,7 +29,7 @@ const seedData = async () => {
         thumbnail: '',
         level: trackInfo.level,
         totalWeeks: trackInfo.totalWeeks,
-        totalLessons: trackInfo.lessons.length,
+        totalLessons: trackInfo.lessons.length, 
         order: trackInfo.order,
         tags: trackInfo.tags,
         isPublished: true

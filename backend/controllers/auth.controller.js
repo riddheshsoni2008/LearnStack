@@ -42,18 +42,12 @@ const register = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000  // 30 days
     });
 
+    // Hide password before sending
+    user.password = undefined;
+
     res.status(201).json({
       success: true,
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        level: user.level,
-        xp: user.xp,
-        streak: user.streak,
-        avatar: user.avatar
-      },
+      data: user,
       token
     });
   } catch (error) {
@@ -112,18 +106,12 @@ const login = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
+    // Hide password before sending
+    user.password = undefined;
+
     res.status(200).json({
       success: true,
-      data: {
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        level: user.level,
-        xp: user.xp,
-        streak: user.streak,
-        avatar: user.avatar
-      },
+      data: user,
       token
     });
   } catch (error) {

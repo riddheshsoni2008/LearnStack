@@ -67,15 +67,28 @@ const UserSchema = new mongoose.Schema({
 });
 
 // Hash password before saving
-UserSchema.pre('save', async function() {
+UserSchema.pre('save', async function () {
   if (!this.isModified('password')) return;
   const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 
 // Compare password method
-UserSchema.methods.matchPassword = async function(enteredPassword) {
+UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
+
+// Auto-update level based on XP
+UserSchema.pre('save', function () {
+  if (this.xp >= 1500) {
+    this.level = 'advanced';
+  } else if (this.xp >= 500) {
+    this.level = 'intermediate';
+  } else if (this.xp >= 100) {
+    this.level = 'beginner';
+  } else {
+    this.level = 'not_assessed';
+  }
+});
 
 module.exports = mongoose.model('User', UserSchema);

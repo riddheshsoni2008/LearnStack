@@ -32,7 +32,7 @@ function Navbar() {
 
         <div className="hidden md:flex items-center gap-8">
           <a href="#features" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Features</a>
-          <a href="#tracks" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Tracks</a>
+          <a href="#tracks" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Course</a>
           <a href="#how-it-works" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">How It Works</a>
           <a href="#community" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Community</a>
         </div>

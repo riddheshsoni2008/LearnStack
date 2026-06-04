@@ -10,3 +10,4 @@ router.post('/logout', protect, logout);
 router.put('/profile', protect, updateProfile);
 
 module.exports = router;
+ 
