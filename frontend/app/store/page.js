@@ -36,7 +36,10 @@ export default function StorePage() {
   };
 
   const handlePurchase = async (item) => {
-    if (user?.diamonds < item.cost) {
+    const userDiamonds = Number(user?.diamonds || 0);
+    const itemCost = Number(item.cost || 0);
+
+    if (userDiamonds < itemCost) {
       addToast({
         type: "error",
         title: "Insufficient Diamonds",

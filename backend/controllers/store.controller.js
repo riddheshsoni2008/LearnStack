@@ -33,10 +33,20 @@ const purchaseItem = async (req, res) => {
 
     const user = await User.findById(req.user._id);
 
+    const userDiamonds = Number(user.diamonds || 0);
+    const itemCost = Number(item.cost || 0);
+
+    // Logging per requirements
+    console.log(`[Store Purchase] User: ${user.email}`);
+    console.log(`[Store Purchase] Balance: ${user.diamonds} (type: ${typeof user.diamonds})`);
+    console.log(`[Store Purchase] Item Cost: ${item.cost} (type: ${typeof item.cost})`);
+
     // Check balance
-    if (user.diamonds < item.cost) {
+    if (userDiamonds < itemCost) {
+      console.log(`[Store Purchase] Validation: FAILED (Not enough Diamonds)`);
       return res.status(400).json({ success: false, message: 'Not enough Diamonds' });
     }
+    console.log(`[Store Purchase] Validation: PASSED`);
 
     // Check if already owned
     let ownedArray = [];
@@ -49,7 +59,7 @@ const purchaseItem = async (req, res) => {
     }
 
     // Process purchase
-    user.diamonds -= item.cost;
+    user.diamonds = userDiamonds - itemCost;
 
     if (item.type === 'theme') user.ownedThemes.push(item.id);
     if (item.type === 'border') user.ownedBorders.push(item.id);

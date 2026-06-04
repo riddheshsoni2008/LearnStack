@@ -15,6 +15,27 @@ const RARITY_STYLES = {
   legendary: { border: "border-yellow-500/30", bg: "bg-yellow-500/10", text: "text-yellow-400", label: "Legendary", glow: "shadow-yellow-500/20" },
 };
 
+// ═══════════════════════════════════════════════════════════════
+// Cosmetic Styles
+// ═══════════════════════════════════════════════════════════════
+const THEME_STYLES = {
+  default: "bg-[var(--background)]",
+  theme_blue: "bg-gradient-to-br from-blue-950 via-[var(--background)] to-[var(--background)]",
+  theme_neon: "bg-gradient-to-br from-purple-900/40 via-fuchsia-900/20 to-[var(--background)]",
+  theme_galaxy: "bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] bg-[var(--background)]"
+};
+
+const BORDER_STYLES = {
+  none: "border-4 border-[var(--background)] ring-2 ring-[var(--primary-dark)]",
+  border_gold: "border-4 border-yellow-400 ring-2 ring-yellow-600 shadow-[0_0_20px_rgba(250,204,21,0.6)] animate-pulse-glow",
+  border_fire: "border-4 border-orange-500 ring-2 ring-red-600 shadow-[0_0_20px_rgba(249,115,22,0.8)]"
+};
+
+const TITLE_STYLES = {
+  title_warrior: { text: "CODE WARRIOR", icon: "⚔️" },
+  title_ninja: { text: "CODE NINJA", icon: "🥷" }
+};
+
 export default function ProfilePage() {
   const router = useRouter();
   const { user, loading: authLoading, fetchUser } = useAuth();
@@ -103,15 +124,32 @@ export default function ProfilePage() {
   // Level progress
   const levelProgress = user.currentLevelProgress || { percent: 0, xpIntoLevel: 0, xpForLevel: 1 };
 
+  const activeThemeClass = THEME_STYLES[user?.activeTheme] || THEME_STYLES.default;
+  const activeBorderClass = BORDER_STYLES[user?.activeBorder] || BORDER_STYLES.none;
+  
+  let displayTitle = user?.levelTitle || "Newbie";
+  let displayIcon = "";
+  if (user?.activeTitle && user.activeTitle !== 'Newbie' && TITLE_STYLES[user.activeTitle]) {
+    displayTitle = TITLE_STYLES[user.activeTitle].text;
+    displayIcon = TITLE_STYLES[user.activeTitle].icon;
+  }
+
+  // Diagnostic log for the audit
+  console.log("Profile Cosmetics Loaded:", {
+    theme: user?.activeTheme,
+    border: user?.activeBorder,
+    title: user?.activeTitle
+  });
+
   return (
-    <div className="min-h-screen bg-[var(--background)] pb-20">
+    <div className={`min-h-screen pb-20 ${activeThemeClass}`}>
       <AuthNavbar />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-8 sm:mt-12">
         {/* ═══ Profile Header ═══ */}
         <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-8 mb-10 sm:mb-12 text-center md:text-left">
           <div className="relative">
-            <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-4xl sm:text-5xl font-bold text-white shadow-lg border-4 border-[var(--background)] ring-2 ring-[var(--primary-dark)]">
+            <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-4xl sm:text-5xl font-bold text-white shadow-lg ${activeBorderClass}`}>
               {user.name.charAt(0).toUpperCase()}
             </div>
             {/* Level badge overlay */}
@@ -124,7 +162,7 @@ export default function ProfilePage() {
             <p className="text-[var(--text-muted)] text-base sm:text-lg mb-3">{user.email}</p>
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-[var(--surface-light)] border border-[var(--border)] gap-2">
               <span className="text-sm font-bold gradient-text uppercase tracking-wider">
-                Level {user.level || 1} — {user.levelTitle || "Newbie"}
+                Level {user.level || 1} — {displayIcon} {displayTitle}
               </span>
             </div>
             <div className="flex flex-wrap gap-4 mt-4 text-xs text-[var(--text-muted)]">

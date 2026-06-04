@@ -12,6 +12,27 @@ const ICONS = {
   title: "👑",
 };
 
+// ═══════════════════════════════════════════════════════════════
+// Cosmetic Styles (For preview)
+// ═══════════════════════════════════════════════════════════════
+const THEME_STYLES = {
+  default: "bg-[var(--surface-light)]",
+  theme_blue: "bg-gradient-to-br from-blue-900 to-black",
+  theme_neon: "bg-gradient-to-br from-purple-900 via-fuchsia-900 to-black",
+  theme_galaxy: "bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] bg-black"
+};
+
+const BORDER_STYLES = {
+  none: "border-4 border-[var(--surface-light)] ring-2 ring-[var(--border)]",
+  border_gold: "border-4 border-yellow-400 ring-2 ring-yellow-600 shadow-[0_0_20px_rgba(250,204,21,0.6)]",
+  border_fire: "border-4 border-orange-500 ring-2 ring-red-600 shadow-[0_0_20px_rgba(249,115,22,0.8)]"
+};
+
+const TITLE_STYLES = {
+  title_warrior: { text: "CODE WARRIOR", icon: "⚔️" },
+  title_ninja: { text: "CODE NINJA", icon: "🥷" }
+};
+
 export default function InventoryPage() {
   const { user, fetchUser } = useAuth();
   const { addToast } = useCelebration();
@@ -103,44 +124,56 @@ export default function InventoryPage() {
           {ICONS[type]} {title}
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {items.map((item) => (
-            <motion.div
-              key={item.id}
-              whileHover={{ y: -5 }}
-              className={`glass rounded-xl p-5 border relative overflow-hidden transition-all flex flex-col ${item.active
-                ? "border-[var(--accent)] shadow-lg shadow-[var(--accent)]/20 bg-[var(--accent)]/10"
-                : "border-[var(--border)]"
-                }`}
-            >
-              {item.active && (
-                <div className="absolute top-0 right-0 bg-[var(--accent)] text-[var(--accent-light)] text-[10px] font-bold uppercase px-2 py-1 rounded-bl-lg">
-                  Equipped
-                </div>
-              )}
+          {items.map((item) => {
+            const previewClass =
+              item.type === 'theme' ? THEME_STYLES[item.id] || THEME_STYLES.default :
+                item.type === 'border' ? (BORDER_STYLES[item.id] || BORDER_STYLES.none) + " m-2 rounded-xl" :
+                  "";
 
-              <div className="text-3xl mb-3">{ICONS[item.type]}</div>
-              <h3 className="font-bold text-lg mb-4 flex-grow">{item.name}</h3>
+            const titleDisplay = item.type === 'title' && TITLE_STYLES[item.id] ?
+              `${TITLE_STYLES[item.id].icon} ${TITLE_STYLES[item.id].text}` : item.name;
 
-              <button
-                onClick={() => handleEquip(item)}
-                disabled={item.active || equipping === item.id}
-                className={`w-full py-2 rounded-lg text-sm font-bold transition-colors ${equipping === item.id
-                  ? "bg-[var(--surface-light)] text-[var(--text-muted)] flex justify-center"
-                  : item.active
-                    ? "bg-[var(--accent)] text-white"
-                    : "bg-[var(--surface-light)] hover:bg-[var(--text-muted)] text-white"
-                  }`}
+            return (
+              <motion.div
+                key={item.id}
+                whileHover={{ y: -5 }}
+                className={`rounded-xl p-5 border relative overflow-hidden transition-all flex flex-col ${item.active
+                  ? "border-[var(--accent)] shadow-lg shadow-[var(--accent)]/20 "
+                  : "border-[var(--border)] glass"
+                  } ${item.type === 'theme' ? previewClass : ''} ${item.type === 'border' && item.active ? 'bg-[var(--accent)]/10' : ''}`}
               >
-                {equipping === item.id ? (
-                  <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                ) : item.active ? (
-                  "Active"
-                ) : (
-                  "Equip"
+                {item.active && (
+                  <div className="absolute top-0 right-0 bg-[var(--accent)] text-[var(--accent-light)] text-[10px] font-bold uppercase px-2 py-1 rounded-bl-lg">
+                    Equipped
+                  </div>
                 )}
-              </button>
-            </motion.div>
-          ))}
+
+                <div className={`text-3xl mb-3 ${item.type === 'border' ? previewClass : ''}`}>
+                  {item.type === 'title' ? (TITLE_STYLES[item.id]?.icon || ICONS.title) : ICONS[item.type]}
+                </div>
+                <h3 className="font-bold text-lg mb-4 flex-grow">{titleDisplay}</h3>
+
+                <button
+                  onClick={() => handleEquip(item)}
+                  disabled={item.active || equipping === item.id}
+                  className={`w-full py-2 rounded-lg text-sm font-bold transition-colors ${equipping === item.id
+                    ? "bg-[var(--surface-light)] text-[var(--text-muted)] flex justify-center"
+                    : item.active
+                      ? "bg-[var(--accent)] text-white"
+                      : "bg-[var(--surface-light)] hover:bg-[var(--text-muted)] text-white"
+                    }`}
+                >
+                  {equipping === item.id ? (
+                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                  ) : item.active ? (
+                    "Active"
+                  ) : (
+                    "Equip"
+                  )}
+                </button>
+              </motion.div>
+            )
+          })}
         </div>
       </div>
     );
