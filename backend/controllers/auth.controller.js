@@ -140,7 +140,7 @@ const login = async (req, res) => {
 const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate('badges');
-    
+
     if (user) {
       user.lastActive = new Date();
       await user.save({ validateBeforeSave: false });
