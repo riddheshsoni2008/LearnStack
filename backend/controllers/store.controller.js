@@ -67,16 +67,6 @@ const purchaseItem = async (req, res) => {
 
     await user.save();
 
-    // Log XP History
-    await XpHistory.create({
-      userId: user._id,
-      amount: -item.cost,
-      source: 'store_purchase',
-      description: `Purchased ${item.name}`,
-      levelBefore: user.level,
-      levelAfter: user.level
-    });
-
     res.status(200).json({
       success: true,
       message: 'Purchase successful!',
@@ -132,13 +122,14 @@ const openMysteryBox = async (req, res) => {
     if (selectedReward.type === 'diamond') {
       user.diamonds += selectedReward.amount;
     } else if (['theme', 'border', 'title'].includes(selectedReward.type)) {
-      let ownedArray = [];
-      if (selectedReward.type === 'theme') ownedArray = user.ownedThemes;
-      if (selectedReward.type === 'border') ownedArray = user.ownedBorders;
-      if (selectedReward.type === 'title') ownedArray = user.ownedTitles;
+      let arrayName = '';
+      if (selectedReward.type === 'theme') { ownedArray = user.ownedThemes; arrayName = 'ownedThemes'; }
+      if (selectedReward.type === 'border') { ownedArray = user.ownedBorders; arrayName = 'ownedBorders'; }
+      if (selectedReward.type === 'title') { ownedArray = user.ownedTitles; arrayName = 'ownedTitles'; }
 
       if (!ownedArray.includes(selectedReward.itemId)) {
         ownedArray.push(selectedReward.itemId);
+        if (arrayName) user.markModified(arrayName);
       } else {
         // Fallback: give 1 Diamond if already owned
         user.diamonds += 1;
@@ -209,12 +200,18 @@ const equipItem = async (req, res) => {
     const { itemId, type } = req.body;
     const user = await User.findById(req.user._id);
 
+    console.log(`[Cosmetic Equip] User: ${user.email}, Item: ${itemId}, Type: ${type}`);
+
     let ownedArray = [];
     if (type === 'theme') ownedArray = user.ownedThemes;
     if (type === 'border') ownedArray = user.ownedBorders;
     if (type === 'title') ownedArray = user.ownedTitles;
 
+    console.log(`[Cosmetic Equip] Owned ${type}s:`, ownedArray);
+    console.log(`[Cosmetic Equip] Checking ownership for ${itemId}...`);
+
     if (!ownedArray.includes(itemId) && itemId !== 'default' && itemId !== 'none' && itemId !== 'Newbie') {
+      console.log(`[Cosmetic Equip] Validation FAILED: Item not owned.`);
       return res.status(400).json({ success: false, message: 'You do not own this item' });
     }
 
@@ -223,6 +220,7 @@ const equipItem = async (req, res) => {
     if (type === 'title') user.activeTitle = itemId;
 
     await user.save();
+    console.log(`[Cosmetic Equip] Success! Active ${type} set to ${itemId}`);
 
     res.status(200).json({
       success: true,
@@ -234,6 +232,7 @@ const equipItem = async (req, res) => {
       }
     });
   } catch (error) {
+    console.log(`[Cosmetic Equip] Error:`, error.message);
     res.status(500).json({ success: false, message: error.message });
   }
 };
