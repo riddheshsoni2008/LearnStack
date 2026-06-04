@@ -86,7 +86,7 @@ const updateStreak = async (user) => {
       await XpHistory.create({
         userId: user._id,
         amount: streakBonus,
-        source: 'streak_bonus',
+        source: 'streak',
         description: `${user.streak}-day streak milestone bonus!`,
         levelBefore: user.level,
         levelAfter: user.level

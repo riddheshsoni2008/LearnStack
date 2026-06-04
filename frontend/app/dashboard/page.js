@@ -44,9 +44,6 @@ function XPRing({ level, levelTitle, progress, xp }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Streak Calendar (last 7 days)
-// ═══════════════════════════════════════════════════════════════
 function StreakCalendar({ streak, longestStreak }) {
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const today = new Date();
@@ -74,11 +71,10 @@ function StreakCalendar({ streak, longestStreak }) {
           <div key={i} className="flex flex-col items-center gap-1">
             <div className="text-[10px] text-[var(--text-muted)] uppercase">{d.day}</div>
             <div
-              className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${
-                d.active
-                  ? "bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/20"
-                  : "bg-[var(--surface-light)] text-[var(--text-muted)] border border-[var(--border)]"
-              } ${d.isToday ? "ring-2 ring-orange-400/50" : ""}`}
+              className={`w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-all ${d.active
+                ? "bg-gradient-to-br from-orange-500 to-red-500 text-white shadow-lg shadow-orange-500/20"
+                : "bg-[var(--surface-light)] text-[var(--text-muted)] border border-[var(--border)]"
+                } ${d.isToday ? "ring-2 ring-orange-400/50" : ""}`}
             >
               {d.active ? "🔥" : d.date}
             </div>
@@ -107,11 +103,10 @@ function BadgeCard({ badge, earned = false }) {
   const style = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
   return (
     <div
-      className={`relative rounded-xl p-3 border transition-all ${
-        earned
-          ? `${style.border} ${style.bg} shadow-lg`
-          : "border-[var(--border)] bg-[var(--surface-light)] opacity-40 grayscale"
-      }`}
+      className={`relative rounded-xl p-3 border transition-all ${earned
+        ? `${style.border} ${style.bg} shadow-lg`
+        : "border-[var(--border)] bg-[var(--surface-light)] opacity-40 grayscale"
+        }`}
     >
       <div className="text-center">
         <div className="text-2xl mb-1">{badge.icon}</div>
@@ -216,7 +211,7 @@ export default function DashboardPage() {
               level={user.level || 1}
               levelTitle={user.levelTitle || "Newbie"}
               progress={user.currentLevelProgress?.percent || 0}
-              xp={user.xp || 0}
+              xp={user.totalXpEarned || 0}
             />
           </div>
 

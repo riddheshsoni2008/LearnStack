@@ -95,6 +95,11 @@ export default function ProfilePage() {
     }
   });
 
+  // Group badges
+  const achievementBadges = allBadges.filter(b => !b.condition.startsWith('MYSTERY'));
+  const exclusiveBadges = allBadges.filter(b => b.condition.startsWith('MYSTERY'));
+
+
   // Level progress
   const levelProgress = user.currentLevelProgress || { percent: 0, xpIntoLevel: 0, xpForLevel: 1 };
 
@@ -161,7 +166,7 @@ export default function ProfilePage() {
         {/* ═══ Stats Grid ═══ */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[
-            { label: "Total XP", value: user.xp || 0, icon: "⚡", color: "text-yellow-400" },
+            { label: "Total XP", value: user.totalXpEarned || 0, icon: "⚡", color: "text-yellow-400" },
             { label: "Day Streak", value: user.streak || 0, icon: "🔥", color: "text-orange-500" },
             { label: "Lessons", value: completedLessons, icon: "📚", color: "text-blue-400" },
             { label: "Badges", value: myBadges.length, icon: "🏆", color: "text-purple-400" },
@@ -176,9 +181,9 @@ export default function ProfilePage() {
 
         {/* ═══ Badge Showcase ═══ */}
         <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8">
-          <h3 className="text-lg font-bold mb-4">🏆 Badge Showcase</h3>
+          <h3 className="text-lg font-bold mb-4">🏆 Achievements</h3>
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
-            {allBadges.map((badge) => {
+            {achievementBadges.map((badge) => {
               const earned = earnedBadgeIds.includes(badge._id);
               const style = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
               return (
@@ -211,9 +216,53 @@ export default function ProfilePage() {
             })}
           </div>
           <div className="text-center mt-4 text-xs text-[var(--text-muted)]">
-            {myBadges.length} / {allBadges.length} badges earned
+            {myBadges.filter(b => !b.condition.startsWith('MYSTERY')).length} / {achievementBadges.length} achievements earned
           </div>
         </div>
+
+        {/* ═══ Exclusive Rewards ═══ */}
+        {exclusiveBadges.length > 0 && (
+          <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8 border-purple-500/30 shadow-lg shadow-purple-500/10">
+            <h3 className="text-lg font-bold mb-4 text-purple-400">🎁 Exclusive Rewards</h3>
+            <p className="text-sm text-[var(--text-muted)] mb-4">Rare badges obtained only through the Mystery Box.</p>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              {exclusiveBadges.map((badge) => {
+                const earned = earnedBadgeIds.includes(badge._id);
+                const style = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
+                return (
+                  <div
+                    key={badge._id}
+                    className={`relative rounded-xl p-3 border transition-all text-center ${
+                      earned
+                        ? `${style.border} ${style.bg} shadow-lg ${style.glow}`
+                        : "border-[var(--border)] bg-[var(--surface-light)] opacity-30 grayscale"
+                    }`}
+                    title={`${badge.name}: ${badge.description}`}
+                  >
+                    <div className="text-3xl mb-1">{badge.icon}</div>
+                    <div className={`text-[10px] font-bold ${earned ? style.text : "text-[var(--text-muted)]"} truncate`}>
+                      {badge.name}
+                    </div>
+                    <div className="text-[8px] text-[var(--text-muted)] mt-0.5 line-clamp-2">{badge.description}</div>
+                    {earned && (
+                      <div className={`absolute -top-1 -right-1 text-[7px] px-1.5 py-0.5 rounded-full font-bold ${style.bg} ${style.text} border ${style.border}`}>
+                        {style.label}
+                      </div>
+                    )}
+                    {!earned && (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xl opacity-50">🔒</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="text-center mt-4 text-xs text-[var(--text-muted)]">
+              {myBadges.filter(b => b.condition.startsWith('MYSTERY')).length} / {exclusiveBadges.length} exclusive rewards earned
+            </div>
+          </div>
+        )}
 
         {/* ═══ Track Progress ═══ */}
         <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8">

@@ -55,7 +55,7 @@ const checkAndAwardBadges = async (userId, context = {}) => {
         await XpHistory.create({
           userId,
           amount: badge.xpBonus,
-          source: 'badge_bonus',
+          source: 'badge',
           description: `Badge unlocked: ${badge.name}`,
           referenceId: badge._id,
           levelBefore: user.level,

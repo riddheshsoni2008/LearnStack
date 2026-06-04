@@ -16,7 +16,7 @@ const XpHistorySchema = new mongoose.Schema({
   },
   source: {
     type: String,
-    enum: ['quiz', 'lesson', 'coding_challenge', 'streak_bonus', 'badge_bonus', 'perfect_score', 'daily_challenge'],
+    enum: ['quiz', 'lesson', 'coding_challenge', 'streak', 'badge', 'perfect_score', 'daily_challenge', 'mystery_box', 'store_purchase', 'level_up'],
     required: true
   },
   description: {

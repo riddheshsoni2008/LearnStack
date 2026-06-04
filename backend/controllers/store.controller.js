@@ -50,7 +50,7 @@ const purchaseItem = async (req, res) => {
 
     // Process purchase
     user.xpBalance -= item.cost;
-    
+
     if (item.type === 'theme') user.ownedThemes.push(item.id);
     if (item.type === 'border') user.ownedBorders.push(item.id);
     if (item.type === 'title') user.ownedTitles.push(item.id);
@@ -127,8 +127,34 @@ const openMysteryBox = async (req, res) => {
         user.xpBalance += 2;
         selectedReward = { ...selectedReward, fallback: 'Already owned. Granted +2 XP instead!' };
       }
+    } else if (selectedReward.type === 'badge') {
+      const Badge = require('../models/Badge');
+      const badge = await Badge.findOne({ condition: selectedReward.badgeCondition });
+
+      if (badge) {
+        if (!user.badges.includes(badge._id)) {
+          user.badges.push(badge._id);
+          user.totalXpEarned += badge.xpBonus || 0;
+          user.xpBalance += badge.xpBonus || 0;
+
+          if (badge.xpBonus > 0) {
+            await XpHistory.create({
+              userId: user._id,
+              amount: badge.xpBonus,
+              source: 'badge',
+              description: `Badge unlocked: ${badge.name}`,
+              referenceId: badge._id,
+              levelBefore: user.level,
+              levelAfter: user.level
+            });
+          }
+        } else {
+          user.totalXpEarned += 5;
+          user.xpBalance += 5;
+          selectedReward = { ...selectedReward, fallback: 'Already owned. Granted +5 XP instead!' };
+        }
+      }
     }
-    // Note: Badges require badgeService integration, kept simple here to show logic.
 
     await user.save();
 

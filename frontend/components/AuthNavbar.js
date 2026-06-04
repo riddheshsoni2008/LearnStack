@@ -46,6 +46,18 @@ export default function AuthNavbar() {
             Profile
           </Link>
           <Link
+            href="/store"
+            className="text-sm font-medium text-yellow-400 hover:text-yellow-300 transition-colors"
+          >
+            Store
+          </Link>
+          <Link
+            href="/inventory"
+            className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
+          >
+            Inventory
+          </Link>
+          <Link
             href="/leaderboard"
             className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
           >
@@ -53,9 +65,14 @@ export default function AuthNavbar() {
           </Link>
 
           <div className="flex items-center gap-4 border-l border-[var(--border)] pl-6 ml-2">
-            {user?.xp !== undefined && (
-              <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20 shadow-inner">
-                ⚡ {user.xp} XP • Lvl {user.level || 1}
+            {user?.totalXpEarned !== undefined && (
+              <div className="flex gap-2">
+                <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20 shadow-inner">
+                  ⚡ {user.totalXpEarned} XP • Lvl {user.level || 1}
+                </div>
+                <div className="text-sm font-semibold flex items-center gap-1.5 bg-yellow-500/10 text-yellow-400 px-3 py-1 rounded-full border border-yellow-500/20 shadow-inner">
+                  💎 {user.xpBalance} Bal
+                </div>
               </div>
             )}
             <div className="text-sm text-[var(--text-muted)]">
@@ -97,9 +114,14 @@ export default function AuthNavbar() {
                 <p className="text-sm text-[var(--text-muted)]">Signed in as</p>
                 <p className="font-bold text-[var(--foreground)] truncate max-w-[200px]">{user?.name}</p>
               </div>
-              {user?.xp !== undefined && (
-                <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20">
-                  ⚡ {user.xp} XP
+              {user?.totalXpEarned !== undefined && (
+                <div className="flex flex-col gap-1 items-end">
+                  <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20">
+                    ⚡ {user.totalXpEarned} XP
+                  </div>
+                  <div className="text-sm font-semibold flex items-center gap-1.5 bg-yellow-500/10 text-yellow-400 px-3 py-1 rounded-full border border-yellow-500/20">
+                    💎 {user.xpBalance} Bal
+                  </div>
                 </div>
               )}
             </div>
@@ -131,6 +153,20 @@ export default function AuthNavbar() {
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">👤</span> Profile
+            </Link>
+            <Link
+              href="/store"
+              className="text-yellow-400 hover:text-yellow-300 transition-colors font-medium py-2 flex items-center gap-3"
+              onClick={() => setMobileOpen(false)}
+            >
+              <span className="text-xl">🏪</span> Store
+            </Link>
+            <Link
+              href="/inventory"
+              className="text-[var(--text-muted)] hover:text-white transition-colors font-medium py-2 flex items-center gap-3"
+              onClick={() => setMobileOpen(false)}
+            >
+              <span className="text-xl">🎒</span> Inventory
             </Link>
             <Link
               href="/leaderboard"

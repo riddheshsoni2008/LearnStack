@@ -1,6 +1,6 @@
 const express = require('express');
 const { getStoreItems, purchaseItem, openMysteryBox, equipItem } = require('../controllers/store.controller');
-const { protect } = require('../controllers/auth.controller');
+const { protect } = require('../middleware/auth.middleware');
 
 const router = express.Router();
 
