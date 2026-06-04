@@ -2,47 +2,42 @@ const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const path = require('path');
 const User = require('../models/User');
+const { STORE_ITEMS } = require('../config/storeItems');
 const { purchaseItem } = require('../controllers/store.controller');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
 
-async function testStore() {
+async function testPurchase() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('Connected to DB');
-
     const user = await User.findOne();
-    if (!user) {
-      console.log('No user found');
-      process.exit(1);
-    }
-    
-    console.log(`User ${user.email} has ${user.xpBalance} XP. Adding 100 XP...`);
+    if (!user) process.exit(1);
+
+    // Ensure enough XP
     user.xpBalance = 100;
-    await user.save();
+    await user.save({ validateBeforeSave: false });
 
     const req = {
       user: { _id: user._id },
-      body: { itemId: 'theme_blue' }
+      body: { itemId: 'theme_galaxy' }
     };
+
     const res = {
       status: (code) => {
-        console.log('Status:', code);
         return {
           json: (data) => {
-            console.log('Response:', data);
+            console.log(`Status ${code}:`, data);
           }
-        };
+        }
       }
     };
 
     await purchaseItem(req, res);
-    
     process.exit(0);
-  } catch (error) {
-    console.error('Error:', error);
+  } catch (err) {
+    console.error(err);
     process.exit(1);
   }
 }
 
-testStore();
+testPurchase();

@@ -46,7 +46,6 @@ const checkAndAwardBadges = async (userId, context = {}) => {
     // Add badge references + bonus XP to user
     user.badges.push(...badgeIds);
     user.totalXpEarned += totalBonusXP;
-    user.xpBalance += totalBonusXP;
     await user.save({ validateBeforeSave: false });
 
     // Log XP history for each badge bonus

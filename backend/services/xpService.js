@@ -30,7 +30,6 @@ const awardXP = async (userId, amount, source, description, referenceId = null) 
 
   const oldLevel = user.level;
   user.totalXpEarned += amount;
-  user.xpBalance += amount;
   await user.save({ validateBeforeSave: false });
 
   const newLevel = user.level;
@@ -81,7 +80,6 @@ const updateStreak = async (user) => {
       streakBonus = STREAK_MILESTONES[user.streak];
       streakBonusMilestone = user.streak;
       user.totalXpEarned += streakBonus;
-      user.xpBalance += streakBonus;
 
       await XpHistory.create({
         userId: user._id,

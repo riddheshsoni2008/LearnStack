@@ -36,6 +36,15 @@ export default function StorePage() {
   };
 
   const handlePurchase = async (item) => {
+    if (user?.xpBalance < item.cost) {
+      addToast({
+        type: "error",
+        title: "Insufficient XP",
+        description: `You need ${item.cost} XP to buy this item.`,
+      });
+      return;
+    }
+
     setPurchasing(item.id);
     try {
       const res = await fetch("/api/store/purchase", {
@@ -79,6 +88,46 @@ export default function StorePage() {
     if (item.type === "border") return user.ownedBorders?.includes(item.id);
     if (item.type === "title") return user.ownedTitles?.includes(item.id);
     return false;
+  };
+
+  const isEquipped = (item) => {
+    if (!user) return false;
+    if (item.type === "theme") return user.activeTheme === item.id;
+    if (item.type === "border") return user.activeBorder === item.id;
+    if (item.type === "title") return user.activeTitle === item.id;
+    return false;
+  };
+
+  const handleEquip = async (item) => {
+    setPurchasing(item.id);
+    try {
+      const res = await fetch("/api/store/equip", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ itemId: item.id, type: item.type }),
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        addToast({
+          type: "success",
+          title: "Equipped!",
+          description: `You equipped ${item.name}`,
+        });
+        fetchUser(); // Refresh user state
+      } else {
+        addToast({
+          type: "error",
+          title: "Failed to equip",
+          description: data.message,
+        });
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setPurchasing(null);
+    }
   };
 
   return (
@@ -181,27 +230,41 @@ export default function StorePage() {
                       {item.description}
                     </p>
                     
-                    <button
-                      onClick={() => handlePurchase(item)}
-                      disabled={owned || !canAfford || purchasing === item.id}
-                      className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
-                        owned
-                          ? "bg-[var(--surface-light)] text-[var(--text-muted)] cursor-not-allowed"
-                          : canAfford
-                          ? "bg-white text-black hover:bg-gray-200 active:scale-95 shadow-lg"
-                          : "bg-[var(--surface-light)] text-red-400 cursor-not-allowed opacity-70 border border-red-500/20"
-                      }`}
-                    >
-                      {purchasing === item.id ? (
-                        <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
-                      ) : owned ? (
-                        "Already Owned"
-                      ) : canAfford ? (
-                        "Purchase"
-                      ) : (
-                        "Not Enough XP"
-                      )}
-                    </button>
+                    {owned ? (
+                      <button
+                        onClick={() => handleEquip(item)}
+                        disabled={purchasing === item.id}
+                        className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+                          isEquipped(item)
+                            ? "bg-[var(--accent)] text-white shadow-lg shadow-[var(--accent)]/30"
+                            : "bg-[var(--surface-light)] text-[var(--foreground)] hover:bg-[var(--surface)] border border-[var(--border)]"
+                        }`}
+                      >
+                        {purchasing === item.id ? (
+                          <div className="w-5 h-5 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                        ) : isEquipped(item) ? (
+                          "Equipped"
+                        ) : (
+                          "Equip"
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handlePurchase(item)}
+                        disabled={purchasing === item.id}
+                        className={`w-full py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 ${
+                          canAfford
+                            ? "bg-white text-black hover:bg-gray-200 active:scale-95 shadow-lg"
+                            : "bg-[var(--surface-light)] text-red-400 opacity-90 border border-red-500/20 hover:bg-red-500/10"
+                        }`}
+                      >
+                        {purchasing === item.id ? (
+                          <div className="w-5 h-5 border-2 border-black/20 border-t-black rounded-full animate-spin" />
+                        ) : (
+                          "Purchase"
+                        )}
+                      </button>
+                    )}
                   </motion.div>
                 );
               })}

@@ -34,8 +34,8 @@ const purchaseItem = async (req, res) => {
     const user = await User.findById(req.user._id);
 
     // Check balance
-    if (user.xpBalance < item.cost) {
-      return res.status(400).json({ success: false, message: 'Not enough XP' });
+    if (user.diamonds < item.cost) {
+      return res.status(400).json({ success: false, message: 'Not enough Diamonds' });
     }
 
     // Check if already owned
@@ -49,7 +49,7 @@ const purchaseItem = async (req, res) => {
     }
 
     // Process purchase
-    user.xpBalance -= item.cost;
+    user.diamonds -= item.cost;
 
     if (item.type === 'theme') user.ownedThemes.push(item.id);
     if (item.type === 'border') user.ownedBorders.push(item.id);
@@ -71,6 +71,7 @@ const purchaseItem = async (req, res) => {
       success: true,
       message: 'Purchase successful!',
       data: {
+        diamonds: user.diamonds,
         xpBalance: user.xpBalance,
         ownedThemes: user.ownedThemes,
         ownedBorders: user.ownedBorders,
@@ -110,9 +111,8 @@ const openMysteryBox = async (req, res) => {
     }
 
     // Apply reward
-    if (selectedReward.type === 'xp') {
-      user.totalXpEarned += selectedReward.amount;
-      user.xpBalance += selectedReward.amount;
+    if (selectedReward.type === 'diamond') {
+      user.diamonds += selectedReward.amount;
     } else if (['theme', 'border', 'title'].includes(selectedReward.type)) {
       let ownedArray = [];
       if (selectedReward.type === 'theme') ownedArray = user.ownedThemes;
@@ -122,10 +122,9 @@ const openMysteryBox = async (req, res) => {
       if (!ownedArray.includes(selectedReward.itemId)) {
         ownedArray.push(selectedReward.itemId);
       } else {
-        // Fallback: give 2 XP if already owned
-        user.totalXpEarned += 2;
-        user.xpBalance += 2;
-        selectedReward = { ...selectedReward, fallback: 'Already owned. Granted +2 XP instead!' };
+        // Fallback: give 1 Diamond if already owned
+        user.diamonds += 1;
+        selectedReward = { ...selectedReward, fallback: 'Already owned. Granted 1 Diamond instead!' };
       }
     } else if (selectedReward.type === 'badge') {
       const Badge = require('../models/Badge');
@@ -134,9 +133,9 @@ const openMysteryBox = async (req, res) => {
       if (badge) {
         if (!user.badges.includes(badge._id)) {
           user.badges.push(badge._id);
+          // XP bonus for badges is still fine since badges represent learning achievements
           user.totalXpEarned += badge.xpBonus || 0;
-          user.xpBalance += badge.xpBonus || 0;
-
+          
           if (badge.xpBonus > 0) {
             await XpHistory.create({
               userId: user._id,
@@ -149,9 +148,8 @@ const openMysteryBox = async (req, res) => {
             });
           }
         } else {
-          user.totalXpEarned += 5;
-          user.xpBalance += 5;
-          selectedReward = { ...selectedReward, fallback: 'Already owned. Granted +5 XP instead!' };
+          user.diamonds += 2;
+          selectedReward = { ...selectedReward, fallback: 'Already owned. Granted 2 Diamonds instead!' };
         }
       }
     }
@@ -171,6 +169,7 @@ const openMysteryBox = async (req, res) => {
       success: true,
       data: {
         reward: selectedReward,
+        diamonds: user.diamonds,
         xpBalance: user.xpBalance,
         totalXpEarned: user.totalXpEarned,
         ownedThemes: user.ownedThemes,
