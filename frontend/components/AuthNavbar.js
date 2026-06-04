@@ -70,8 +70,8 @@ export default function AuthNavbar() {
                 <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20 shadow-inner">
                   ⚡ {user.totalXpEarned} XP • Lvl {user.level || 1}
                 </div>
-                <div className="text-sm font-semibold flex items-center gap-1.5 bg-yellow-500/10 text-yellow-400 px-3 py-1 rounded-full border border-yellow-500/20 shadow-inner">
-                  💎 {user.xpBalance} Bal
+                <div className="text-sm font-semibold flex items-center gap-1.5 bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 shadow-inner">
+                  💎 {user.diamonds || 0} Diamonds
                 </div>
               </div>
             )}
@@ -119,8 +119,8 @@ export default function AuthNavbar() {
                   <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20">
                     ⚡ {user.totalXpEarned} XP
                   </div>
-                  <div className="text-sm font-semibold flex items-center gap-1.5 bg-yellow-500/10 text-yellow-400 px-3 py-1 rounded-full border border-yellow-500/20">
-                    💎 {user.xpBalance} Bal
+                  <div className="text-sm font-semibold flex items-center gap-1.5 bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20">
+                    💎 {user.diamonds || 0} Diamonds
                   </div>
                 </div>
               )}

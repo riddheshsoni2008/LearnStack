@@ -36,11 +36,11 @@ export default function StorePage() {
   };
 
   const handlePurchase = async (item) => {
-    if (user?.xpBalance < item.cost) {
+    if (user?.diamonds < item.cost) {
       addToast({
         type: "error",
-        title: "Insufficient XP",
-        description: `You need ${item.cost} XP to buy this item.`,
+        title: "Insufficient Diamonds",
+        description: `You need ${item.cost} Diamonds to buy this item.`,
       });
       return;
     }
@@ -146,8 +146,8 @@ export default function StorePage() {
           <div className="glass px-6 py-4 rounded-2xl flex items-center gap-4 border border-yellow-500/20 shadow-lg shadow-yellow-500/5">
             <div className="text-3xl">💎</div>
             <div>
-              <p className="text-sm font-medium text-[var(--text-muted)]">Your Balance</p>
-              <p className="text-2xl font-bold text-yellow-400">{user?.xpBalance || 0} XP</p>
+              <p className="text-sm font-medium text-[var(--text-muted)]">Your Diamonds</p>
+              <p className="text-2xl font-bold text-cyan-400">{user?.diamonds || 0} Diamonds</p>
             </div>
           </div>
         </div>
@@ -203,7 +203,7 @@ export default function StorePage() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {items.map((item) => {
                 const owned = isOwned(item);
-                const canAfford = user?.xpBalance >= item.cost;
+                const canAfford = user?.diamonds >= item.cost;
                 
                 return (
                   <motion.div
@@ -220,7 +220,7 @@ export default function StorePage() {
                       <div className="text-4xl bg-[var(--surface-light)] w-14 h-14 rounded-xl flex items-center justify-center border border-[var(--border)] shadow-inner">
                         {item.icon}
                       </div>
-                      <div className={`px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1.5 ${owned ? "bg-[var(--accent)]/20 text-[var(--accent-light)]" : "bg-yellow-500/10 text-yellow-400 border border-yellow-500/20"}`}>
+                      <div className={`px-3 py-1 rounded-full text-sm font-bold flex items-center gap-1.5 ${owned ? "bg-[var(--accent)]/20 text-[var(--accent-light)]" : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"}`}>
                         {owned ? "Owned" : `💎 ${item.cost}`}
                       </div>
                     </div>

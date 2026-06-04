@@ -34,17 +34,19 @@ export default function MysteryBox({ cost, userBalance, onReward }) {
           setReward(data.data.reward);
           onReward(); // Update user balance/inventory
           
-          // Fire confetti
-          const colors = data.data.reward.rarity === 'epic' ? ['#a855f7', '#d946ef'] : 
-                         data.data.reward.rarity === 'rare' ? ['#3b82f6', '#60a5fa'] : 
-                         ['#fbbf24', '#f59e0b'];
-                         
-          confetti({
-            particleCount: 150,
-            spread: 100,
-            origin: { y: 0.5 },
-            colors
-          });
+          // Fire confetti only for epic and legendary
+          if (data.data.reward.rarity === 'epic' || data.data.reward.rarity === 'legendary') {
+            const colors = data.data.reward.rarity === 'legendary' ? ['#fbbf24', '#f59e0b', '#ffffff'] :
+                           data.data.reward.rarity === 'epic' ? ['#a855f7', '#d946ef'] : 
+                           ['#fbbf24', '#f59e0b'];
+                           
+            confetti({
+              particleCount: 150,
+              spread: 100,
+              origin: { y: 0.5 },
+              colors
+            });
+          }
 
           if (data.data.reward.fallback) {
              setTimeout(() => {
@@ -66,10 +68,11 @@ export default function MysteryBox({ cost, userBalance, onReward }) {
     idle: { scale: 1, y: 0 },
     hover: { scale: 1.05, y: -5, transition: { type: "spring", stiffness: 300 } },
     shaking: {
-      x: [0, -10, 10, -10, 10, -5, 5, 0],
-      y: [0, -5, 5, -5, 5, -2, 2, 0],
-      rotate: [0, -5, 5, -5, 5, -2, 2, 0],
-      transition: { duration: 0.5, repeat: 3 }
+      x: [0, -15, 15, -15, 15, -10, 10, -5, 5, 0],
+      y: [0, -8, 8, -8, 8, -5, 5, -2, 2, 0],
+      rotate: [0, -10, 10, -10, 10, -5, 5, -2, 2, 0],
+      scale: [1, 1.1, 1.1, 1.1, 1.1, 1.05, 1.05, 1.02, 1.02, 1],
+      transition: { duration: 0.6, repeat: 2 }
     }
   };
 
@@ -92,7 +95,7 @@ export default function MysteryBox({ cost, userBalance, onReward }) {
             <div className="text-6xl mb-2">{opening ? "✨" : "🎁"}</div>
             {!opening && (
               <div className="bg-black/50 backdrop-blur-sm px-4 py-1.5 rounded-full text-yellow-400 font-bold text-sm border border-yellow-500/30 flex items-center gap-1.5">
-                💎 {cost} XP
+                ⚡ {cost} XP
               </div>
             )}
             {/* Glow pulse behind box */}
@@ -110,9 +113,10 @@ export default function MysteryBox({ cost, userBalance, onReward }) {
             exit={{ opacity: 0, scale: 0.8 }}
             transition={{ type: "spring", damping: 15, stiffness: 100 }}
             className={`w-full h-full rounded-3xl flex flex-col items-center justify-center relative p-6 border-2 shadow-2xl
-              ${reward.rarity === 'epic' ? 'bg-gradient-to-b from-purple-900/80 to-black border-purple-500 shadow-purple-500/50' :
+              ${reward.rarity === 'legendary' ? 'bg-gradient-to-b from-yellow-500/80 to-orange-900 border-yellow-400 shadow-yellow-500/60' :
+                reward.rarity === 'epic' ? 'bg-gradient-to-b from-purple-900/80 to-black border-purple-500 shadow-purple-500/50' :
                 reward.rarity === 'rare' ? 'bg-gradient-to-b from-blue-900/80 to-black border-blue-500 shadow-blue-500/50' :
-                'bg-gradient-to-b from-[var(--surface)] to-black border-yellow-500 shadow-yellow-500/30'
+                'bg-gradient-to-b from-[var(--surface)] to-black border-gray-500 shadow-gray-500/30'
               }
             `}
           >
@@ -126,6 +130,7 @@ export default function MysteryBox({ cost, userBalance, onReward }) {
             </div>
 
             <div className={`text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full mb-4 ${
+               reward.rarity === 'legendary' ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-500/50 shadow-[0_0_15px_rgba(234,179,8,0.5)]' :
                reward.rarity === 'epic' ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30' :
                reward.rarity === 'rare' ? 'bg-blue-500/20 text-blue-300 border border-blue-500/30' :
                'bg-gray-500/20 text-gray-300 border border-gray-500/30'
