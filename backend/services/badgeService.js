@@ -45,7 +45,8 @@ const checkAndAwardBadges = async (userId, context = {}) => {
 
     // Add badge references + bonus XP to user
     user.badges.push(...badgeIds);
-    user.xp += totalBonusXP;
+    user.totalXpEarned += totalBonusXP;
+    user.xpBalance += totalBonusXP;
     await user.save({ validateBeforeSave: false });
 
     // Log XP history for each badge bonus
@@ -113,7 +114,7 @@ const checkCondition = async (badge, user, context) => {
     // ── XP milestones ──
     case 'XP_MILESTONE': {
       const target = parseInt(conditionValue) || 100;
-      return user.xp >= target;
+      return user.totalXpEarned >= target;
     }
 
     // ── Track completion (dynamic) ──

@@ -186,7 +186,8 @@ const submitQuiz = async (req, res) => {
           streak: updatedUser.streak,
           longestStreak: updatedUser.longestStreak,
           streakBonus: streakInfo.streakBonus || 0,
-          totalXP: updatedUser.xp,
+          totalXP: updatedUser.totalXpEarned,
+          xpBalance: updatedUser.xpBalance,
           level: updatedUser.level,
           levelTitle: updatedUser.levelTitle,
           currentLevelProgress: updatedUser.currentLevelProgress
