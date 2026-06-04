@@ -5,11 +5,11 @@ const User = require('../models/User');
 // @access  Private
 const getLeaderboard = async (req, res) => {
   try {
-    // Get top 20 users who haven't hidden themselves
+    // Get top 100 users who haven't hidden themselves
     const topUsers = await User.find({ hideFromLeaderboard: { $ne: true } })
-      .sort({ xp: -1 })
-      .limit(20)
-      .select('name avatar xp streak longestStreak badges createdAt');
+      .sort({ totalXpEarned: -1 })
+      .limit(100)
+      .select('name avatar totalXpEarned streak longestStreak badges createdAt');
 
     const leaderboard = topUsers.map((u, i) => ({
       rank: i + 1,
@@ -17,7 +17,7 @@ const getLeaderboard = async (req, res) => {
       name: u.name,
       avatar: u.avatar,
       initial: u.name.charAt(0).toUpperCase(),
-      xp: u.xp,
+      totalXpEarned: u.totalXpEarned,
       level: u.level,
       levelTitle: u.levelTitle,
       streak: u.streak,
@@ -31,13 +31,13 @@ const getLeaderboard = async (req, res) => {
     if (currentUser && !currentUser.hideFromLeaderboard) {
       const usersAbove = await User.countDocuments({
         hideFromLeaderboard: { $ne: true },
-        xp: { $gt: currentUser.xp }
+        totalXpEarned: { $gt: currentUser.totalXpEarned }
       });
       myRank = {
         rank: usersAbove + 1,
         _id: currentUser._id,
         name: currentUser.name,
-        xp: currentUser.xp,
+        totalXpEarned: currentUser.totalXpEarned,
         level: currentUser.level,
         levelTitle: currentUser.levelTitle,
         streak: currentUser.streak,

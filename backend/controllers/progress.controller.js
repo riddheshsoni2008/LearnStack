@@ -62,7 +62,8 @@ const completeLessonDirect = async (req, res) => {
             leveledUp: false,
             newBadges: [],
             streak: req.user.streak,
-            totalXP: req.user.xp
+            totalXP: req.user.totalXpEarned,
+            xpBalance: req.user.xpBalance
           }
         }
       });
@@ -146,7 +147,8 @@ const completeLessonDirect = async (req, res) => {
           streak: updatedUser.streak,
           longestStreak: updatedUser.longestStreak,
           streakBonus: streakInfo.streakBonus || 0,
-          totalXP: updatedUser.xp,
+          totalXP: updatedUser.totalXpEarned,
+          xpBalance: updatedUser.xpBalance,
           level: updatedUser.level,
           levelTitle: updatedUser.levelTitle,
           currentLevelProgress: updatedUser.currentLevelProgress

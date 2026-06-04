@@ -57,10 +57,14 @@ const UserSchema = new mongoose.Schema({
     enum: ['user', 'admin'],
     default: 'user'
   },
-  xp: {
+  totalXpEarned: {
     type: Number,
     default: 0,
     index: true  // Index for leaderboard queries
+  },
+  xpBalance: {
+    type: Number,
+    default: 0
   },
   streak: {
     type: Number,
@@ -97,6 +101,30 @@ const UserSchema = new mongoose.Schema({
   isVerified: {
     type: Boolean,
     default: false
+  },
+  ownedThemes: {
+    type: [String],
+    default: []
+  },
+  ownedBorders: {
+    type: [String],
+    default: []
+  },
+  ownedTitles: {
+    type: [String],
+    default: []
+  },
+  activeTheme: {
+    type: String,
+    default: 'default'
+  },
+  activeBorder: {
+    type: String,
+    default: 'none'
+  },
+  activeTitle: {
+    type: String,
+    default: 'Newbie'
   }
 }, {
   timestamps: true,
@@ -110,7 +138,7 @@ const UserSchema = new mongoose.Schema({
 UserSchema.virtual('level').get(function () {
   let level = 1;
   for (let i = 0; i < LEVEL_THRESHOLDS.length; i++) {
-    if (this.xp >= LEVEL_THRESHOLDS[i]) {
+    if (this.totalXpEarned >= LEVEL_THRESHOLDS[i]) {
       level = i + 1;
     } else {
       break;
@@ -136,7 +164,7 @@ UserSchema.virtual('levelTitle').get(function () {
 UserSchema.virtual('xpToNextLevel').get(function () {
   const level = this.level;
   if (level >= 50) return 0;
-  return LEVEL_THRESHOLDS[level] - this.xp;
+  return LEVEL_THRESHOLDS[level] - this.totalXpEarned;
 });
 
 // Virtual: Current level XP range and progress %
@@ -144,11 +172,11 @@ UserSchema.virtual('currentLevelProgress').get(function () {
   const level = this.level;
   const currentThreshold = LEVEL_THRESHOLDS[level - 1] || 0;
   const nextThreshold = level >= 50 ? currentThreshold : LEVEL_THRESHOLDS[level];
-  const xpIntoLevel = this.xp - currentThreshold;
+  const xpIntoLevel = this.totalXpEarned - currentThreshold;
   const xpForLevel = nextThreshold - currentThreshold;
   const percent = xpForLevel > 0 ? Math.round((xpIntoLevel / xpForLevel) * 100) : 100;
   return {
-    currentXP: this.xp,
+    currentXP: this.totalXpEarned,
     levelStartXP: currentThreshold,
     levelEndXP: nextThreshold,
     xpIntoLevel,
@@ -160,8 +188,8 @@ UserSchema.virtual('currentLevelProgress').get(function () {
 // ═══════════════════════════════════════════════════════════════
 // Index for leaderboard
 // ═══════════════════════════════════════════════════════════════
-UserSchema.index({ xp: -1 });
-UserSchema.index({ hideFromLeaderboard: 1, xp: -1 });
+UserSchema.index({ totalXpEarned: -1 });
+UserSchema.index({ hideFromLeaderboard: 1, totalXpEarned: -1 });
 
 // ═══════════════════════════════════════════════════════════════
 // Hooks
