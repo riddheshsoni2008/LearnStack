@@ -153,7 +153,7 @@ const openMysteryBox = async (req, res) => {
           user.badges.push(badge._id);
           // XP bonus for badges is still fine since badges represent learning achievements
           user.totalXpEarned += badge.xpBonus || 0;
-          
+
           if (badge.xpBonus > 0) {
             await XpHistory.create({
               userId: user._id,
