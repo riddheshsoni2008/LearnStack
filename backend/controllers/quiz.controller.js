@@ -2,6 +2,8 @@ const Quiz = require('../models/Quiz');
 const Progress = require('../models/Progress');
 const User = require('../models/User');
 const Lesson = require('../models/Lesson');
+const { awardXP, updateStreak } = require('../services/xpService');
+const { checkAndAwardBadges } = require('../services/badgeService');
 
 // @desc    Get quiz for a lesson
 // @route   GET /api/quiz/:lessonId
@@ -39,7 +41,7 @@ const getQuiz = async (req, res) => {
 // @access  Private
 const submitQuiz = async (req, res) => {
   try {
-    const { answers } = req.body; // { questionId: selectedOptionIndex }
+    const { answers } = req.body;
     const quiz = await Quiz.findOne({ lessonId: req.params.lessonId });
 
     if (!quiz) {
@@ -67,19 +69,24 @@ const submitQuiz = async (req, res) => {
 
     // Get the lesson for XP reward
     const lesson = await Lesson.findById(req.params.lessonId);
-    const xpEarned = passed ? (lesson?.xpReward || 10) : 0;
+    const baseXP = lesson?.xpReward || 20;
 
-    // Save progress
-    let isFirstTimePass = false;
-    let actualXpEarned = 0;
+    // ── Gamification response data ──
+    let totalXpEarned = 0;
+    let xpBreakdown = [];
+    let leveledUp = false;
+    let oldLevel = 0;
+    let newLevel = 0;
+    let newBadges = [];
+    let streakInfo = {};
+    let isPerfectScore = score === 100;
 
     if (passed) {
+      // Check if first-time pass (prevent XP farming)
       const existingProgress = await Progress.findOne({ userId: req.user._id, lessonId: req.params.lessonId });
-      if (!existingProgress || !existingProgress.completed) {
-        isFirstTimePass = true;
-        actualXpEarned = xpEarned;
-      }
+      const isFirstTimePass = !existingProgress || !existingProgress.completed;
 
+      // Save progress
       await Progress.findOneAndUpdate(
         { userId: req.user._id, lessonId: req.params.lessonId },
         {
@@ -88,41 +95,70 @@ const submitQuiz = async (req, res) => {
           lessonId: req.params.lessonId,
           completed: true,
           quizScore: score,
-          xpEarned: actualXpEarned,
+          xpEarned: isFirstTimePass ? baseXP : 0,
           completedAt: new Date()
         },
         { upsert: true, new: true }
       );
 
-      // Update user XP and streak
-      const user = await User.findById(req.user._id);
-      
+      // ── Award XP (first-time only gets full reward) ──
       if (isFirstTimePass) {
-        user.xp += actualXpEarned;
+        const result = await awardXP(
+          req.user._id, baseXP, 'quiz',
+          `Passed quiz: ${lesson.title}`,
+          lesson._id
+        );
+        totalXpEarned += baseXP;
+        xpBreakdown.push({ label: 'Quiz Passed', amount: baseXP });
+        leveledUp = result.leveledUp;
+        oldLevel = result.oldLevel;
+        newLevel = result.newLevel;
+      } else {
+        // Retry: award small XP
+        const retryXP = 5;
+        await awardXP(req.user._id, retryXP, 'quiz', `Re-passed quiz: ${lesson.title}`, lesson._id);
+        totalXpEarned += retryXP;
+        xpBreakdown.push({ label: 'Quiz Re-pass', amount: retryXP });
       }
 
-      // Streak logic: if last active was yesterday, increment streak
-      const today = new Date().toDateString();
-      const lastActive = user.lastActive ? new Date(user.lastActive).toDateString() : null;
+      // ── Perfect score bonus ──
+      if (isPerfectScore && isFirstTimePass) {
+        const perfectBonus = 10;
+        const user = await User.findById(req.user._id);
+        user.perfectQuizzes = (user.perfectQuizzes || 0) + 1;
+        await user.save({ validateBeforeSave: false });
 
-      if (lastActive !== today) {
-        const yesterday = new Date();
-        yesterday.setDate(yesterday.getDate() - 1);
-
-        if (lastActive === yesterday.toDateString()) {
-          user.streak += 1;
-        } else if (lastActive !== today) {
-          user.streak = 1; // Reset streak
-        }
-
-        if (user.streak > user.longestStreak) {
-          user.longestStreak = user.streak;
-        }
+        await awardXP(req.user._id, perfectBonus, 'perfect_score', `Perfect score on: ${lesson.title}`, lesson._id);
+        totalXpEarned += perfectBonus;
+        xpBreakdown.push({ label: '⭐ Perfect Score!', amount: perfectBonus });
       }
 
-      user.lastActive = new Date();
-      await user.save({ validateBeforeSave: false });
+      // ── Update streak ──
+      const user = await User.findById(req.user._id);
+      streakInfo = await updateStreak(user);
+      if (streakInfo.streakBonus > 0) {
+        totalXpEarned += streakInfo.streakBonus;
+        xpBreakdown.push({ label: `🔥 ${streakInfo.streakBonusMilestone}-Day Streak!`, amount: streakInfo.streakBonus });
+      }
+
+      // ── Check for new badges ──
+      newBadges = await checkAndAwardBadges(req.user._id, {
+        event: 'quiz_pass',
+        lessonId: lesson._id,
+        trackId: lesson.trackId,
+        quizScore: score
+      });
+      if (newBadges.length > 0) {
+        const badgeBonusTotal = newBadges.reduce((sum, b) => sum + (b.xpBonus || 0), 0);
+        if (badgeBonusTotal > 0) {
+          totalXpEarned += badgeBonusTotal;
+          xpBreakdown.push({ label: `🏆 Badge Bonus (${newBadges.length})`, amount: badgeBonusTotal });
+        }
+      }
     }
+
+    // Fetch updated user for response
+    const updatedUser = await User.findById(req.user._id);
 
     res.status(200).json({
       success: true,
@@ -131,11 +167,34 @@ const submitQuiz = async (req, res) => {
         passed,
         correct,
         total: quiz.questions.length,
-        xpEarned: actualXpEarned,
-        results
+        xpEarned: totalXpEarned,
+        xpBreakdown,
+        results,
+        // Gamification data
+        gamification: {
+          leveledUp,
+          oldLevel,
+          newLevel,
+          newBadges: newBadges.map(b => ({
+            _id: b._id,
+            name: b.name,
+            icon: b.icon,
+            description: b.description,
+            rarity: b.rarity,
+            xpBonus: b.xpBonus
+          })),
+          streak: updatedUser.streak,
+          longestStreak: updatedUser.longestStreak,
+          streakBonus: streakInfo.streakBonus || 0,
+          totalXP: updatedUser.xp,
+          level: updatedUser.level,
+          levelTitle: updatedUser.levelTitle,
+          currentLevelProgress: updatedUser.currentLevelProgress
+        }
       }
     });
   } catch (error) {
+    console.error('Quiz submit error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

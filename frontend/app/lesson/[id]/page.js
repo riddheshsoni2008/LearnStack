@@ -3,6 +3,7 @@ import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import { useCelebration } from "@/context/CelebrationContext";
 import AuthNavbar from "@/components/AuthNavbar";
 import CodeEditor from "@/components/CodeEditor";
 
@@ -10,7 +11,8 @@ export default function LessonPage({ params }) {
   const router = useRouter();
   const { id: lessonId } = use(params);
 
-  const { user, setUser, loading: authLoading } = useAuth();
+  const { user, setUser, loading: authLoading, fetchUser } = useAuth();
+  const { processGamification } = useCelebration();
   const [lesson, setLesson] = useState(null);
   const [quiz, setQuiz] = useState(null);
   const [nextLesson, setNextLesson] = useState(null);
@@ -107,9 +109,10 @@ export default function LessonPage({ params }) {
         setQuizResult(data.data);
         if (data.data.passed) {
           setIsCompleted(true);
-          // Update user XP in local context
-          const updatedUser = { ...user, xp: user.xp + data.data.xpEarned };
-          setUser(updatedUser);
+          // Process gamification celebrations
+          processGamification(data.data.gamification, data.data.xpBreakdown);
+          // Refresh user data from server
+          fetchUser();
         }
       } else {
         alert(data.message || "Failed to submit quiz.");
@@ -137,8 +140,10 @@ export default function LessonPage({ params }) {
 
       if (data.success) {
         setIsCompleted(true);
-        const updatedUser = { ...user, xp: user.xp + data.data.xpEarned };
-        setUser(updatedUser);
+        // Process gamification celebrations
+        processGamification(data.data.gamification, data.data.xpBreakdown);
+        // Refresh user data from server
+        fetchUser();
       } else {
         alert(data.message || "Failed to complete lesson.");
       }

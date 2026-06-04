@@ -45,11 +45,17 @@ export default function AuthNavbar() {
           >
             Profile
           </Link>
+          <Link
+            href="/leaderboard"
+            className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
+          >
+            Leaderboard
+          </Link>
 
           <div className="flex items-center gap-4 border-l border-[var(--border)] pl-6 ml-2">
             {user?.xp !== undefined && (
               <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20 shadow-inner">
-                ⚡ {user.xp} XP
+                ⚡ {user.xp} XP • Lvl {user.level || 1}
               </div>
             )}
             <div className="text-sm text-[var(--text-muted)]">
@@ -125,6 +131,13 @@ export default function AuthNavbar() {
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">👤</span> Profile
+            </Link>
+            <Link
+              href="/leaderboard"
+              className="text-[var(--text-muted)] hover:text-white transition-colors font-medium py-2 flex items-center gap-3"
+              onClick={() => setMobileOpen(false)}
+            >
+              <span className="text-xl">🏅</span> Leaderboard
             </Link>
 
             <button

@@ -1,6 +1,8 @@
 const Progress = require('../models/Progress');
 const Lesson = require('../models/Lesson');
 const User = require('../models/User');
+const { awardXP, updateStreak } = require('../services/xpService');
+const { checkAndAwardBadges } = require('../services/badgeService');
 
 // @desc    Get user's progress for all tracks
 // @route   GET /api/progress/me
@@ -44,14 +46,32 @@ const completeLessonDirect = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Lesson not found' });
     }
 
-    let progress = await Progress.findOne({ userId: req.user._id, lessonId: lesson._id });
-    if (progress && progress.completed) {
-      return res.status(200).json({ success: true, message: 'Lesson already completed', data: progress });
+    // Check if already completed (prevent XP farming)
+    let existingProgress = await Progress.findOne({ userId: req.user._id, lessonId: lesson._id });
+    if (existingProgress && existingProgress.completed) {
+      return res.status(200).json({
+        success: true,
+        message: 'Lesson already completed',
+        data: {
+          score: 100,
+          passed: true,
+          xpEarned: 0,
+          xpBreakdown: [{ label: 'Already completed', amount: 0 }],
+          progress: existingProgress,
+          gamification: {
+            leveledUp: false,
+            newBadges: [],
+            streak: req.user.streak,
+            totalXP: req.user.xp
+          }
+        }
+      });
     }
 
-    const xpEarned = lesson.xpReward || 10;
+    const baseXP = lesson.xpReward || 10;
 
-    progress = await Progress.findOneAndUpdate(
+    // Save progress
+    const progress = await Progress.findOneAndUpdate(
       { userId: req.user._id, lessonId: lesson._id },
       {
         userId: req.user._id,
@@ -59,46 +79,82 @@ const completeLessonDirect = async (req, res) => {
         lessonId: lesson._id,
         completed: true,
         quizScore: 100,
-        xpEarned,
+        xpEarned: baseXP,
         completedAt: new Date()
       },
       { upsert: true, new: true }
     );
 
-    // Update user XP & streak
+    // ── Gamification ──
+    let totalXpEarned = 0;
+    let xpBreakdown = [];
+
+    // Award XP
+    const xpResult = await awardXP(
+      req.user._id, baseXP, 'lesson',
+      `Completed lesson: ${lesson.title}`,
+      lesson._id
+    );
+    totalXpEarned += baseXP;
+    xpBreakdown.push({ label: 'Lesson Complete', amount: baseXP });
+
+    // Update streak
     const user = await User.findById(req.user._id);
-    user.xp += xpEarned;
+    const streakInfo = await updateStreak(user);
+    if (streakInfo.streakBonus > 0) {
+      totalXpEarned += streakInfo.streakBonus;
+      xpBreakdown.push({ label: `🔥 ${streakInfo.streakBonusMilestone}-Day Streak!`, amount: streakInfo.streakBonus });
+    }
 
-    const today = new Date().toDateString();
-    const lastActive = user.lastActive ? new Date(user.lastActive).toDateString() : null;
-
-    if (lastActive !== today) {
-      const yesterday = new Date();
-      yesterday.setDate(yesterday.getDate() - 1);
-
-      if (lastActive === yesterday.toDateString()) {
-        user.streak += 1;
-      } else {
-        user.streak = 1;
-      }
-
-      if (user.streak > user.longestStreak) {
-        user.longestStreak = user.streak;
+    // Check for new badges
+    const newBadges = await checkAndAwardBadges(req.user._id, {
+      event: 'lesson_complete',
+      lessonId: lesson._id,
+      trackId: lesson.trackId
+    });
+    if (newBadges.length > 0) {
+      const badgeBonusTotal = newBadges.reduce((sum, b) => sum + (b.xpBonus || 0), 0);
+      if (badgeBonusTotal > 0) {
+        totalXpEarned += badgeBonusTotal;
+        xpBreakdown.push({ label: `🏆 Badge Bonus (${newBadges.length})`, amount: badgeBonusTotal });
       }
     }
-    user.lastActive = new Date();
-    await user.save({ validateBeforeSave: false });
+
+    // Fetch updated user
+    const updatedUser = await User.findById(req.user._id);
 
     res.status(200).json({
       success: true,
       data: {
         score: 100,
         passed: true,
-        xpEarned,
-        progress
+        xpEarned: totalXpEarned,
+        xpBreakdown,
+        progress,
+        gamification: {
+          leveledUp: xpResult.leveledUp,
+          oldLevel: xpResult.oldLevel,
+          newLevel: xpResult.newLevel,
+          newBadges: newBadges.map(b => ({
+            _id: b._id,
+            name: b.name,
+            icon: b.icon,
+            description: b.description,
+            rarity: b.rarity,
+            xpBonus: b.xpBonus
+          })),
+          streak: updatedUser.streak,
+          longestStreak: updatedUser.longestStreak,
+          streakBonus: streakInfo.streakBonus || 0,
+          totalXP: updatedUser.xp,
+          level: updatedUser.level,
+          levelTitle: updatedUser.levelTitle,
+          currentLevelProgress: updatedUser.currentLevelProgress
+        }
       }
     });
   } catch (error) {
+    console.error('Lesson complete error:', error);
     res.status(500).json({ success: false, message: error.message });
   }
 };

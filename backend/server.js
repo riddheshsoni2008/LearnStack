@@ -27,6 +27,8 @@ app.use('/api/tracks', require('./routes/track.routes'));
 app.use('/api/lessons', require('./routes/lesson.routes'));
 app.use('/api/quiz', require('./routes/quiz.routes'));
 app.use('/api/progress', require('./routes/progress.routes'));
+app.use('/api/badges', require('./routes/badge.routes'));
+app.use('/api/leaderboard', require('./routes/leaderboard.routes'));
 
 // Health check route
 app.get('/api/health', (req, res) => {
