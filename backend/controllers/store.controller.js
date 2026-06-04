@@ -100,12 +100,20 @@ const openMysteryBox = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
 
-    if (user.xpBalance < MYSTERY_BOX_COST) {
+    // Logging per requirements
+    console.log(`[Mystery Box] totalXpEarned: ${user.totalXpEarned}`);
+    console.log(`[Mystery Box] xpBalance: ${user.xpBalance}`);
+    console.log(`[Mystery Box] diamonds: ${user.diamonds}`);
+    console.log(`[Mystery Box] mysteryBoxCost: ${MYSTERY_BOX_COST}`);
+    console.log(`[Mystery Box] validation field used: totalXpEarned (previously xpBalance)`);
+
+    // Check balance (Requires XP)
+    if (user.totalXpEarned < MYSTERY_BOX_COST) {
       return res.status(400).json({ success: false, message: 'Not enough XP' });
     }
 
     // Deduct cost
-    user.xpBalance -= MYSTERY_BOX_COST;
+    user.totalXpEarned -= MYSTERY_BOX_COST;
 
     // Determine reward based on weights
     const totalWeight = MYSTERY_BOX_REWARDS.reduce((sum, item) => sum + item.weight, 0);

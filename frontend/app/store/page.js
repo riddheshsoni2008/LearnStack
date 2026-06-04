@@ -184,7 +184,7 @@ export default function StorePage() {
                 </div>
               </div>
               <div className="w-full md:w-auto flex justify-center">
-                <MysteryBox cost={mysteryBoxCost} userBalance={user?.xpBalance} onReward={fetchUser} />
+                <MysteryBox cost={mysteryBoxCost} userBalance={user?.totalXpEarned} onReward={fetchUser} />
               </div>
             </div>
           </div>
