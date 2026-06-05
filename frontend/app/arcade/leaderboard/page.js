@@ -12,6 +12,7 @@ export default function ArcadeLeaderboard() {
   const { user, loading: authLoading } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [timeframe, setTimeframe] = useState("global");
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -20,8 +21,9 @@ export default function ArcadeLeaderboard() {
     }
 
     const fetchLeaderboard = async () => {
+      setLoading(true);
       try {
-        const res = await fetch("/api/arcade/leaderboard", { credentials: "include" });
+        const res = await fetch(`/api/arcade/leaderboard?timeframe=${timeframe}`, { credentials: "include" });
         const json = await res.json();
         if (json.success) {
           setLeaderboard(json.data);
@@ -33,8 +35,10 @@ export default function ArcadeLeaderboard() {
       }
     };
 
-    fetchLeaderboard();
-  }, [user, authLoading, router]);
+    if (user) {
+      fetchLeaderboard();
+    }
+  }, [user, authLoading, router, timeframe]);
 
   if (loading || authLoading) {
     return (
@@ -55,17 +59,28 @@ export default function ArcadeLeaderboard() {
       <main className="max-w-4xl mx-auto px-6 py-12 relative z-10">
         
         {/* Header */}
-        <div className="flex items-center justify-between mb-12">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-6">
           <div>
             <Link href="/arcade" className="text-gray-400 hover:text-white transition-colors mb-4 block">
               ← Back to Arcade
             </Link>
             <h1 className="text-4xl font-black tracking-tight mb-2 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400">
-              Global Leaderboard
+              Leaderboard
             </h1>
             <p className="text-indigo-200">The top coders in the Arcade.</p>
           </div>
-          <div className="text-6xl drop-shadow-[0_0_20px_rgba(250,204,21,0.3)]">🏆</div>
+          
+          <div className="flex items-center gap-2 bg-indigo-950/50 p-1.5 rounded-xl border border-indigo-500/30">
+            {["global", "monthly", "weekly"].map((tf) => (
+              <button
+                key={tf}
+                onClick={() => setTimeframe(tf)}
+                className={`px-4 py-2 rounded-lg text-sm font-bold capitalize transition-colors ${timeframe === tf ? 'bg-indigo-600 text-white' : 'text-gray-400 hover:text-white hover:bg-indigo-900/50'}`}
+              >
+                {tf}
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Leaderboard Table */}

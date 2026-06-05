@@ -54,14 +54,14 @@ export default function ArcadeHub() {
   return (
     <div className="min-h-screen bg-[#0A051A] text-white overflow-hidden relative pb-20">
       <AuthNavbar />
-      
+
       {/* Dynamic Background */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 pointer-events-none" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-purple-900/20 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-900/20 rounded-full blur-[100px] pointer-events-none translate-y-1/2 -translate-x-1/2" />
 
       <main className="max-w-7xl mx-auto px-6 py-12 relative z-10">
-        
+
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
           <div>
@@ -72,7 +72,7 @@ export default function ArcadeHub() {
               Where code becomes reality. Select your world to begin.
             </p>
           </div>
-          
+
           {/* Player Stats Card */}
           <div className="bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 flex items-center gap-6 backdrop-blur-sm shadow-[0_0_20px_rgba(79,70,229,0.15)]">
             <div className="text-center border-r border-indigo-500/30 pr-6">
@@ -95,7 +95,7 @@ export default function ArcadeHub() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          
+
           {/* World Map Section */}
           <div className="lg:col-span-2 space-y-6">
             <h2 className="text-2xl font-bold flex items-center gap-3">
@@ -108,11 +108,10 @@ export default function ArcadeHub() {
                   <motion.div
                     whileHover={isUnlocked ? { y: -5, scale: 1.02 } : {}}
                     key={world.id}
-                    className={`relative rounded-2xl p-6 border transition-all overflow-hidden ${
-                      isUnlocked 
-                        ? "bg-indigo-950/40 border-indigo-500/50 hover:border-indigo-400 hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] cursor-pointer" 
-                        : "bg-gray-900/50 border-gray-700 opacity-60 grayscale cursor-not-allowed"
-                    }`}
+                    className={`relative rounded-2xl p-6 border transition-all overflow-hidden ${isUnlocked
+                      ? "bg-indigo-950/40 border-indigo-500/50 hover:border-indigo-400 hover:shadow-[0_0_20px_rgba(79,70,229,0.3)] cursor-pointer"
+                      : "bg-gray-900/50 border-gray-700 opacity-60 grayscale cursor-not-allowed"
+                      }`}
                   >
                     {!isUnlocked && (
                       <div className="absolute inset-0 bg-[#0A051A]/80 z-10 flex items-center justify-center backdrop-blur-sm">
@@ -139,7 +138,7 @@ export default function ArcadeHub() {
 
           {/* Right Sidebar */}
           <div className="space-y-8">
-            
+
             {/* Daily Challenge */}
             <div>
               <h2 className="text-2xl font-bold flex items-center gap-3 mb-6">
@@ -153,9 +152,15 @@ export default function ArcadeHub() {
                   <div className="flex items-center gap-2 text-cyan-400 font-bold bg-cyan-900/30 px-3 py-1 rounded-full text-xs border border-cyan-500/30">
                     ⚡ +{data.dailyChallenge.reward} XP
                   </div>
-                  <button className="bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded-xl text-sm transition-colors shadow-[0_0_15px_rgba(219,39,119,0.4)]">
-                    Start Mission
-                  </button>
+                  {data.dailyChallenge.available ? (
+                    <Link href="/arcade/daily" className="bg-pink-600 hover:bg-pink-500 text-white font-bold py-2 px-4 rounded-xl text-sm transition-colors shadow-[0_0_15px_rgba(219,39,119,0.4)]">
+                      Start Mission
+                    </Link>
+                  ) : (
+                    <button disabled className="bg-gray-800 text-gray-400 font-bold py-2 px-4 rounded-xl text-sm cursor-not-allowed">
+                      Completed
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -170,10 +175,21 @@ export default function ArcadeHub() {
                   View All
                 </Link>
               </div>
-              <div className="bg-indigo-950/30 border border-indigo-500/20 rounded-2xl p-6 flex flex-col items-center justify-center text-center">
-                <div className="text-4xl mb-3 opacity-50">🥇</div>
-                <div className="text-indigo-300 text-sm font-medium">
-                  Leaderboard activating soon...
+              <div className="bg-indigo-950/30 border border-indigo-500/20 rounded-2xl p-6 flex flex-col justify-center">
+                <div className="space-y-4">
+                  {data.topPlayers?.length > 0 ? data.topPlayers.map((player, idx) => (
+                    <div key={player._id} className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs">
+                          {player.name.charAt(0).toUpperCase()}
+                        </div>
+                        <span className="font-bold text-gray-200">{player.name}</span>
+                      </div>
+                      <span className="text-yellow-400 font-bold text-sm">#{idx + 1}</span>
+                    </div>
+                  )) : (
+                    <div className="text-center text-gray-500 italic py-4">No players yet.</div>
+                  )}
                 </div>
               </div>
             </div>

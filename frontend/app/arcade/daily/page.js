@@ -1,101 +1,100 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { useCelebration } from "@/context/CelebrationContext";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 
-export default function ArcadeGame() {
-  const params = useParams();
+export default function DailyMission() {
   const router = useRouter();
   const { user, loading: authLoading, fetchUser } = useAuth();
   const { addToast } = useCelebration();
-  const [level, setLevel] = useState(null);
+  const [dailyData, setDailyData] = useState(null);
   const [code, setCode] = useState("");
   const [output, setOutput] = useState([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [cleared, setCleared] = useState(false);
-  const [newAchievements, setNewAchievements] = useState([]);
-  const [nextLevelId, setNextLevelId] = useState(null);
 
   useEffect(() => {
     if (!authLoading && !user) {
       router.push("/login");
       return;
     }
-    
-    const fetchLevel = async () => {
+
+    const fetchDaily = async () => {
       try {
-        const res = await fetch(`/api/arcade/levels/${params.levelId}`, { credentials: "include" });
+        const res = await fetch(`/api/arcade/daily`, { credentials: "include" });
         const json = await res.json();
         if (json.success) {
-          setLevel(json.data);
-          setCode(json.data.initialCode || "");
+          setDailyData(json.data);
+          setCode(json.data.level.initialCode || "");
+          if (json.data.isCompletedToday) {
+            setCleared(true);
+            setOutput([{ type: "success", text: "✓ Daily Mission already completed today!" }]);
+          }
         } else {
           router.push("/arcade");
         }
       } catch (err) {
-        console.error("Error fetching level:", err);
+        console.error("Error fetching daily mission:", err);
       } finally {
         setLoading(false);
       }
     };
 
     if (user) {
-      fetchLevel();
+      fetchDaily();
     }
-  }, [user, authLoading, router, params.levelId]);
+  }, [user, authLoading, router]);
 
   const handleRunCode = async () => {
     setSubmitting(true);
     setOutput([{ type: "system", text: "> Compiling and executing in sandbox..." }]);
 
     try {
-      const res = await fetch("/api/arcade/submit", {
+      const res = await fetch("/api/arcade/daily/submit", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ levelId: params.levelId, code }),
+        body: JSON.stringify({ levelId: dailyData.level._id, code }),
         credentials: "include"
       });
-      
+
       const data = await res.json();
-      
+
       const newOutput = [];
+      // If there are standard logs, show them first
       if (data.logs && data.logs.length > 0) {
         data.logs.slice(0, -1).forEach(l => newOutput.push({ type: "log", text: l }));
       }
 
       if (data.passed) {
+        // The last log is the successful output
         if (data.logs && data.logs.length > 0) {
-           newOutput.push({ type: "success", text: "✅ " + data.logs[data.logs.length - 1] });
+          newOutput.push({ type: "success", text: "✅ " + data.logs[data.logs.length - 1] });
         }
-        newOutput.push({ type: "success", text: "🏆 Level Cleared!" });
-        
+        newOutput.push({ type: "success", text: "🏆 Daily Mission Complete" });
+
         if (data.xpAwarded > 0) {
-          newOutput.push({ type: "system", text: `⚡ +${data.xpAwarded} XP Earned!` });
+          newOutput.push({ type: "system", text: `⚡ +${data.xpAwarded} XP` });
         }
-        if (data.newAchievements && data.newAchievements.length > 0) {
-          setNewAchievements(data.newAchievements);
-          newOutput.push({ type: "system", text: `⭐ Unlocked ${data.newAchievements.length} new achievement(s)!` });
+        if (data.streakUpdated) {
+          newOutput.push({ type: "system", text: `🔥 Streak extended to ${data.newStreak} days!` });
         }
-        if (data.nextLevelId) {
-          setNextLevelId(data.nextLevelId);
-        }
-        
-        // Sync user context so the map and XP display update globally
+
+        // Sync user context so the XP and Streak display update globally
         await fetchUser();
-        
+
         setOutput(newOutput);
         setCleared(true);
         confetti({
           particleCount: 150,
           spread: 80,
           origin: { y: 0.6 },
-          colors: ['#818cf8', '#c084fc', '#f472b6']
+          colors: ['#FBBF24', '#F59E0B', '#D97706']
         });
       } else {
         newOutput.push({ type: "error", text: "❌ " + data.message });
@@ -112,16 +111,15 @@ export default function ArcadeGame() {
     if (navigator.share) {
       try {
         await navigator.share({
-          title: "Level Cleared in Coding Arcade!",
-          text: `🏆 I just cleared "${level?.title}" and earned +${level?.xpReward} XP on LearnStack's Coding Arcade!`,
+          title: "Daily Mission Cleared!",
+          text: `🔥 I just cleared the Daily Mission and extended my streak to ${dailyData?.currentStreak + 1 || 1} on LearnStack's Coding Arcade!`,
           url: window.location.origin + "/arcade",
         });
       } catch (err) {
         console.error("Error sharing:", err);
       }
     } else {
-      // Fallback for browsers that don't support Web Share API
-      navigator.clipboard.writeText(`🏆 I just cleared "${level?.title}" and earned +${level?.xpReward} XP on LearnStack's Coding Arcade!`);
+      navigator.clipboard.writeText(`🔥 I just cleared the Daily Mission on LearnStack's Coding Arcade!`);
       addToast({ title: "Copied to clipboard!", type: "success" });
     }
   };
@@ -129,40 +127,42 @@ export default function ArcadeGame() {
   if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-[#0A051A] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-yellow-500"></div>
       </div>
     );
   }
 
+  const level = dailyData?.level;
+
   return (
-    <div className={`min-h-screen text-white flex flex-col ${level?.isBossLevel ? 'bg-[#1a0505]' : 'bg-[#0A051A]'}`}>
-      
+    <div className="min-h-screen text-white flex flex-col bg-[#0f0a00]">
+
       {/* Header Bar */}
-      <header className={`h-16 border-b flex items-center justify-between px-6 shrink-0 ${level?.isBossLevel ? 'border-red-900/50 bg-red-950/20' : 'border-indigo-900/50 bg-indigo-950/20'}`}>
+      <header className="h-16 border-b flex items-center justify-between px-6 shrink-0 border-yellow-900/50 bg-yellow-950/20">
         <div className="flex items-center gap-4">
           <Link href="/arcade" className="text-gray-400 hover:text-white transition-colors">
             ← Back to Map
           </Link>
           <div className="h-6 w-px bg-gray-700"></div>
-          <h1 className="font-bold text-lg">{level?.title}</h1>
+          <h1 className="font-bold text-lg text-yellow-500">🔥 Daily Mission</h1>
         </div>
         <div className="flex items-center gap-4">
-          <div className="text-xs font-bold text-indigo-300 bg-indigo-900/40 px-3 py-1 rounded-full border border-indigo-500/30">
-            Reward: ⚡ {level?.xpReward} XP
+          <div className="text-xs font-bold text-yellow-300 bg-yellow-900/40 px-3 py-1 rounded-full border border-yellow-500/30">
+            Reward: ⚡ 100 XP
           </div>
         </div>
       </header>
 
       {/* Main Game Interface */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
-        
+
         {/* Left Panel: Narrative & Challenge */}
-        <div className={`w-full lg:w-1/3 flex flex-col border-r ${level?.isBossLevel ? 'border-red-900/50 bg-[#140202]' : 'border-indigo-900/50 bg-[#070312]'} overflow-y-auto`}>
+        <div className="w-full lg:w-1/3 flex flex-col border-r border-yellow-900/50 bg-[#120c02] overflow-y-auto">
           <div className="p-8">
             <div className="mb-8">
-              <div className="text-[10px] uppercase tracking-widest text-indigo-400 font-bold mb-2">Transmission Received</div>
+              <div className="text-[10px] uppercase tracking-widest text-yellow-500 font-bold mb-2">Daily Transmission</div>
               <div className="bg-gray-900/60 border border-gray-800 rounded-xl p-6 relative">
-                <div className="text-4xl mb-4">🤖</div>
+                <div className="text-4xl mb-4">📅</div>
                 <p className="text-gray-300 leading-relaxed font-serif italic">
                   "{level?.story}"
                 </p>
@@ -171,10 +171,10 @@ export default function ArcadeGame() {
 
             <div>
               <h2 className="text-xl font-bold mb-4 flex items-center gap-2">
-                <span className="text-indigo-400">⚡</span> Objective
+                <span className="text-yellow-500">⚡</span> Objective
               </h2>
-              <div className="bg-indigo-950/30 border border-indigo-900/50 rounded-xl p-6">
-                <p className="text-indigo-100 text-sm leading-relaxed">
+              <div className="bg-yellow-950/30 border border-yellow-900/50 rounded-xl p-6">
+                <p className="text-yellow-100 text-sm leading-relaxed">
                   {level?.challengeText}
                 </p>
               </div>
@@ -184,22 +184,21 @@ export default function ArcadeGame() {
 
         {/* Right Panel: Code Editor & Console */}
         <div className="flex-1 flex flex-col h-[calc(100vh-64px)]">
-          
-          {/* Editor Area */}
+
           <div className="flex-1 flex flex-col relative bg-[#1E1E1E]">
             <div className="h-10 bg-[#2D2D2D] flex items-center px-4 justify-between shrink-0">
               <div className="text-xs text-gray-400 font-mono flex items-center gap-2">
-                <span className="text-yellow-400">JS</span> main.js
+                <span className="text-yellow-400">JS</span> daily.js
               </div>
-              <button 
+              <button
                 onClick={handleRunCode}
                 disabled={submitting || cleared}
-                className={`text-xs font-bold px-4 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center gap-2 ${submitting || cleared ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`text-xs font-bold px-4 py-1.5 rounded bg-yellow-600 hover:bg-yellow-500 text-white transition-colors flex items-center gap-2 ${submitting || cleared ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {submitting ? 'Running...' : '▶ Run Code'}
               </button>
             </div>
-            
+
             <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
@@ -210,7 +209,6 @@ export default function ArcadeGame() {
             />
           </div>
 
-          {/* Console Output Area */}
           <div className="h-64 shrink-0 bg-[#0A0A0A] border-t border-gray-800 flex flex-col">
             <div className="h-8 bg-[#141414] flex items-center px-4 text-xs text-gray-500 font-mono shrink-0">
               Terminal Output
@@ -220,10 +218,10 @@ export default function ArcadeGame() {
                 <div className="text-gray-600">Waiting for execution...</div>
               ) : (
                 output.map((out, i) => (
-                  <div key={i} className={`
+                  <div key={i} className={`whitespace-pre-wrap
                     ${out.type === 'error' ? 'text-red-400' : ''}
                     ${out.type === 'success' ? 'text-green-400 font-bold' : ''}
-                    ${out.type === 'system' ? 'text-indigo-400' : ''}
+                    ${out.type === 'system' ? 'text-yellow-400 font-bold' : ''}
                     ${out.type === 'log' ? 'text-gray-300' : ''}
                   `}>
                     {out.text}
@@ -236,42 +234,24 @@ export default function ArcadeGame() {
 
       </main>
 
-      {/* Level Cleared Overlay */}
-      {cleared && (
-        <motion.div 
+      {cleared && !dailyData?.isCompletedToday && (
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
         >
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, y: 50 }}
             animate={{ scale: 1, y: 0 }}
-            className="bg-gray-900 border border-indigo-500/30 p-12 rounded-3xl text-center max-w-lg shadow-[0_0_50px_rgba(79,70,229,0.2)]"
+            className="bg-gray-900 border border-yellow-500/30 p-12 rounded-3xl text-center max-w-lg shadow-[0_0_50px_rgba(245,158,11,0.2)]"
           >
-            <div className="text-6xl mb-6">🏆</div>
-            <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-4">
-              LEVEL CLEARED!
+            <div className="text-6xl mb-6">🔥</div>
+            <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-4">
+              MISSION CLEARED!
             </h2>
             <p className="text-gray-400 mb-6">
-              Excellent logic. You have successfully conquered {level?.title}!
+              You earned +100 XP and extended your streak. Come back tomorrow for a new mission!
             </p>
-            
-            {newAchievements.length > 0 && (
-              <div className="mb-8 space-y-3">
-                <h3 className="text-sm font-bold text-yellow-400 uppercase tracking-widest">⭐ New Achievements Unlocked!</h3>
-                <div className="flex flex-col gap-3">
-                  {newAchievements.map((ach) => (
-                    <div key={ach._id} className="bg-yellow-900/20 border border-yellow-500/30 rounded-xl p-3 flex items-center gap-4 text-left">
-                      <div className="text-3xl">{ach.icon}</div>
-                      <div>
-                        <div className="font-bold text-yellow-300">{ach.name}</div>
-                        <div className="text-xs text-yellow-500">{ach.description}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <Link href="/arcade" className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-gray-800 hover:bg-gray-700 text-white transition-colors">
@@ -280,15 +260,6 @@ export default function ArcadeGame() {
               <button onClick={handleShare} className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-[#25D366] hover:bg-[#128C7E] text-white transition-colors flex items-center justify-center gap-2">
                 <span>📱</span> Share Win
               </button>
-              {nextLevelId ? (
-                <button onClick={() => router.push(`/arcade/play/${nextLevelId}`)} className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.4)] transition-all">
-                  Next Level →
-                </button>
-              ) : (
-                <button onClick={() => router.push(`/arcade`)} className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-green-600 hover:bg-green-500 text-white shadow-[0_0_15px_rgba(16,185,129,0.4)] transition-all">
-                  World Complete! 🌟
-                </button>
-              )}
             </div>
           </motion.div>
         </motion.div>

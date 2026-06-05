@@ -13,6 +13,7 @@ const GameLevelSchema = new mongoose.Schema({
   },
   language: { type: String, default: 'javascript' },
   initialCode: { type: String, default: '' },
+  expectedOutput: { type: String, default: '' },
   validationId: { type: String, required: true },
   xpReward: { type: Number, required: true },
   unlockRequirement: { type: mongoose.Schema.Types.ObjectId, ref: 'GameLevel', default: null },
