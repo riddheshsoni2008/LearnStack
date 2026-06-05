@@ -4,7 +4,7 @@ const path = require('path');
 
 // Models
 const User = require('../models/User');
-const Progress = require('../models/Progress');
+const ExerciseHistoryDaily = require('../models/ExerciseHistoryDaily');
 const XpHistory = require('../models/XpHistory');
 
 dotenv.config({ path: path.join(__dirname, '../.env') });
@@ -39,8 +39,8 @@ async function resetGamification() {
     // 2. Remove all XP history records
     const xpHistoryResult = await XpHistory.deleteMany({});
 
-    // 3. Remove all Progress records (resets lessonsCompleted to 0)
-    const progressResult = await Progress.deleteMany({});
+    // 3. Remove all ExerciseHistoryDaily records (resets daily lessons and streaks)
+    const progressResult = await ExerciseHistoryDaily.deleteMany({});
 
   } finally {
     if (mongoose.connection.readyState !== 0) {

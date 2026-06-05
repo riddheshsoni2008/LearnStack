@@ -138,26 +138,26 @@ export default function ArcadeGame() {
     <div className={`min-h-screen text-white flex flex-col ${level?.isBossLevel ? 'bg-[#1a0505]' : 'bg-[#0A051A]'}`}>
       
       {/* Header Bar */}
-      <header className={`h-16 border-b flex items-center justify-between px-6 shrink-0 ${level?.isBossLevel ? 'border-red-900/50 bg-red-950/20' : 'border-indigo-900/50 bg-indigo-950/20'}`}>
-        <div className="flex items-center gap-4">
-          <Link href="/arcade" className="text-gray-400 hover:text-white transition-colors">
-            ← Back to Map
+      <header className={`h-14 sm:h-16 border-b flex items-center justify-between px-4 sm:px-6 shrink-0 ${level?.isBossLevel ? 'border-red-900/50 bg-red-950/20' : 'border-indigo-900/50 bg-indigo-950/20'}`}>
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+          <Link href="/arcade" className="text-gray-400 hover:text-white transition-colors shrink-0">
+            ←<span className="hidden sm:inline"> Back to Map</span>
           </Link>
-          <div className="h-6 w-px bg-gray-700"></div>
-          <h1 className="font-bold text-lg">{level?.title}</h1>
+          <div className="h-6 w-px bg-gray-700 shrink-0"></div>
+          <h1 className="font-bold text-sm sm:text-lg truncate flex-1">{level?.title}</h1>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-xs font-bold text-indigo-300 bg-indigo-900/40 px-3 py-1 rounded-full border border-indigo-500/30">
-            Reward: ⚡ {level?.xpReward} XP
+        <div className="flex items-center gap-4 shrink-0 ml-2">
+          <div className="text-[10px] sm:text-xs font-bold text-indigo-300 bg-indigo-900/40 px-2 sm:px-3 py-1 rounded-full border border-indigo-500/30 whitespace-nowrap">
+            <span className="hidden sm:inline">Reward: </span>⚡ {level?.xpReward} XP
           </div>
         </div>
       </header>
 
       {/* Main Game Interface */}
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <main className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
         
         {/* Left Panel: Narrative & Challenge */}
-        <div className={`w-full lg:w-1/3 flex flex-col border-r ${level?.isBossLevel ? 'border-red-900/50 bg-[#140202]' : 'border-indigo-900/50 bg-[#070312]'} overflow-y-auto`}>
+        <div className={`w-full lg:w-1/3 flex flex-col border-b lg:border-b-0 lg:border-r ${level?.isBossLevel ? 'border-red-900/50 bg-[#140202]' : 'border-indigo-900/50 bg-[#070312]'} lg:overflow-y-auto`}>
           <div className="p-8">
             <div className="mb-8">
               <div className="text-[10px] uppercase tracking-widest text-indigo-400 font-bold mb-2">Transmission Received</div>
@@ -183,7 +183,7 @@ export default function ArcadeGame() {
         </div>
 
         {/* Right Panel: Code Editor & Console */}
-        <div className="flex-1 flex flex-col h-[calc(100vh-64px)]">
+        <div className="flex-1 flex flex-col min-h-[600px] lg:min-h-0 lg:h-[calc(100vh-64px)]">
           
           {/* Editor Area */}
           <div className="flex-1 flex flex-col relative bg-[#1E1E1E]">
@@ -246,7 +246,7 @@ export default function ArcadeGame() {
           <motion.div 
             initial={{ scale: 0.8, y: 50 }}
             animate={{ scale: 1, y: 0 }}
-            className="bg-gray-900 border border-indigo-500/30 p-12 rounded-3xl text-center max-w-lg shadow-[0_0_50px_rgba(79,70,229,0.2)]"
+            className="bg-gray-900 border border-indigo-500/30 p-6 md:p-12 rounded-3xl text-center w-[90%] md:w-auto max-w-lg shadow-[0_0_50px_rgba(79,70,229,0.2)]"
           >
             <div className="text-6xl mb-6">🏆</div>
             <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400 mb-4">

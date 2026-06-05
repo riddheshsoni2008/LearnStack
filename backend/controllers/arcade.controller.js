@@ -4,6 +4,7 @@ const path = require('path');
 const User = require('../models/User');
 const GameLevel = require('../models/GameLevel');
 const GameAchievement = require('../models/GameAchievement');
+const { logExerciseCompletion } = require('../services/exerciseHistoryService');
 
 // @desc    Get Arcade Hub Data
 // @route   GET /api/arcade/hub
@@ -129,6 +130,9 @@ const submitChallenge = async (req, res) => {
           logs
         });
       }
+
+      // Log exercise completion
+      await logExerciseCompletion(req.user._id, level._id, `Arcade: ${level.title}`, level.xpReward, 'GameLevel');
 
       // Check if already completed
       const alreadyCompleted = user.arcadeProgress.find(p => p.levelId.toString() === levelId);
@@ -352,6 +356,9 @@ const submitDailyMission = async (req, res) => {
       if (!result.passed) {
         return res.status(400).json({ success: false, passed: false, message: result.error || 'Challenge failed.', logs });
       }
+
+      // Log exercise completion
+      await logExerciseCompletion(req.user._id, level._id, `Daily Mission: ${level.title}`, level.xpReward || 100, 'GameLevel');
 
       // Daily Challenge Logic
       const today = new Date().setHours(0, 0, 0, 0);

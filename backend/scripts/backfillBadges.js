@@ -7,7 +7,6 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 
 // Import Models
 const User = require('../models/User');
-const Progress = require('../models/Progress');
 const Track = require('../models/Track');
 const Badge = require('../models/Badge');
 const XpHistory = require('../models/XpHistory');

@@ -138,26 +138,26 @@ export default function DailyMission() {
     <div className="min-h-screen text-white flex flex-col bg-[#0f0a00]">
 
       {/* Header Bar */}
-      <header className="h-16 border-b flex items-center justify-between px-6 shrink-0 border-yellow-900/50 bg-yellow-950/20">
-        <div className="flex items-center gap-4">
-          <Link href="/arcade" className="text-gray-400 hover:text-white transition-colors">
-            ← Back to Map
+      <header className="h-14 sm:h-16 border-b flex items-center justify-between px-4 sm:px-6 shrink-0 border-yellow-900/50 bg-yellow-950/20">
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+          <Link href="/arcade" className="text-gray-400 hover:text-white transition-colors shrink-0">
+            ←<span className="hidden sm:inline"> Back to Map</span>
           </Link>
-          <div className="h-6 w-px bg-gray-700"></div>
-          <h1 className="font-bold text-lg text-yellow-500">🔥 Daily Mission</h1>
+          <div className="h-6 w-px bg-gray-700 shrink-0"></div>
+          <h1 className="font-bold text-sm sm:text-lg text-yellow-500 truncate flex-1">🔥 Daily Mission</h1>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="text-xs font-bold text-yellow-300 bg-yellow-900/40 px-3 py-1 rounded-full border border-yellow-500/30">
-            Reward: ⚡ 100 XP
+        <div className="flex items-center gap-4 shrink-0 ml-2">
+          <div className="text-[10px] sm:text-xs font-bold text-yellow-300 bg-yellow-900/40 px-2 sm:px-3 py-1 rounded-full border border-yellow-500/30 whitespace-nowrap">
+            <span className="hidden sm:inline">Reward: </span>⚡ 100 XP
           </div>
         </div>
       </header>
 
       {/* Main Game Interface */}
-      <main className="flex-1 flex flex-col lg:flex-row overflow-hidden">
+      <main className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
 
         {/* Left Panel: Narrative & Challenge */}
-        <div className="w-full lg:w-1/3 flex flex-col border-r border-yellow-900/50 bg-[#120c02] overflow-y-auto">
+        <div className="w-full lg:w-1/3 flex flex-col border-b lg:border-b-0 lg:border-r border-yellow-900/50 bg-[#120c02] lg:overflow-y-auto">
           <div className="p-8">
             <div className="mb-8">
               <div className="text-[10px] uppercase tracking-widest text-yellow-500 font-bold mb-2">Daily Transmission</div>
@@ -183,7 +183,7 @@ export default function DailyMission() {
         </div>
 
         {/* Right Panel: Code Editor & Console */}
-        <div className="flex-1 flex flex-col h-[calc(100vh-64px)]">
+        <div className="flex-1 flex flex-col min-h-[600px] lg:min-h-0 lg:h-[calc(100vh-64px)]">
 
           <div className="flex-1 flex flex-col relative bg-[#1E1E1E]">
             <div className="h-10 bg-[#2D2D2D] flex items-center px-4 justify-between shrink-0">
@@ -243,7 +243,7 @@ export default function DailyMission() {
           <motion.div
             initial={{ scale: 0.8, y: 50 }}
             animate={{ scale: 1, y: 0 }}
-            className="bg-gray-900 border border-yellow-500/30 p-12 rounded-3xl text-center max-w-lg shadow-[0_0_50px_rgba(245,158,11,0.2)]"
+            className="bg-gray-900 border border-yellow-500/30 p-6 md:p-12 rounded-3xl text-center w-[90%] md:w-auto max-w-lg shadow-[0_0_50px_rgba(245,158,11,0.2)]"
           >
             <div className="text-6xl mb-6">🔥</div>
             <h2 className="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-400 mb-4">

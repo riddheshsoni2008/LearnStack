@@ -30,14 +30,14 @@ function Navbar() {
           </span>
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-8">
           <a href="#features" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Features</a>
           <a href="#tracks" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Course</a>
           <a href="#how-it-works" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">How It Works</a>
           <a href="#community" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Community</a>
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           {!loading && user ? (
             <>
               <Link href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">
@@ -59,7 +59,7 @@ function Navbar() {
           )}
         </div>
 
-        <button className="md:hidden text-[var(--foreground)] p-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
+        <button className="lg:hidden text-[var(--foreground)] p-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
           {mobileOpen ? (
             <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
           ) : (
@@ -69,7 +69,7 @@ function Navbar() {
       </div>
 
       {mobileOpen && (
-        <div className="md:hidden glass mt-2 mx-4 rounded-xl p-6 animate-slide-up">
+        <div className="lg:hidden glass mt-2 mx-4 rounded-xl p-6 animate-slide-up">
           <div className="flex flex-col gap-4">
             <a href="#features" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium" onClick={() => setMobileOpen(false)}>Features</a>
             <a href="#tracks" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium" onClick={() => setMobileOpen(false)}>Tracks</a>

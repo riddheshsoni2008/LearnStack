@@ -20,7 +20,7 @@ export default function AuthNavbar() {
         </Link>
 
         {/* Desktop Menu */}
-        <div className="hidden md:flex items-center gap-6">
+        <div className="hidden lg:flex items-center gap-4 xl:gap-6">
           <Link
             href="/"
             className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
@@ -51,6 +51,12 @@ export default function AuthNavbar() {
           >
             Leaderboard
           </Link>
+          <Link
+            href="/ai-teacher"
+            className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
+          >
+            🤖 AI
+          </Link>
 
           <div className="flex items-center gap-4 border-l border-[var(--border)] pl-6 ml-2">
             {user?.totalXpEarned !== undefined && (
@@ -74,7 +80,7 @@ export default function AuthNavbar() {
 
         {/* Mobile Toggle */}
         <button
-          className="md:hidden text-[var(--foreground)] p-2 hover:bg-[var(--surface-light)] rounded-lg transition-colors"
+          className="lg:hidden text-[var(--foreground)] p-2 hover:bg-[var(--surface-light)] rounded-lg transition-colors"
           onClick={() => setMobileOpen(!mobileOpen)}
           aria-label="Toggle menu"
         >
@@ -92,7 +98,7 @@ export default function AuthNavbar() {
 
       {/* Mobile Menu Dropdown */}
       {mobileOpen && (
-        <div className="md:hidden glass border border-[var(--border)] mt-4 mx-2 rounded-xl p-6 animate-slide-up shadow-2xl">
+        <div className="lg:hidden glass border border-[var(--border)] mt-4 mx-2 rounded-xl p-6 animate-slide-up shadow-2xl">
           <div className="flex flex-col gap-5">
             <div className="flex items-center justify-between pb-4 border-b border-[var(--border)]">
               <div>
@@ -103,9 +109,6 @@ export default function AuthNavbar() {
                 <div className="flex flex-col gap-1 items-end">
                   <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20">
                     ⚡ {user.totalXpEarned} XP
-                  </div>
-                  <div className="text-sm font-semibold flex items-center gap-1.5 bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20">
-                    💎 {user.diamonds || 0} Diamonds
                   </div>
                 </div>
               )}
@@ -145,6 +148,13 @@ export default function AuthNavbar() {
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">🏅</span> Leaderboard
+            </Link>
+            <Link
+              href="/ai-teacher"
+              className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium py-2 flex items-center gap-3"
+              onClick={() => setMobileOpen(false)}
+            >
+              <span className="text-xl">🤖</span> AI Teacher
             </Link>
 
             <button

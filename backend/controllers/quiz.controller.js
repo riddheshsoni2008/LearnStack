@@ -1,9 +1,10 @@
 const Quiz = require('../models/Quiz');
-const Progress = require('../models/Progress');
+const ExerciseHistoryDaily = require('../models/ExerciseHistoryDaily');
 const User = require('../models/User');
 const Lesson = require('../models/Lesson');
 const { awardXP, updateStreak } = require('../services/xpService');
 const { checkAndAwardBadges } = require('../services/badgeService');
+const { logExerciseCompletion } = require('../services/exerciseHistoryService');
 
 // @desc    Get quiz for a lesson
 // @route   GET /api/quiz/:lessonId
@@ -83,23 +84,14 @@ const submitQuiz = async (req, res) => {
 
     if (passed) {
       // Check if first-time pass (prevent XP farming)
-      const existingProgress = await Progress.findOne({ userId: req.user._id, lessonId: req.params.lessonId });
-      const isFirstTimePass = !existingProgress || !existingProgress.completed;
+      const existingHistory = await ExerciseHistoryDaily.findOne({
+        userId: req.user._id,
+        "completedExercises.exerciseId": req.params.lessonId
+      });
+      const isFirstTimePass = !existingHistory;
 
-      // Save progress
-      await Progress.findOneAndUpdate(
-        { userId: req.user._id, lessonId: req.params.lessonId },
-        {
-          userId: req.user._id,
-          trackId: lesson.trackId,
-          lessonId: req.params.lessonId,
-          completed: true,
-          quizScore: score,
-          xpEarned: isFirstTimePass ? baseXP : 0,
-          completedAt: new Date()
-        },
-        { upsert: true, new: true }
-      );
+      // Log exercise completion
+      await logExerciseCompletion(req.user._id, lesson._id, `${lesson.title} - Quiz`, score, 'Lesson', lesson.trackId);
 
       // ── Award XP (first-time only gets full reward) ──
       if (isFirstTimePass) {

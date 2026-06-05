@@ -1,12 +1,22 @@
 const Badge = require('../models/Badge');
 const User = require('../models/User');
-const Progress = require('../models/Progress');
+const ExerciseHistoryDaily = require('../models/ExerciseHistoryDaily');
 const Track = require('../models/Track');
 const XpHistory = require('../models/XpHistory');
 
 // ═══════════════════════════════════════════════════════════════
 // Badge Service — centralized badge checking and awarding
 // ═══════════════════════════════════════════════════════════════
+
+const getCompletedCount = async (userId, matchQuery = {}) => {
+  const result = await ExerciseHistoryDaily.aggregate([
+    { $match: { userId } },
+    { $unwind: "$completedExercises" },
+    { $match: matchQuery },
+    { $count: "count" }
+  ]);
+  return result.length > 0 ? result[0].count : 0;
+};
 
 /**
  * Check all badge conditions for a user and award any newly earned badges.
@@ -76,28 +86,30 @@ const checkCondition = async (badge, user, context) => {
   switch (condition) {
     // ── Lesson milestones ──
     case 'FIRST_LESSON': {
-      const count = await Progress.countDocuments({ userId: user._id, completed: true });
+      const count = await getCompletedCount(user._id, { "completedExercises.exerciseType": "Lesson" });
       return count >= 1;
     }
     case 'LESSONS_5': {
-      const count = await Progress.countDocuments({ userId: user._id, completed: true });
+      const count = await getCompletedCount(user._id, { "completedExercises.exerciseType": "Lesson" });
       return count >= 5;
     }
     case 'LESSONS_IN_DAY': {
       // 5 lessons completed in the same day
       const todayStart = new Date();
       todayStart.setHours(0, 0, 0, 0);
-      const count = await Progress.countDocuments({
-        userId: user._id,
-        completed: true,
-        completedAt: { $gte: todayStart }
+      const count = await getCompletedCount(user._id, {
+        "completedExercises.exerciseType": "Lesson",
+        "completedExercises.completedAt": { $gte: todayStart }
       });
       return count >= 5;
     }
 
     // ── Quiz milestones ──
     case 'FIRST_QUIZ': {
-      const count = await Progress.countDocuments({ userId: user._id, completed: true, quizScore: { $gt: 0 } });
+      const count = await getCompletedCount(user._id, {
+        "completedExercises.exerciseType": "Lesson",
+        "completedExercises.score": { $gt: 0 }
+      });
       return count >= 1;
     }
     case 'PERFECT_SCORE': {
@@ -121,10 +133,8 @@ const checkCondition = async (badge, user, context) => {
       if (!conditionValue) return false;
       const track = await Track.findOne({ title: { $regex: conditionValue, $options: 'i' } });
       if (!track) return false;
-      const completedInTrack = await Progress.countDocuments({
-        userId: user._id,
-        trackId: track._id,
-        completed: true
+      const completedInTrack = await getCompletedCount(user._id, {
+        "completedExercises.trackId": track._id
       });
       return completedInTrack >= track.totalLessons;
     }
@@ -133,10 +143,8 @@ const checkCondition = async (badge, user, context) => {
     case 'ALL_TRACKS': {
       const tracks = await Track.find({});
       for (const track of tracks) {
-        const completedInTrack = await Progress.countDocuments({
-          userId: user._id,
-          trackId: track._id,
-          completed: true
+        const completedInTrack = await getCompletedCount(user._id, {
+          "completedExercises.trackId": track._id
         });
         if (completedInTrack < track.totalLessons) return false;
       }
