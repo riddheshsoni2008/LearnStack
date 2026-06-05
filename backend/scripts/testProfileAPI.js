@@ -1,8 +1,8 @@
 const http = require('http');
 
 const loginOptions = {
-  hostname: 'localhost',
-  port: 5000,
+  hostname: process.env.API_HOST || 'localhost',
+  port: process.env.PORT || 5000,
   path: '/api/auth/login',
   method: 'POST',
   headers: {
@@ -32,8 +32,8 @@ const req = http.request(loginOptions, res => {
 
     endpoints.forEach(endpoint => {
       http.get({
-        hostname: 'localhost',
-        port: 5000,
+        hostname: process.env.API_HOST || 'localhost',
+        port: process.env.PORT || 5000,
         path: endpoint,
         headers: {
           Authorization: `Bearer ${token}`
