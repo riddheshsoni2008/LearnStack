@@ -89,6 +89,24 @@ export default function ArcadeGame() {
     }
   };
 
+  const handleShare = async () => {
+    if (navigator.share) {
+      try {
+        await navigator.share({
+          title: "Level Cleared in Coding Arcade!",
+          text: `🏆 I just cleared "${level?.title}" and earned +${level?.xpReward} XP on LearnStack's Coding Arcade!`,
+          url: window.location.origin + "/arcade",
+        });
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    } else {
+      // Fallback for browsers that don't support Web Share API
+      navigator.clipboard.writeText(`🏆 I just cleared "${level?.title}" and earned +${level?.xpReward} XP on LearnStack's Coding Arcade!`);
+      addToast({ title: "Copied to clipboard!", type: "success" });
+    }
+  };
+
   if (loading || authLoading) {
     return (
       <div className="min-h-screen bg-[#0A051A] flex items-center justify-center">
@@ -236,11 +254,14 @@ export default function ArcadeGame() {
               </div>
             )}
 
-            <div className="flex items-center justify-center gap-4">
-              <Link href="/arcade" className="px-6 py-3 rounded-xl font-bold bg-gray-800 hover:bg-gray-700 text-white transition-colors">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+              <Link href="/arcade" className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-gray-800 hover:bg-gray-700 text-white transition-colors">
                 Back to Map
               </Link>
-              <button onClick={() => window.location.reload()} className="px-6 py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.4)] transition-all">
+              <button onClick={handleShare} className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-[#25D366] hover:bg-[#128C7E] text-white transition-colors flex items-center justify-center gap-2">
+                <span>📱</span> Share Win
+              </button>
+              <button onClick={() => window.location.reload()} className="w-full sm:w-auto px-6 py-3 rounded-xl font-bold bg-indigo-600 hover:bg-indigo-500 text-white shadow-[0_0_15px_rgba(79,70,229,0.4)] transition-all">
                 Next Level →
               </button>
             </div>

@@ -69,7 +69,7 @@ const submitChallenge = async (req, res) => {
     }
 
     const validateCode = require(validatorPath);
-    
+
     // Sandbox Environment
     const logs = [];
     const context = {
@@ -83,22 +83,22 @@ const submitChallenge = async (req, res) => {
     try {
       // Execute user code with timeout protection against infinite loops
       vm.runInContext(code, context, { timeout: 1000 });
-      
+
       // Run specific validation logic
       const result = await validateCode(context, code);
-      
+
       if (!result.passed) {
-        return res.status(400).json({ 
-          success: false, 
-          passed: false, 
+        return res.status(400).json({
+          success: false,
+          passed: false,
           message: result.error || 'Challenge failed. Check your logic.',
-          logs 
+          logs
         });
       }
 
       // Check if already completed
       const alreadyCompleted = user.arcadeProgress.find(p => p.levelId.toString() === levelId);
-      
+
       let newlyUnlockedAchievements = [];
       if (!alreadyCompleted) {
         user.arcadeProgress.push({ levelId, score: 100 });
@@ -107,7 +107,7 @@ const submitChallenge = async (req, res) => {
         if (level.isBossLevel) {
           user.completedBossBattles += 1;
         }
-        
+
         // Check for newly unlocked achievements
         const allAchievements = await GameAchievement.find({});
         for (let achievement of allAchievements) {
@@ -120,7 +120,7 @@ const submitChallenge = async (req, res) => {
             } else if (achievement.type === 'BOSS_DEFEATED' && user.completedBossBattles >= achievement.target) {
               conditionMet = true;
             }
-            
+
             if (conditionMet) {
               user.unlockedGameAchievements.push(achievement._id);
               newlyUnlockedAchievements.push(achievement);
@@ -141,9 +141,9 @@ const submitChallenge = async (req, res) => {
       });
 
     } catch (err) {
-      return res.status(400).json({ 
-        success: false, 
-        passed: false, 
+      return res.status(400).json({
+        success: false,
+        passed: false,
         message: err.message === 'Script execution timed out.' ? 'Execution Timeout: Infinite loop detected.' : err.message,
         logs
       });
@@ -154,20 +154,17 @@ const submitChallenge = async (req, res) => {
   }
 };
 
-// @desc    Get Arcade Leaderboard
-// @route   GET /api/arcade/leaderboard
-// @access  Private
 const getArcadeLeaderboard = async (req, res) => {
   try {
     const { timeframe = 'global' } = req.query;
-    
+
     // In V1 we do a basic global sort. For weekly/monthly we would need timestamped XP tracking.
     const topUsers = await User.find({ gameXpEarned: { $gt: 0 } })
       .select('name gameXpEarned arcadeProgress completedBossBattles level levelTitle')
-      .sort({ 
-        gameXpEarned: -1, 
-        'arcadeProgress.length': -1, 
-        completedBossBattles: -1 
+      .sort({
+        gameXpEarned: -1,
+        'arcadeProgress.length': -1,
+        completedBossBattles: -1
       })
       .limit(50);
 
