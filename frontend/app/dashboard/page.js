@@ -296,6 +296,49 @@ export default function DashboardPage() {
           </div>
         </div>
 
+        {/* ═══ Coding Arcade ═══ */}
+        <div className="glass rounded-2xl p-6 mb-8 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)] relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
+          
+          <div className="flex items-center justify-between mb-6 relative z-10">
+            <h3 className="text-xl font-bold flex items-center gap-2">🎮 Coding Arcade</h3>
+          </div>
+
+          <div className="relative z-10">
+            {user.totalXpEarned < 1000 ? (
+              <div className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-8 text-center flex flex-col items-center">
+                <div className="text-5xl mb-4 opacity-70">🔒</div>
+                <h4 className="text-lg font-bold mb-2">Coding Arcade Locked</h4>
+                <p className="text-[var(--text-muted)] text-sm mb-6">Reach 1000 XP to unlock the Arcade.</p>
+                
+                <div className="w-full max-w-md">
+                  <div className="flex justify-between text-xs font-bold mb-2">
+                    <span className="text-[var(--primary-light)]">{user.totalXpEarned || 0} XP</span>
+                    <span className="text-[var(--text-muted)]">1000 XP</span>
+                  </div>
+                  <div className="w-full h-3 bg-[var(--surface)] rounded-full overflow-hidden">
+                    <div 
+                      className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-1000"
+                      style={{ width: `${Math.min(((user.totalXpEarned || 0) / 1000) * 100, 100)}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className="bg-gradient-to-br from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 rounded-xl p-8 text-center flex flex-col items-center relative overflow-hidden group">
+                <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-20 pointer-events-none" />
+                <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">🕹️</div>
+                <h4 className="text-2xl font-black mb-2 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">Arcade Unlocked!</h4>
+                <p className="text-indigo-200 text-sm mb-8">Dive into story-driven coding challenges, defeat bugs, and climb the leaderboard.</p>
+                
+                <Link href="/arcade" className="relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-indigo-600 border border-transparent rounded-xl shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:bg-indigo-700 hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 focus:ring-offset-[var(--background)]">
+                  Enter Arcade
+                </Link>
+              </div>
+            )}
+          </div>
+        </div>
+
         {/* ═══ Continue Learning ═══ */}
         <div className="glass rounded-2xl p-8 text-center">
           <div className="text-5xl mb-4">🚀</div>

@@ -46,18 +46,6 @@ export default function AuthNavbar() {
             Profile
           </Link>
           <Link
-            href="/store"
-            className="text-sm font-medium text-yellow-400 hover:text-yellow-300 transition-colors"
-          >
-            Store
-          </Link>
-          <Link
-            href="/inventory"
-            className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
-          >
-            Inventory
-          </Link>
-          <Link
             href="/leaderboard"
             className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
           >
@@ -69,9 +57,6 @@ export default function AuthNavbar() {
               <div className="flex gap-2">
                 <div className="text-sm font-semibold flex items-center gap-1.5 bg-[var(--accent)]/10 text-[var(--accent-light)] px-3 py-1 rounded-full border border-[var(--accent)]/20 shadow-inner">
                   ⚡ {user.totalXpEarned} XP • Lvl {user.level || 1}
-                </div>
-                <div className="text-sm font-semibold flex items-center gap-1.5 bg-cyan-500/10 text-cyan-400 px-3 py-1 rounded-full border border-cyan-500/20 shadow-inner">
-                  💎 {user.diamonds || 0} Diamonds
                 </div>
               </div>
             )}
@@ -153,20 +138,6 @@ export default function AuthNavbar() {
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">👤</span> Profile
-            </Link>
-            <Link
-              href="/store"
-              className="text-yellow-400 hover:text-yellow-300 transition-colors font-medium py-2 flex items-center gap-3"
-              onClick={() => setMobileOpen(false)}
-            >
-              <span className="text-xl">🏪</span> Store
-            </Link>
-            <Link
-              href="/inventory"
-              className="text-[var(--text-muted)] hover:text-white transition-colors font-medium py-2 flex items-center gap-3"
-              onClick={() => setMobileOpen(false)}
-            >
-              <span className="text-xl">🎒</span> Inventory
             </Link>
             <Link
               href="/leaderboard"

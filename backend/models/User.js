@@ -60,7 +60,7 @@ const UserSchema = new mongoose.Schema({
   totalXpEarned: {
     type: Number,
     default: 0,
-    index: true  // Index for leaderboard queries
+    index: true
   },
   xpBalance: {
     type: Number,
@@ -106,29 +106,26 @@ const UserSchema = new mongoose.Schema({
     type: Boolean,
     default: false
   },
-  ownedThemes: {
-    type: [String],
-    default: []
+  gameXpEarned: {
+    type: Number,
+    default: 0
   },
-  ownedBorders: {
-    type: [String],
-    default: []
+  arcadeProgress: [{
+    levelId: { type: mongoose.Schema.Types.ObjectId, ref: 'GameLevel' },
+    completedAt: { type: Date, default: Date.now },
+    score: { type: Number, default: 0 }
+  }],
+  unlockedGameAchievements: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'GameAchievement'
+  }],
+  completedBossBattles: {
+    type: Number,
+    default: 0
   },
-  ownedTitles: {
-    type: [String],
-    default: []
-  },
-  activeTheme: {
-    type: String,
-    default: 'default'
-  },
-  activeBorder: {
-    type: String,
-    default: 'none'
-  },
-  activeTitle: {
-    type: String,
-    default: 'Newbie'
+  dailyChallenge: {
+    lastCompletedDate: { type: Date, default: null },
+    currentStreak: { type: Number, default: 0 }
   }
 }, {
   timestamps: true,

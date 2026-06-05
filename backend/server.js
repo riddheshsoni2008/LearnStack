@@ -29,16 +29,7 @@ app.use('/api/quiz', require('./routes/quiz.routes'));
 app.use('/api/progress', require('./routes/progress.routes'));
 app.use('/api/badges', require('./routes/badge.routes'));
 app.use('/api/leaderboard', require('./routes/leaderboard.routes'));
-app.use('/api/store', require('./routes/store.routes'));
-
-// Health check route
-app.get('/api/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: '🚀 LearnStack API is running!',
-    timestamp: new Date().toISOString()
-  });
-});
+app.use('/api/arcade', require('./routes/arcade.routes'));
 
 // 404 handler
 app.use((req, res) => {

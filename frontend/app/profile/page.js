@@ -124,33 +124,18 @@ export default function ProfilePage() {
   // Level progress
   const levelProgress = user.currentLevelProgress || { percent: 0, xpIntoLevel: 0, xpForLevel: 1 };
 
-  const activeThemeClass = THEME_STYLES[user?.activeTheme] || THEME_STYLES.default;
-  const activeBorderClass = BORDER_STYLES[user?.activeBorder] || BORDER_STYLES.none;
-  
-  let displayTitle = user?.levelTitle || "Newbie";
-  let displayIcon = "";
-  if (user?.activeTitle && user.activeTitle !== 'Newbie' && TITLE_STYLES[user.activeTitle]) {
-    displayTitle = TITLE_STYLES[user.activeTitle].text;
-    displayIcon = TITLE_STYLES[user.activeTitle].icon;
-  }
-
-  // Diagnostic log for the audit
-  console.log("Profile Cosmetics Loaded:", {
-    theme: user?.activeTheme,
-    border: user?.activeBorder,
-    title: user?.activeTitle
-  });
+  let displayTitle = user?.levelTitle || "Learner";
 
   return (
-    <div className={`min-h-screen pb-20 ${activeThemeClass}`}>
+    <div className={`min-h-screen pb-20 bg-[var(--background)]`}>
       <AuthNavbar />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-8 sm:mt-12">
         {/* ═══ Profile Header ═══ */}
         <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-8 mb-10 sm:mb-12 text-center md:text-left">
           <div className="relative">
-            <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-4xl sm:text-5xl font-bold text-white shadow-lg ${activeBorderClass}`}>
-              {user.name.charAt(0).toUpperCase()}
+            <div className={`w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-4xl sm:text-5xl font-bold text-white shadow-lg border-4 border-[var(--surface)]`}>
+              {user?.name?.charAt(0).toUpperCase()}
             </div>
             {/* Level badge overlay */}
             <div className="absolute -bottom-1 -right-1 bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] text-white text-xs font-black rounded-full w-8 h-8 flex items-center justify-center border-2 border-[var(--background)] shadow-lg">
@@ -162,7 +147,7 @@ export default function ProfilePage() {
             <p className="text-[var(--text-muted)] text-base sm:text-lg mb-3">{user.email}</p>
             <div className="inline-flex items-center px-4 py-2 rounded-full bg-[var(--surface-light)] border border-[var(--border)] gap-2">
               <span className="text-sm font-bold gradient-text uppercase tracking-wider">
-                Level {user.level || 1} — {displayIcon} {displayTitle}
+                Level {user.level || 1} — {displayTitle}
               </span>
             </div>
             <div className="flex flex-wrap gap-4 mt-4 text-xs text-[var(--text-muted)]">
