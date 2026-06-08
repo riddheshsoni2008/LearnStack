@@ -39,12 +39,13 @@ const TITLE_STYLES = {
 export default function ProfilePage() {
   const router = useRouter();
   const { user, loading: authLoading, fetchUser } = useAuth();
-  
+
   const [progress, setProgress] = useState([]);
   const [tracks, setTracks] = useState([]);
   const [allBadges, setAllBadges] = useState([]);
   const [myBadges, setMyBadges] = useState([]);
   const [xpHistory, setXpHistory] = useState([]);
+  const [certificates, setCertificates] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   // Auto-refresh Last Active every 60 seconds
@@ -65,16 +66,17 @@ export default function ProfilePage() {
     const fetchData = async () => {
       if (!user) return;
       try {
-        const [progRes, tracksRes, badgesRes, myBadgesRes, xpRes] = await Promise.all([
+        const [progRes, tracksRes, badgesRes, myBadgesRes, xpRes, certRes] = await Promise.all([
           fetch("/api/progress/me", { cache: "no-store" }),
           fetch("/api/tracks", { cache: "no-store" }),
           fetch("/api/badges", { cache: "no-store" }),
           fetch("/api/badges/me", { cache: "no-store" }),
           fetch("/api/badges/xp-history", { cache: "no-store" }),
+          fetch("/api/certificates/me", { cache: "no-store" }),
         ]);
 
-        const [progData, tracksData, badgesData, myBadgesData, xpData] = await Promise.all([
-          progRes.json(), tracksRes.json(), badgesRes.json(), myBadgesRes.json(), xpRes.json(),
+        const [progData, tracksData, badgesData, myBadgesData, xpData, certData] = await Promise.all([
+          progRes.json(), tracksRes.json(), badgesRes.json(), myBadgesRes.json(), xpRes.json(), certRes.json(),
         ]);
 
         if (progData.success) setProgress(progData.data);
@@ -82,6 +84,7 @@ export default function ProfilePage() {
         if (badgesData.success) setAllBadges(badgesData.data);
         if (myBadgesData.success) setMyBadges(myBadgesData.data);
         if (xpData.success) setXpHistory(xpData.data);
+        if (certData.success) setCertificates(certData.data);
       } catch (err) {
         console.error("Failed to load profile data:", err);
       } finally {
@@ -202,6 +205,102 @@ export default function ProfilePage() {
           ))}
         </div>
 
+        {/* ═══ Certificates Showcase (Professional) ═══ */}
+        {certificates.length > 0 && (
+          <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8 shadow-xl shadow-yellow-500/10">
+            <div className="border-b border-[var(--border)] pb-4 mb-6">
+              <h3 className="text-xl font-bold tracking-wide uppercase text-yellow-400">🎓 Professional Certifications</h3>
+              <p className="text-xs text-[var(--text-muted)] uppercase tracking-wider mt-1">Verified Credentials Archive</p>
+            </div>
+
+            {/* 🌟 BEST STUDENT HERO SECTION (PROFESSIONAL CERTIFICATES) 🌟 */}
+            {certificates.filter(c => c.certificateType === 'PROFESSIONAL').map((cert) => (
+              <div key={cert._id} className="mb-8 relative group overflow-hidden rounded-xl border-2 border-yellow-500 bg-gradient-to-br from-yellow-500/10 to-purple-500/10 p-1">
+                <div className="absolute inset-0 bg-yellow-500/20 blur-2xl opacity-50 pointer-events-none"></div>
+                <div className="relative bg-[var(--surface)] border border-[var(--border)] rounded-lg p-6 sm:p-10 text-center">
+                  <div className="text-6xl mb-4">🏆</div>
+                  <h4 className="font-extrabold text-2xl sm:text-3xl text-yellow-400 mb-2 uppercase tracking-widest">
+                    Best Student of LearnStack
+                  </h4>
+                  <p className="text-[var(--text-muted)] max-w-lg mx-auto mb-6 text-sm">
+                    This incredibly rare credential is only awarded to individuals who have achieved 100% completion across all published courses on the platform.
+                  </p>
+
+                  <div className="flex flex-wrap justify-center gap-6 mb-8 text-xs">
+                    <div className="bg-[var(--surface-light)] border border-[var(--border)] px-4 py-2 rounded">
+                      <span className="block text-[10px] uppercase text-[var(--text-muted)] mb-1">Credential</span>
+                      <span className="font-mono text-[var(--text)]">{cert.certificateId}</span>
+                    </div>
+                    <div className="bg-[var(--surface-light)] border border-[var(--border)] px-4 py-2 rounded">
+                      <span className="block text-[10px] uppercase text-[var(--text-muted)] mb-1">Completion</span>
+                      <span className="font-bold text-emerald-400">{cert.completionPercentage}%</span>
+                    </div>
+                    <div className="bg-[var(--surface-light)] border border-[var(--border)] px-4 py-2 rounded">
+                      <span className="block text-[10px] uppercase text-[var(--text-muted)] mb-1">Issued</span>
+                      <span className="font-bold text-[var(--text)]">{new Date(cert.issuedAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex justify-center gap-4">
+                    <Link href={`/certificates/${cert.certificateId}`} className="bg-yellow-500 text-black text-sm font-bold uppercase tracking-wider py-3 px-8 rounded hover:bg-yellow-400 transition">
+                      View Flagship Credential
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+
+            {/* STANDARD CERTIFICATES GRID */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {certificates.filter(c => c.certificateType !== 'PROFESSIONAL').map((cert) => (
+                <div key={cert._id} className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-5 hover:bg-[var(--surface)] transition duration-300">
+                  <div className="flex justify-between items-start mb-4">
+                    <div>
+                      <span className="inline-block px-2 py-1 bg-[var(--surface)] border border-[var(--border)] text-[var(--text-muted)] text-[10px] font-bold uppercase tracking-widest mb-3 rounded">
+                        {cert.certificateType}
+                      </span>
+                      <h4 className="font-bold text-lg text-[var(--text)] leading-snug">
+                        {cert.certificateType === 'ADVANCED' ? 'Advanced Developer Achievement' : cert.trackName}
+                      </h4>
+                    </div>
+                    {cert.isRevoked ? (
+                      <span className="text-red-400 font-bold text-xs uppercase tracking-widest border border-red-500/30 bg-red-500/10 px-2 py-1 rounded">Revoked</span>
+                    ) : (
+                      <span className="text-emerald-400 font-bold text-xs uppercase tracking-widest flex items-center gap-1 border border-emerald-500/30 bg-emerald-500/10 px-2 py-1 rounded">
+                        ✓ Verified
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 mb-6 text-xs">
+                    <div>
+                      <span className="block text-[9px] uppercase tracking-wider text-[var(--text-muted)] mb-1">ID</span>
+                      <span className="font-mono text-[var(--text)]">{cert.certificateId}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[9px] uppercase tracking-wider text-[var(--text-muted)] mb-1">Date</span>
+                      <span className="text-[var(--text)]">{new Date(cert.issuedAt).toLocaleDateString("en-US", { year: 'numeric', month: 'short', day: 'numeric' })}</span>
+                    </div>
+                    <div>
+                      <span className="block text-[9px] uppercase tracking-wider text-[var(--text-muted)] mb-1">Score</span>
+                      <span className="font-bold text-emerald-400">{cert.completionPercentage}%</span>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Link href={`/certificates/${cert.certificateId}`} className="flex-1 bg-[var(--primary)] text-white text-center text-xs font-bold uppercase tracking-wider py-2.5 px-4 rounded hover:bg-[var(--primary-dark)] transition">
+                      View
+                    </Link>
+                    <a href={cert.verificationUrl} target="_blank" rel="noopener noreferrer" className="flex-1 bg-[var(--surface)] text-[var(--text)] border border-[var(--border)] text-center text-xs font-bold uppercase tracking-wider py-2.5 px-4 rounded hover:bg-[var(--background)] transition">
+                      Verify
+                    </a>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         {/* ═══ Badge Showcase ═══ */}
         <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8">
           <h3 className="text-lg font-bold mb-4">🏆 Achievements</h3>
@@ -212,11 +311,10 @@ export default function ProfilePage() {
               return (
                 <div
                   key={badge._id}
-                  className={`relative rounded-xl p-3 border transition-all text-center ${
-                    earned
+                  className={`relative rounded-xl p-3 border transition-all text-center ${earned
                       ? `${style.border} ${style.bg} shadow-lg ${style.glow}`
                       : "border-[var(--border)] bg-[var(--surface-light)] opacity-30 grayscale"
-                  }`}
+                    }`}
                   title={`${badge.name}: ${badge.description}`}
                 >
                   <div className="text-3xl mb-1">{badge.icon}</div>
@@ -243,10 +341,9 @@ export default function ProfilePage() {
           </div>
         </div>
 
-        {/* ═══ Exclusive Rewards ═══ */}
         {exclusiveBadges.length > 0 && (
           <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8 border-purple-500/30 shadow-lg shadow-purple-500/10">
-            <h3 className="text-lg font-bold mb-4 text-purple-400">🎁 Exclusive Rewards</h3>
+            <h3 className="text-lg font-bold mb-4 text-purple-400"> Exclusive Rewards</h3>
             <p className="text-sm text-[var(--text-muted)] mb-4">Rare badges obtained only through the Mystery Box.</p>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
               {exclusiveBadges.map((badge) => {
@@ -255,11 +352,10 @@ export default function ProfilePage() {
                 return (
                   <div
                     key={badge._id}
-                    className={`relative rounded-xl p-3 border transition-all text-center ${
-                      earned
+                    className={`relative rounded-xl p-3 border transition-all text-center ${earned
                         ? `${style.border} ${style.bg} shadow-lg ${style.glow}`
                         : "border-[var(--border)] bg-[var(--surface-light)] opacity-30 grayscale"
-                    }`}
+                      }`}
                     title={`${badge.name}: ${badge.description}`}
                   >
                     <div className="text-3xl mb-1">{badge.icon}</div>
@@ -305,11 +401,10 @@ export default function ProfilePage() {
                   </div>
                   <div className="w-full h-2 bg-[var(--surface)] rounded-full overflow-hidden">
                     <div
-                      className={`h-full rounded-full transition-all duration-700 ${
-                        pct === 100
+                      className={`h-full rounded-full transition-all duration-700 ${pct === 100
                           ? "bg-gradient-to-r from-emerald-500 to-green-400"
                           : "bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]"
-                      }`}
+                        }`}
                       style={{ width: `${pct}%` }}
                     />
                   </div>
@@ -332,7 +427,7 @@ export default function ProfilePage() {
             </div>
           </div>
           <div className="w-full h-4 bg-[#0a0a0f] rounded-full overflow-hidden border border-[var(--border)] mt-6 relative shadow-inner">
-            <div 
+            <div
               className="h-full bg-gradient-to-r from-[var(--primary-dark)] via-[var(--primary)] to-[var(--accent)] transition-all duration-1000 ease-out relative"
               style={{ width: `${overallPercent}%` }}
             >

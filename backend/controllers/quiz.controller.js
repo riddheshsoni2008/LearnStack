@@ -5,6 +5,7 @@ const Lesson = require('../models/Lesson');
 const { awardXP, updateStreak } = require('../services/xpService');
 const { checkAndAwardBadges } = require('../services/badgeService');
 const { logExerciseCompletion } = require('../services/exerciseHistoryService');
+const { checkAndAwardCertificate } = require('../services/certificateService');
 
 // @desc    Get quiz for a lesson
 // @route   GET /api/quiz/:lessonId
@@ -152,6 +153,12 @@ const submitQuiz = async (req, res) => {
     // Fetch updated user for response
     const updatedUser = await User.findById(req.user._id);
 
+    // ── Check for Track Completion Certificate ──
+    let newCertificate = null;
+    if (passed) {
+      newCertificate = await checkAndAwardCertificate(req.user._id, lesson.trackId);
+    }
+
     res.status(200).json({
       success: true,
       data: {
@@ -175,6 +182,10 @@ const submitQuiz = async (req, res) => {
             rarity: b.rarity,
             xpBonus: b.xpBonus
           })),
+          newCertificate: newCertificate ? {
+            certificateId: newCertificate.certificateId,
+            verificationUrl: newCertificate.verificationUrl
+          } : null,
           streak: updatedUser.streak,
           longestStreak: updatedUser.longestStreak,
           streakBonus: streakInfo.streakBonus || 0,

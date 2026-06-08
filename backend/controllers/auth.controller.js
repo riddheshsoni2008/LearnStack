@@ -91,10 +91,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Update last active
-    user.lastActive = Date.now();
-    await user.save({ validateBeforeSave: false });
-
     // Generate token
     const token = generateToken(user._id);
 
@@ -129,9 +125,8 @@ const getMe = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate('badges');
 
-    if (user) {
-      user.lastActive = new Date();
-      await user.save({ validateBeforeSave: false });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'User not found' });
     }
 
     res.status(200).json({

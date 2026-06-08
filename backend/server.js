@@ -31,6 +31,7 @@ app.use('/api/badges', require('./routes/badge.routes'));
 app.use('/api/leaderboard', require('./routes/leaderboard.routes'));
 app.use('/api/arcade', require('./routes/arcade.routes'));
 app.use('/api/ai', require('./routes/ai.routes'));
+app.use('/api/certificates', require('./routes/certificate.routes'));
 
 // 404 handler
 app.use((req, res) => {

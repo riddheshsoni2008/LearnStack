@@ -1,4 +1,4 @@
-import { Inter } from "next/font/google";
+import { Inter, Great_Vibes } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 
@@ -6,6 +6,12 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
+});
+
+const greatVibes = Great_Vibes({
+  variable: "--font-signature",
+  subsets: ["latin"],
+  weight: ["400"],
 });
 
 export const metadata = {
@@ -17,7 +23,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${inter.variable} h-full antialiased`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${greatVibes.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]" suppressHydrationWarning>
         <Providers>{children}</Providers>
       </body>
