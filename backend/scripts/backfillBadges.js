@@ -9,7 +9,6 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 const User = require('../models/User');
 const Track = require('../models/Track');
 const Badge = require('../models/Badge');
-const XpHistory = require('../models/XpHistory');
 
 
 const { checkAndAwardBadges } = require('../services/badgeService');

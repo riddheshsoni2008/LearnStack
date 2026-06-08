@@ -82,6 +82,10 @@ const UserSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   },
+  lastExerciseDate: {
+    type: Date,
+    default: null
+  },
   badges: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Badge'
@@ -191,6 +195,7 @@ UserSchema.virtual('currentLevelProgress').get(function () {
 // ═══════════════════════════════════════════════════════════════
 UserSchema.index({ totalXpEarned: -1 });
 UserSchema.index({ hideFromLeaderboard: 1, totalXpEarned: -1 });
+UserSchema.index({ gameXpEarned: -1 });
 
 // ═══════════════════════════════════════════════════════════════
 // Hooks

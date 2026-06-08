@@ -25,7 +25,14 @@ const logExerciseCompletion = async (userId, exerciseId, title, score = 0, exerc
       { 
         userId, 
         date: todayString,
-        'completedExercises.exerciseId': { $ne: exerciseId } 
+        completedExercises: {
+          $not: {
+            $elemMatch: {
+              exerciseId: exerciseId,
+              title: title
+            }
+          }
+        }
       },
       {
         $push: {

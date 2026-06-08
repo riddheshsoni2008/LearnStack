@@ -2,7 +2,7 @@ const Badge = require('../models/Badge');
 const User = require('../models/User');
 const ExerciseHistoryDaily = require('../models/ExerciseHistoryDaily');
 const Track = require('../models/Track');
-const XpHistory = require('../models/XpHistory');
+const { logXpTransaction } = require('./xpService');
 
 // ═══════════════════════════════════════════════════════════════
 // Badge Service — centralized badge checking and awarding
@@ -53,23 +53,28 @@ const checkAndAwardBadges = async (userId, context = {}) => {
       totalBonusXP += badge.xpBonus || 0;
     }
 
-    // Add badge references + bonus XP to user
-    user.badges.push(...badgeIds);
-    user.totalXpEarned += totalBonusXP;
-    await user.save({ validateBeforeSave: false });
+    // Add badge references + bonus XP to user atomically
+    const updatedUser = await User.findByIdAndUpdate(
+      userId,
+      {
+        $addToSet: { badges: { $each: badgeIds } },
+        $inc: { totalXpEarned: totalBonusXP }
+      },
+      { new: true }
+    );
 
     // Log XP history for each badge bonus
     for (const badge of newlyEarned) {
       if (badge.xpBonus > 0) {
-        await XpHistory.create({
+        await logXpTransaction(
           userId,
-          amount: badge.xpBonus,
-          source: 'badge',
-          description: `Badge unlocked: ${badge.name}`,
-          referenceId: badge._id,
-          levelBefore: user.level,
-          levelAfter: user.level
-        });
+          badge.xpBonus,
+          'badge',
+          `Badge unlocked: ${badge.name}`,
+          badge._id,
+          user.level,
+          updatedUser.level
+        );
       }
     }
   }

@@ -50,12 +50,12 @@ export default function ProfilePage() {
 
   // Auto-refresh Last Active every 60 seconds
   useEffect(() => {
-    if (!user) return;
+    if (!user?._id) return;
     const intervalId = setInterval(() => {
       fetchUser();
     }, 60000);
     return () => clearInterval(intervalId);
-  }, [user, fetchUser]);
+  }, [user?._id, fetchUser]);
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -64,7 +64,7 @@ export default function ProfilePage() {
     }
 
     const fetchData = async () => {
-      if (!user) return;
+      if (!user?._id) return;
       try {
         const [progRes, tracksRes, badgesRes, myBadgesRes, xpRes, certRes] = await Promise.all([
           fetch("/api/progress/me", { cache: "no-store" }),
@@ -93,7 +93,7 @@ export default function ProfilePage() {
     };
 
     fetchData();
-  }, [user, authLoading, router]);
+  }, [user?._id, authLoading, router]);
 
   if (authLoading || dataLoading) {
     return (

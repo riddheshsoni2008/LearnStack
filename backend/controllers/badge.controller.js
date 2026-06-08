@@ -1,6 +1,6 @@
 const Badge = require('../models/Badge');
 const User = require('../models/User');
-const XpHistory = require('../models/XpHistory');
+const ExerciseHistoryDaily = require('../models/ExerciseHistoryDaily');
 
 // @desc    Get all available badges
 // @route   GET /api/badges
@@ -29,15 +29,23 @@ const getMyBadges = async (req, res) => {
   }
 };
 
-// @desc    Get user's XP history
-// @route   GET /api/badges/xp-history
-// @access  Private
 const getXpHistory = async (req, res) => {
   try {
-    const history = await XpHistory.find({ userId: req.user._id })
-      .sort({ createdAt: -1 })
-      .limit(50);
-    res.status(200).json({ success: true, data: history });
+    const historyDocs = await ExerciseHistoryDaily.find({ userId: req.user._id })
+      .sort({ date: -1 })
+      .limit(30);
+
+    let xpHistory = [];
+    historyDocs.forEach(doc => {
+      if (doc.xpHistory && doc.xpHistory.length > 0) {
+        xpHistory = xpHistory.concat(doc.xpHistory);
+      }
+    });
+
+    xpHistory.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    xpHistory = xpHistory.slice(0, 50);
+
+    res.status(200).json({ success: true, data: xpHistory });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

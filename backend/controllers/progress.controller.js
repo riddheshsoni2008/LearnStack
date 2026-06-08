@@ -21,22 +21,25 @@ const getMyProgress = async (req, res) => {
         select: 'title weekNumber'
       });
 
-    const progress = [];
+    const progressMap = new Map();
     history.forEach(day => {
       day.completedExercises.forEach(ex => {
-        if (ex.exerciseType === 'Lesson') {
-          progress.push({
-            trackId: ex.trackId,
-            lessonId: ex.exerciseId,
-            completed: true,
-            quizScore: ex.score,
-            completedAt: ex.completedAt
-          });
+        if (ex.exerciseType === 'Lesson' && ex.exerciseId) {
+          const lessonIdStr = ex.exerciseId._id ? ex.exerciseId._id.toString() : ex.exerciseId.toString();
+          if (!progressMap.has(lessonIdStr)) {
+            progressMap.set(lessonIdStr, {
+              trackId: ex.trackId,
+              lessonId: ex.exerciseId._id || ex.exerciseId,
+              completed: true,
+              quizScore: ex.score,
+              completedAt: ex.completedAt
+            });
+          }
         }
       });
     });
 
-    res.status(200).json({ success: true, data: progress });
+    res.status(200).json({ success: true, data: Array.from(progressMap.values()) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -53,22 +56,25 @@ const getTrackProgress = async (req, res) => {
         select: 'title weekNumber order'
       });
 
-    const progress = [];
+    const progressMap = new Map();
     history.forEach(day => {
       day.completedExercises.forEach(ex => {
-        if (ex.exerciseType === 'Lesson' && ex.trackId && ex.trackId.toString() === req.params.trackId) {
-          progress.push({
-            trackId: ex.trackId,
-            lessonId: ex.exerciseId,
-            completed: true,
-            quizScore: ex.score,
-            completedAt: ex.completedAt
-          });
+        if (ex.exerciseType === 'Lesson' && ex.exerciseId && ex.trackId && ex.trackId.toString() === req.params.trackId) {
+          const lessonIdStr = ex.exerciseId._id ? ex.exerciseId._id.toString() : ex.exerciseId.toString();
+          if (!progressMap.has(lessonIdStr)) {
+            progressMap.set(lessonIdStr, {
+              trackId: ex.trackId,
+              lessonId: ex.exerciseId._id || ex.exerciseId,
+              completed: true,
+              quizScore: ex.score,
+              completedAt: ex.completedAt
+            });
+          }
         }
       });
     });
 
-    res.status(200).json({ success: true, data: progress });
+    res.status(200).json({ success: true, data: Array.from(progressMap.values()) });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -88,11 +94,18 @@ const completeLessonDirect = async (req, res) => {
     let existingProgress = null;
     const existingHistory = await ExerciseHistoryDaily.findOne({
       userId: req.user._id,
-      "completedExercises.exerciseId": lesson._id
+      completedExercises: {
+        $elemMatch: {
+          exerciseId: lesson._id,
+          title: { $not: / - Quiz$/ }
+        }
+      }
     });
     
     if (existingHistory) {
-      existingProgress = existingHistory.completedExercises.find(ex => ex.exerciseId.toString() === lesson._id.toString());
+      existingProgress = existingHistory.completedExercises.find(
+        ex => ex.exerciseId.toString() === lesson._id.toString() && !ex.title.includes(' - Quiz')
+      );
     }
 
     if (existingProgress) {

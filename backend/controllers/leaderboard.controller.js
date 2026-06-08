@@ -66,11 +66,14 @@ const getLeaderboard = async (req, res) => {
 const togglePrivacy = async (req, res) => {
   try {
     const user = await User.findById(req.user._id);
-    user.hideFromLeaderboard = !user.hideFromLeaderboard;
-    await user.save({ validateBeforeSave: false });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { hideFromLeaderboard: !user.hideFromLeaderboard } },
+      { new: true }
+    );
     res.status(200).json({
       success: true,
-      data: { hideFromLeaderboard: user.hideFromLeaderboard }
+      data: { hideFromLeaderboard: updatedUser.hideFromLeaderboard }
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

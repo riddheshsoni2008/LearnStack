@@ -134,39 +134,53 @@ const submitChallenge = async (req, res) => {
       // Log exercise completion
       await logExerciseCompletion(req.user._id, level._id, `Arcade: ${level.title}`, level.xpReward, 'GameLevel');
 
-      // Check if already completed
-      const alreadyCompleted = user.arcadeProgress.find(p => p.levelId.toString() === levelId);
-
       let newlyUnlockedAchievements = [];
-      if (!alreadyCompleted) {
-        user.arcadeProgress.push({ levelId, score: level.xpReward });
-        user.gameXpEarned += level.xpReward;
-        user.totalXpEarned += level.xpReward;
-        if (level.isBossLevel) {
-          user.completedBossBattles += 1;
-        }
+      
+      // Atomic update to prevent duplicate completions
+      const updateDoc = {
+        $push: { arcadeProgress: { levelId, score: level.xpReward } },
+        $inc: { gameXpEarned: level.xpReward, totalXpEarned: level.xpReward }
+      };
+      if (level.isBossLevel) {
+        updateDoc.$inc.completedBossBattles = 1;
+      }
 
-        // Check for newly unlocked achievements
+      const updatedUser = await User.findOneAndUpdate(
+        { _id: req.user._id, 'arcadeProgress.levelId': { $ne: levelId } },
+        updateDoc,
+        { new: true }
+      );
+
+      const alreadyCompleted = !updatedUser;
+
+      if (!alreadyCompleted) {
+        // Check for newly unlocked achievements based on updated progress
         const allAchievements = await GameAchievement.find({});
+        const newAchievementIds = [];
+        
         for (let achievement of allAchievements) {
-          if (!user.unlockedGameAchievements.includes(achievement._id)) {
+          if (!updatedUser.unlockedGameAchievements.includes(achievement._id)) {
             let conditionMet = false;
-            if (achievement.type === 'LEVEL_COMPLETE' && user.arcadeProgress.length >= achievement.target) {
+            if (achievement.type === 'LEVEL_COMPLETE' && updatedUser.arcadeProgress.length >= achievement.target) {
               conditionMet = true;
-            } else if (achievement.type === 'FIRST_CHALLENGE' && user.arcadeProgress.length >= 1) {
+            } else if (achievement.type === 'FIRST_CHALLENGE' && updatedUser.arcadeProgress.length >= 1) {
               conditionMet = true;
-            } else if (achievement.type === 'BOSS_DEFEATED' && user.completedBossBattles >= achievement.target) {
+            } else if (achievement.type === 'BOSS_DEFEATED' && updatedUser.completedBossBattles >= achievement.target) {
               conditionMet = true;
             }
 
             if (conditionMet) {
-              user.unlockedGameAchievements.push(achievement._id);
+              newAchievementIds.push(achievement._id);
               newlyUnlockedAchievements.push(achievement);
             }
           }
         }
 
-        await user.save();
+        if (newAchievementIds.length > 0) {
+          await User.findByIdAndUpdate(req.user._id, {
+            $addToSet: { unlockedGameAchievements: { $each: newAchievementIds } }
+          });
+        }
       }
 
       // Find next level ID
@@ -361,34 +375,41 @@ const submitDailyMission = async (req, res) => {
       await logExerciseCompletion(req.user._id, level._id, `Daily Mission: ${level.title}`, level.xpReward || 100, 'GameLevel');
 
       // Daily Challenge Logic
-      const today = new Date().setHours(0, 0, 0, 0);
-      const lastCompleted = user.dailyChallenge?.lastCompletedDate ? new Date(user.dailyChallenge.lastCompletedDate).setHours(0, 0, 0, 0) : null;
+      const todayDate = new Date();
+      todayDate.setHours(0, 0, 0, 0);
+      const todayTime = todayDate.getTime();
+      
+      const lastCompletedTime = user.dailyChallenge?.lastCompletedDate 
+        ? new Date(user.dailyChallenge.lastCompletedDate).setHours(0, 0, 0, 0) 
+        : null;
       
       let xpAwarded = 0;
       let streakUpdated = false;
 
-      if (lastCompleted !== today) {
-        // Award extra XP for daily (e.g. 100)
+      if (lastCompletedTime !== todayTime) {
+        // Award extra XP for daily
         xpAwarded = 100;
-        user.gameXpEarned += xpAwarded;
-        user.totalXpEarned += xpAwarded;
-
-        // Update streak
-        const yesterday = new Date(today);
-        yesterday.setDate(yesterday.getDate() - 1);
         
-        if (!user.dailyChallenge) {
-          user.dailyChallenge = { currentStreak: 1, lastCompletedDate: new Date() };
-        } else if (lastCompleted === yesterday.getTime()) {
-          user.dailyChallenge.currentStreak += 1;
-          user.dailyChallenge.lastCompletedDate = new Date();
-        } else {
-          user.dailyChallenge.currentStreak = 1;
-          user.dailyChallenge.lastCompletedDate = new Date();
+        const yesterdayDate = new Date(todayDate);
+        yesterdayDate.setDate(yesterdayDate.getDate() - 1);
+        const yesterdayTime = yesterdayDate.getTime();
+        
+        let newStreak = 1;
+        if (user.dailyChallenge && lastCompletedTime === yesterdayTime) {
+          newStreak = user.dailyChallenge.currentStreak + 1;
         }
         
+        // Atomic update
+        await User.findByIdAndUpdate(req.user._id, {
+          $inc: { gameXpEarned: xpAwarded, totalXpEarned: xpAwarded },
+          $set: {
+            'dailyChallenge.lastCompletedDate': new Date(),
+            'dailyChallenge.currentStreak': newStreak
+          }
+        });
+        
+        user.dailyChallenge = { currentStreak: newStreak, lastCompletedDate: new Date() };
         streakUpdated = true;
-        await user.save();
       }
 
       return res.status(200).json({

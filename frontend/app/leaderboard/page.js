@@ -96,7 +96,7 @@ export default function LeaderboardPage() {
               </div>
               <div className="text-right">
                 <div className="text-2xl font-black gradient-text">#{myRank.rank}</div>
-                <div className="text-xs text-yellow-400 font-bold">⚡ {myRank.xp} XP</div>
+                <div className="text-xs text-yellow-400 font-bold">⚡ {myRank.totalXpEarned} XP</div>
               </div>
             </div>
           </div>
@@ -160,7 +160,7 @@ export default function LeaderboardPage() {
 
                 {/* XP */}
                 <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-black text-yellow-400">⚡ {entry.xp}</div>
+                  <div className="text-sm font-black text-yellow-400">⚡ {entry.totalXpEarned}</div>
                   <div className="text-[10px] text-[var(--text-muted)]">XP</div>
                 </div>
               </div>

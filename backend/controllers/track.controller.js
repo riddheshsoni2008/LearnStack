@@ -6,7 +6,7 @@ const Lesson = require('../models/Lesson');
 // @access  Public
 const getTracks = async (req, res) => {
   try {
-    const tracks = await Track.find({ isPublished: true }).sort({ order: 1 });
+    const tracks = await Track.find({ isPublished: true }).sort({ order: 1 }).lean();
     res.status(200).json({ success: true, data: tracks });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -18,7 +18,7 @@ const getTracks = async (req, res) => {
 // @access  Public
 const getTrack = async (req, res) => {
   try {
-    const track = await Track.findById(req.params.id);
+    const track = await Track.findById(req.params.id).lean();
     if (!track) {
       return res.status(404).json({ success: false, message: 'Track not found' });
     }
@@ -26,7 +26,8 @@ const getTrack = async (req, res) => {
     // Get all lessons for this track, grouped by week
     const lessons = await Lesson.find({ trackId: track._id, isPublished: true })
       .sort({ weekNumber: 1, order: 1 })
-      .select('-codeSnippet -content'); // Don't send full content in listing
+      .select('-codeSnippet -content')
+      .lean();
 
     res.status(200).json({ success: true, data: { track, lessons } });
   } catch (error) {
@@ -39,7 +40,7 @@ const getTrack = async (req, res) => {
 // @access  Public
 const getTrackBySlug = async (req, res) => {
   try {
-    const track = await Track.findOne({ slug: req.params.slug });
+    const track = await Track.findOne({ slug: req.params.slug }).lean();
     if (!track) {
       return res.status(404).json({ success: false, message: 'Track not found' });
     }
@@ -47,7 +48,8 @@ const getTrackBySlug = async (req, res) => {
     // Get all lessons for this track, grouped by week
     const lessons = await Lesson.find({ trackId: track._id, isPublished: true })
       .sort({ weekNumber: 1, order: 1 })
-      .select('-codeSnippet -content'); // Don't send full content in listing
+      .select('-codeSnippet -content')
+      .lean();
 
     res.status(200).json({ success: true, data: { track, lessons } });
   } catch (error) {

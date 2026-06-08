@@ -51,6 +51,12 @@ const register = async (req, res) => {
       token
     });
   } catch (error) {
+    if (error.code === 11000) {
+      return res.status(400).json({
+        success: false,
+        message: 'User already exists with this email'
+      });
+    }
     res.status(500).json({
       success: false,
       message: error.message
@@ -123,7 +129,11 @@ const login = async (req, res) => {
 // @access  Private
 const getMe = async (req, res) => {
   try {
-    const user = await User.findById(req.user._id).populate('badges');
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: { lastActive: new Date() } },
+      { new: true }
+    ).populate('badges');
 
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found' });
@@ -162,12 +172,15 @@ const logout = async (req, res) => {
 const updateProfile = async (req, res) => {
   try {
     const { name, avatar } = req.body;
-    const user = await User.findById(req.user._id);
+    const updates = {};
+    if (name) updates.name = name;
+    if (avatar !== undefined) updates.avatar = avatar;
 
-    if (name) user.name = name;
-    if (avatar) user.avatar = avatar;
-
-    await user.save();
+    const user = await User.findByIdAndUpdate(
+      req.user._id,
+      { $set: updates },
+      { new: true, runValidators: true }
+    );
 
     res.status(200).json({
       success: true,

@@ -32,8 +32,8 @@ const verifyCertificate = async (req, res) => {
     const certificate = await Certificate.findOne({ certificateId }).select('-userId -trackId');
 
     if (!certificate) {
-      return res.status(404).json({ 
-        success: false, 
+      return res.status(404).json({
+        success: false,
         message: 'Certificate not found',
         status: 'NOT_FOUND'
       });
@@ -56,6 +56,8 @@ const verifyCertificate = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
 
 module.exports = {
   getMyCertificates,

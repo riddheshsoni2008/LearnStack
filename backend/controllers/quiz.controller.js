@@ -87,7 +87,12 @@ const submitQuiz = async (req, res) => {
       // Check if first-time pass (prevent XP farming)
       const existingHistory = await ExerciseHistoryDaily.findOne({
         userId: req.user._id,
-        "completedExercises.exerciseId": req.params.lessonId
+        completedExercises: {
+          $elemMatch: {
+            exerciseId: req.params.lessonId,
+            title: { $regex: / - Quiz$/ }
+          }
+        }
       });
       const isFirstTimePass = !existingHistory;
 
@@ -117,9 +122,7 @@ const submitQuiz = async (req, res) => {
       // ── Perfect score bonus ──
       if (isPerfectScore && isFirstTimePass) {
         const perfectBonus = 10;
-        const user = await User.findById(req.user._id);
-        user.perfectQuizzes = (user.perfectQuizzes || 0) + 1;
-        await user.save({ validateBeforeSave: false });
+        await User.findByIdAndUpdate(req.user._id, { $inc: { perfectQuizzes: 1 } });
 
         await awardXP(req.user._id, perfectBonus, 'perfect_score', `Perfect score on: ${lesson.title}`, lesson._id);
         totalXpEarned += perfectBonus;

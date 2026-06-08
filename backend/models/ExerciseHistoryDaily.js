@@ -38,7 +38,42 @@ const ExerciseHistoryDailySchema = new mongoose.Schema({
       type: Number,
       default: 0
     }
-  }]
+  }],
+  xpHistory: [{
+    amount: {
+      type: Number,
+      required: true
+    },
+    source: {
+      type: String,
+      enum: ['quiz', 'lesson', 'coding_challenge', 'streak', 'badge', 'perfect_score', 'daily_challenge', 'mystery_box', 'store_purchase', 'level_up'],
+      required: true
+    },
+    description: {
+      type: String,
+      required: true
+    },
+    referenceId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null
+    },
+    levelBefore: {
+      type: Number,
+      default: 1
+    },
+    levelAfter: {
+      type: Number,
+      default: 1
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now
+    }
+  }],
+  totalXpEarnedToday: {
+    type: Number,
+    default: 0
+  }
 }, {
   timestamps: true
 });

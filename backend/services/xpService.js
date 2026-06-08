@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const XpHistory = require('../models/XpHistory');
+const ExerciseHistoryDaily = require('../models/ExerciseHistoryDaily');
 
 // ═══════════════════════════════════════════════════════════════
 // XP Service — centralized XP awarding with history tracking
@@ -15,38 +15,48 @@ const STREAK_MILESTONES = {
   100: 1000 // 100-day streak bonus
 };
 
-/**
- * Award XP to a user with full tracking
- * @param {string} userId 
- * @param {number} amount - XP amount
- * @param {string} source - 'quiz' | 'lesson' | 'coding_challenge' | 'streak_bonus' | 'perfect_score' | 'daily_challenge'
- * @param {string} description 
- * @param {string} referenceId - optional reference (lessonId, etc.)
- * @returns {object} { user, leveledUp, oldLevel, newLevel, xpAwarded }
- */
+const logXpTransaction = async (userId, amount, source, description, referenceId, levelBefore, levelAfter) => {
+  const todayString = new Date().toISOString().split('T')[0];
+  await ExerciseHistoryDaily.updateOne(
+    { userId, date: todayString },
+    {
+      $setOnInsert: { userId, date: todayString },
+      $push: { 
+        xpHistory: { 
+          amount, 
+          source, 
+          description, 
+          referenceId, 
+          levelBefore, 
+          levelAfter,
+          createdAt: new Date()
+        } 
+      },
+      $inc: { totalXpEarnedToday: amount }
+    },
+    { upsert: true }
+  );
+};
+
 const awardXP = async (userId, amount, source, description, referenceId = null) => {
   const user = await User.findById(userId);
   if (!user || amount <= 0) return { user, leveledUp: false, xpAwarded: 0 };
 
   const oldLevel = user.level;
-  user.totalXpEarned += amount;
-  await user.save({ validateBeforeSave: false });
+  
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    { $inc: { totalXpEarned: amount } },
+    { new: true }
+  );
 
-  const newLevel = user.level;
+  const newLevel = updatedUser.level;
   const leveledUp = newLevel > oldLevel;
 
   // Log to XP history
-  await XpHistory.create({
-    userId,
-    amount,
-    source,
-    description,
-    referenceId,
-    levelBefore: oldLevel,
-    levelAfter: newLevel
-  });
+  await logXpTransaction(userId, amount, source, description, referenceId, oldLevel, newLevel);
 
-  return { user, leveledUp, oldLevel, newLevel, xpAwarded: amount };
+  return { user: updatedUser, leveledUp, oldLevel, newLevel, xpAwarded: amount };
 };
 
 /**
@@ -56,46 +66,64 @@ const awardXP = async (userId, amount, source, description, referenceId = null) 
  */
 const updateStreak = async (user) => {
   const today = new Date().toDateString();
-  const lastActive = user.lastActive ? new Date(user.lastActive).toDateString() : null;
+  const lastExerciseDateRaw = user.lastExerciseDate || user.lastActive;
+  const lastExerciseDate = lastExerciseDateRaw ? new Date(lastExerciseDateRaw).toDateString() : null;
 
   let streakBonus = 0;
   let streakBonusMilestone = null;
 
-  if (lastActive !== today) {
+  if (lastExerciseDate !== today) {
     const yesterday = new Date();
     yesterday.setDate(yesterday.getDate() - 1);
 
-    if (lastActive === yesterday.toDateString()) {
-      user.streak += 1;
+    let newStreak = user.streak;
+    if (lastExerciseDate === yesterday.toDateString()) {
+      newStreak += 1;
     } else {
-      user.streak = 1;
+      newStreak = 1;
     }
 
-    if (user.streak > user.longestStreak) {
-      user.longestStreak = user.streak;
+    const newLongestStreak = Math.max(newStreak, user.longestStreak);
+
+    // Calculate streak bonus
+    if (STREAK_MILESTONES[newStreak]) {
+      streakBonus = STREAK_MILESTONES[newStreak];
+      streakBonusMilestone = newStreak;
     }
 
-    // Check for streak milestone bonus (one-time per milestone)
-    if (STREAK_MILESTONES[user.streak]) {
-      streakBonus = STREAK_MILESTONES[user.streak];
-      streakBonusMilestone = user.streak;
-      user.totalXpEarned += streakBonus;
+    const updatedUser = await User.findByIdAndUpdate(
+      user._id,
+      {
+        $set: { 
+          streak: newStreak, 
+          longestStreak: newLongestStreak,
+          lastExerciseDate: new Date(),
+          lastActive: new Date()
+        },
+        $inc: {
+          totalXpEarned: streakBonus
+        }
+      },
+      { new: true }
+    );
 
-      await XpHistory.create({
-        userId: user._id,
-        amount: streakBonus,
-        source: 'streak',
-        description: `${user.streak}-day streak milestone bonus!`,
-        levelBefore: user.level,
-        levelAfter: user.level
-      });
+    if (streakBonus > 0) {
+      await logXpTransaction(
+        updatedUser._id,
+        streakBonus,
+        'streak',
+        `${newStreak}-day streak milestone bonus!`,
+        null,
+        user.level,
+        updatedUser.level
+      );
     }
+  } else {
+    // Just update last active time without touching streak
+    await User.updateOne({ _id: user._id }, { $set: { lastActive: new Date() } });
   }
-
-  user.lastActive = new Date();
-  await user.save({ validateBeforeSave: false });
 
   return { streakUpdated: true, streakBonus, streakBonusMilestone };
 };
 
-module.exports = { awardXP, updateStreak, STREAK_MILESTONES };
+module.exports = { awardXP, updateStreak, STREAK_MILESTONES, logXpTransaction };
