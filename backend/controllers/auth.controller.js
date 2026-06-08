@@ -8,14 +8,10 @@ const generateToken = (id) => {
   });
 };
 
-// @desc    Register a new user
-// @route   POST /api/auth/register
-// @access  Public
 const register = async (req, res) => {
   try {
     const { name, email, password } = req.body;
 
-    // Check if user already exists
     const userExists = await User.findOne({ email });
     if (userExists) {
       return res.status(400).json({
@@ -24,25 +20,21 @@ const register = async (req, res) => {
       });
     }
 
-    // Create user
     const user = await User.create({
       name,
       email,
       password
     });
 
-    // Generate token
     const token = generateToken(user._id);
 
-    // Set cookie
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 30 * 24 * 60 * 60 * 1000  // 30 days
+      maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
-    // Hide password before sending
     user.password = undefined;
 
     res.status(201).json({
@@ -64,14 +56,10 @@ const register = async (req, res) => {
   }
 };
 
-// @desc    Login user
-// @route   POST /api/auth/login
-// @access  Public
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // Validate input
     if (!email || !password) {
       return res.status(400).json({
         success: false,
@@ -79,7 +67,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Find user and include password field
     const user = await User.findOne({ email }).select('+password');
     if (!user) {
       return res.status(401).json({
@@ -88,7 +75,6 @@ const login = async (req, res) => {
       });
     }
 
-    // Check password
     const isMatch = await user.matchPassword(password);
     if (!isMatch) {
       return res.status(401).json({
@@ -97,10 +83,8 @@ const login = async (req, res) => {
       });
     }
 
-    // Generate token
     const token = generateToken(user._id);
 
-    // Set cookie
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -108,7 +92,6 @@ const login = async (req, res) => {
       maxAge: 30 * 24 * 60 * 60 * 1000
     });
 
-    // Hide password before sending
     user.password = undefined;
 
     res.status(200).json({
@@ -116,6 +99,7 @@ const login = async (req, res) => {
       data: user,
       token
     });
+    
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -124,9 +108,6 @@ const login = async (req, res) => {
   }
 };
 
-// @desc    Get current logged in user
-// @route   GET /api/auth/me
-// @access  Private
 const getMe = async (req, res) => {
   try {
     const user = await User.findByIdAndUpdate(
@@ -151,9 +132,6 @@ const getMe = async (req, res) => {
   }
 };
 
-// @desc    Logout user / clear cookie
-// @route   POST /api/auth/logout
-// @access  Private
 const logout = async (req, res) => {
   res.cookie('token', 'none', {
     httpOnly: true,
@@ -166,9 +144,7 @@ const logout = async (req, res) => {
   });
 };
 
-// @desc    Update user profile
-// @route   PUT /api/auth/profile
-// @access  Private
+
 const updateProfile = async (req, res) => {
   try {
     const { name, avatar } = req.body;

@@ -21,16 +21,16 @@ const logXpTransaction = async (userId, amount, source, description, referenceId
     { userId, date: todayString },
     {
       $setOnInsert: { userId, date: todayString },
-      $push: { 
-        xpHistory: { 
-          amount, 
-          source, 
-          description, 
-          referenceId, 
-          levelBefore, 
+      $push: {
+        xpHistory: {
+          amount,
+          source,
+          description,
+          referenceId,
+          levelBefore,
           levelAfter,
           createdAt: new Date()
-        } 
+        }
       },
       $inc: { totalXpEarnedToday: amount }
     },
@@ -43,7 +43,7 @@ const awardXP = async (userId, amount, source, description, referenceId = null) 
   if (!user || amount <= 0) return { user, leveledUp: false, xpAwarded: 0 };
 
   const oldLevel = user.level;
-  
+
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { $inc: { totalXpEarned: amount } },
@@ -94,8 +94,8 @@ const updateStreak = async (user) => {
     const updatedUser = await User.findByIdAndUpdate(
       user._id,
       {
-        $set: { 
-          streak: newStreak, 
+        $set: {
+          streak: newStreak,
           longestStreak: newLongestStreak,
           lastExerciseDate: new Date(),
           lastActive: new Date()
@@ -103,7 +103,7 @@ const updateStreak = async (user) => {
         $inc: {
           totalXpEarned: streakBonus
         }
-      },
+      },  
       { new: true }
     );
 
@@ -119,7 +119,7 @@ const updateStreak = async (user) => {
       );
     }
   } else {
-    // Just update last active time without touching streak
+
     await User.updateOne({ _id: user._id }, { $set: { lastActive: new Date() } });
   }
 

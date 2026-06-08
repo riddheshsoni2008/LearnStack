@@ -109,10 +109,6 @@ const evaluateAdvancedCertifications = async (userId, user) => {
   }
 };
 
-/**
- * Checks if a user has completed a track and awards a certificate if eligible.
- * Atomic and idempotent to prevent duplicate certificates.
- */
 const checkAndAwardCertificate = async (userId, trackId) => {
   try {
     const user = await User.findById(userId);
@@ -120,14 +116,13 @@ const checkAndAwardCertificate = async (userId, trackId) => {
 
     let trackAwarded = null;
 
-    // STEP 1: Check if certificate already exists
     const existingCert = await Certificate.findOne({ userId, trackId, certificateType: 'TRACK' });
-    
+
     if (!existingCert) {
-      // STEP 2: Load track
+
       const track = await Track.findById(trackId);
       if (track) {
-        // STEP 3: Calculate progress
+
         const publishedLessons = await Lesson.find({ trackId, isPublished: true }).select('_id');
         const lessonIds = publishedLessons.map(l => l._id.toString());
         const totalLessons = lessonIds.length;
@@ -137,9 +132,9 @@ const checkAndAwardCertificate = async (userId, trackId) => {
           const quizLessonIds = quizzes.map(q => q.lessonId.toString());
           const totalQuizzes = quizLessonIds.length;
 
-          const historyDocs = await ExerciseHistoryDaily.find({ 
-            userId, 
-            'completedExercises.trackId': trackId 
+          const historyDocs = await ExerciseHistoryDaily.find({
+            userId,
+            'completedExercises.trackId': trackId
           });
 
           const completedLessonIds = new Set();
@@ -171,7 +166,7 @@ const checkAndAwardCertificate = async (userId, trackId) => {
 
           const isLessonsComplete = validCompletedLessons === totalLessons;
           const isQuizzesComplete = validCompletedQuizzes === totalQuizzes;
-          
+
           let completionPercentage = 0;
           if (totalLessons + totalQuizzes > 0) {
             completionPercentage = Math.round(((validCompletedLessons + validCompletedQuizzes) / (totalLessons + totalQuizzes)) * 100);

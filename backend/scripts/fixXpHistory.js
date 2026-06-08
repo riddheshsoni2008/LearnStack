@@ -15,7 +15,7 @@ async function fixXpHistoryEnum() {
       { source: 'streak_bonus' },
       { $set: { source: 'streak' } }
     );
-    
+
     const badgeResult = await XpHistory.updateMany(
       { source: 'badge_bonus' },
       { $set: { source: 'badge' } }
@@ -27,7 +27,7 @@ async function fixXpHistoryEnum() {
     console.log('Finished fixing mismatched enum values.');
     process.exit(0);
   } catch (error) {
-    console.error('❌ Error fixing XP History:', error);
+    console.error(' Error fixing XP History:', error);
     process.exit(1);
   }
 }
