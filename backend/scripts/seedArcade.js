@@ -72,7 +72,7 @@ const worldsData = [
 
 const levels = [];
 
-worldsData.forEach((worldData, wIdx) => {
+worldsData.forEach((worldData) => {
   worldData.scenarios.forEach((scenario, sIdx) => {
     levels.push({
       world: worldData.name,
@@ -91,7 +91,6 @@ worldsData.forEach((worldData, wIdx) => {
     });
   });
 
-  // Add Boss
   levels.push({
     world: worldData.name,
     levelNumber: 6,
@@ -129,7 +128,6 @@ const seedDatabase = async () => {
     await GameAchievement.insertMany(achievements);
     console.log('30 Real Arcade Levels and 4 Achievements Seeded Successfully!');
 
-    // Create generic validator
     const validatorDir = path.join(__dirname, '../validators/arcade');
     if (!fs.existsSync(validatorDir)) {
       fs.mkdirSync(validatorDir, { recursive: true });

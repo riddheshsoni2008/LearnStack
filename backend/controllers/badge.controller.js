@@ -2,9 +2,6 @@ const Badge = require('../models/Badge');
 const User = require('../models/User');
 const ExerciseHistoryDaily = require('../models/ExerciseHistoryDaily');
 
-// @desc    Get all available badges
-// @route   GET /api/badges
-// @access  Private
 const getAllBadges = async (req, res) => {
   try {
     const badges = await Badge.find({}).sort({ rarity: 1, name: 1 });
@@ -14,9 +11,6 @@ const getAllBadges = async (req, res) => {
   }
 };
 
-// @desc    Get current user's earned badges
-// @route   GET /api/badges/me
-// @access  Private
 const getMyBadges = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate('badges');

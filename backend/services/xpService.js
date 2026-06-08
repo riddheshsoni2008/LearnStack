@@ -8,7 +8,7 @@ const ExerciseHistoryDaily = require('../models/ExerciseHistoryDaily');
 // Streak milestone bonuses (one-time awards)
 const STREAK_MILESTONES = {
   3: 15,    // 3-day streak bonus
-  7: 35,    // 7-day streak bonus  
+  7: 35,   
   14: 75,   // 2-week streak bonus
   30: 200,  // 30-day streak bonus
   60: 400,  // 60-day streak bonus

@@ -6,6 +6,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 async function run() {
+
   try {
     await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to MongoDB. Starting XP History Migration...');
@@ -20,7 +21,7 @@ async function run() {
 
     for (const record of xpRecords) {
       const dateStr = record.createdAt.toISOString().split('T')[0];
-      
+
       const newEntry = {
         amount: record.amount,
         source: record.source,
@@ -55,7 +56,7 @@ async function run() {
     }
 
     console.log(`Migration Complete. Migrated ${migrated} records.`);
-    
+
   } catch (error) {
     console.error('Migration failed:', error);
   } finally {

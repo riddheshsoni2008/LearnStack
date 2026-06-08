@@ -19,7 +19,7 @@ export default function AuthNavbar() {
           </span>
         </Link>
 
-        {/* Desktop Menu */}
+        
         <div className="hidden lg:flex items-center gap-4 xl:gap-6">
           <Link
             href="/"

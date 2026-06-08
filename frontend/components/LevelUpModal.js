@@ -10,14 +10,14 @@ export default function LevelUpModal() {
 
   useEffect(() => {
     if (levelUpData) {
-      // Fire premium confetti burst when modal appears
+
       const duration = 3 * 1000;
       const animationEnd = Date.now() + duration;
       const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10001 };
 
       const randomInRange = (min, max) => Math.random() * (max - min) + min;
 
-      const interval = setInterval(function() {
+      const interval = setInterval(function () {
         const timeLeft = animationEnd - Date.now();
 
         if (timeLeft <= 0) {
@@ -47,14 +47,14 @@ export default function LevelUpModal() {
           />
 
           {/* Modal */}
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 50 }}
             transition={{ type: "spring", damping: 15, stiffness: 100 }}
             className="relative glass border border-[var(--primary)]/40 rounded-3xl p-8 sm:p-12 max-w-lg w-full text-center shadow-2xl shadow-[var(--primary)]/30 overflow-hidden"
           >
-            {/* Background Glow */}
+
             <motion.div
               animate={{ opacity: [0.5, 0.8, 0.5], scale: [1, 1.2, 1] }}
               transition={{ duration: 3, repeat: Infinity }}
@@ -63,10 +63,10 @@ export default function LevelUpModal() {
 
             {/* Content */}
             <div className="relative z-10">
-              <motion.div 
+              <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1, rotate: [0, 10, -10, 10, 0] }}
-                transition={{ 
+                transition={{
                   scale: { type: "spring", delay: 0.2 },
                   rotate: { type: "keyframes", delay: 0.2, duration: 0.5 }
                 }}
@@ -74,7 +74,7 @@ export default function LevelUpModal() {
               >
                 🎉
               </motion.div>
-              
+
               <h2 className="text-4xl font-black gradient-text mb-2 tracking-tight">LEVEL UP!</h2>
 
               <div className="flex items-center justify-center gap-6 my-8">
@@ -84,7 +84,7 @@ export default function LevelUpModal() {
                   </div>
                 </div>
 
-                <motion.div 
+                <motion.div
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
                   transition={{ delay: 0.5 }}
@@ -94,7 +94,7 @@ export default function LevelUpModal() {
                 </motion.div>
 
                 <div className="text-center">
-                  <motion.div 
+                  <motion.div
                     initial={{ scale: 0.5, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
                     transition={{ type: "spring", delay: 0.7 }}
@@ -105,7 +105,7 @@ export default function LevelUpModal() {
                 </div>
               </div>
 
-              <motion.div 
+              <motion.div
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1 }}

@@ -64,26 +64,26 @@ const seedData = async () => {
     // ── Seed Courses ──
     for (let trackInfo of courseData) {
       console.log(`📚 Creating Track: ${trackInfo.title}`);
-      
+
       const track = await Track.create({
         title: trackInfo.title,
         description: trackInfo.description,
         thumbnail: '',
         level: trackInfo.level,
         totalWeeks: trackInfo.totalWeeks,
-        totalLessons: trackInfo.lessons.length, 
+        totalLessons: trackInfo.lessons.length,
         order: trackInfo.order,
         tags: trackInfo.tags,
         isPublished: true
       });
 
-      console.log(`  -> Generating ${trackInfo.lessons.length} lessons...`);
-      
+      console.log(` -> Generating ${trackInfo.lessons.length} lessons...`);
+
       // Generate Lessons
       let orderCounter = 1;
       for (let lessonInfo of trackInfo.lessons) {
         const content = `Welcome to this comprehensive lesson on **${lessonInfo.title}**!\n\nThis is a fundamental pillar of mastering ${trackInfo.title}. In the embedded video above, you will learn the exact step-by-step process of implementing ${lessonInfo.topic} concepts correctly.\n\n### What You Will Learn\n- Core principles of ${lessonInfo.title}\n- Real-world use cases for ${lessonInfo.topic}\n- Common mistakes to avoid\n\nMake sure to watch the full video before attempting the quiz!`;
-        
+
         const codeSnippet = `// Example for: ${lessonInfo.title}\nconsole.log("Mastering ${lessonInfo.topic} -> ${lessonInfo.title}!");`;
 
         // Get a coding challenge for this lesson's topic
@@ -108,10 +108,6 @@ const seedData = async () => {
       }
     }
 
-    console.log('\n✅ Seed completed successfully!');
-    console.log(`   📚 ${courseData.length} tracks with 115+ lessons`);
-    console.log(`   🏆 ${BADGES.length} achievement badges`);
-    console.log(`\n💡 Note: Quizzes are not seeded by default. Run 'node scripts/generateQuizzes.js' to generate them.`);
     process.exit(0);
   } catch (error) {
     console.error('❌ Error seeding data:', error);
