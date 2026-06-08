@@ -17,10 +17,6 @@ const getBaseUrl = () => process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:30
 
 const generateQrCodeUrl = (url) => `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
 
-/**
- * Evaluates and awards multi-track certificates (ADVANCED and PROFESSIONAL).
- * Atomic and idempotent.
- */
 const evaluateAdvancedCertifications = async (userId, user) => {
   try {
     const earnedTracksCount = await Certificate.countDocuments({ userId, certificateType: 'TRACK', isValid: true });
@@ -28,7 +24,6 @@ const evaluateAdvancedCertifications = async (userId, user) => {
 
     const awards = [];
 
-    // Check for ADVANCED certificate (3 or more tracks)
     if (earnedTracksCount >= 3) {
       const advancedCertId = generateCertId();
       const verificationUrl = `${getBaseUrl()}/certificates/${advancedCertId}`;
@@ -65,7 +60,6 @@ const evaluateAdvancedCertifications = async (userId, user) => {
       }
     }
 
-    // Check for PROFESSIONAL certificate (All tracks)
     if (totalPublishedTracks > 0 && earnedTracksCount === totalPublishedTracks) {
       const profCertId = generateCertId();
       const verificationUrl = `${getBaseUrl()}/certificates/${profCertId}`;

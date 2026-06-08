@@ -126,4 +126,4 @@ const updateStreak = async (user) => {
   return { streakUpdated: true, streakBonus, streakBonusMilestone };
 };
 
-module.exports = { awardXP, updateStreak, STREAK_MILESTONES, logXpTransaction };
+module.exports = { awardXP, updateStreak, logXpTransaction };

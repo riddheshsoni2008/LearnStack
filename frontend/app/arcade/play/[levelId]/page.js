@@ -27,7 +27,7 @@ export default function ArcadeGame() {
       router.push("/login");
       return;
     }
-    
+
     const fetchLevel = async () => {
       try {
         const res = await fetch(`/api/arcade/levels/${params.levelId}`, { credentials: "include" });
@@ -61,9 +61,9 @@ export default function ArcadeGame() {
         body: JSON.stringify({ levelId: params.levelId, code }),
         credentials: "include"
       });
-      
+
       const data = await res.json();
-      
+
       const newOutput = [];
       if (data.logs && data.logs.length > 0) {
         data.logs.slice(0, -1).forEach(l => newOutput.push({ type: "log", text: l }));
@@ -71,10 +71,10 @@ export default function ArcadeGame() {
 
       if (data.passed) {
         if (data.logs && data.logs.length > 0) {
-           newOutput.push({ type: "success", text: "✅ " + data.logs[data.logs.length - 1] });
+          newOutput.push({ type: "success", text: "✅ " + data.logs[data.logs.length - 1] });
         }
         newOutput.push({ type: "success", text: "🏆 Level Cleared!" });
-        
+
         if (data.xpAwarded > 0) {
           newOutput.push({ type: "system", text: `⚡ +${data.xpAwarded} XP Earned!` });
         }
@@ -85,10 +85,10 @@ export default function ArcadeGame() {
         if (data.nextLevelId) {
           setNextLevelId(data.nextLevelId);
         }
-        
+
         // Sync user context so the map and XP display update globally
         await fetchUser();
-        
+
         setOutput(newOutput);
         setCleared(true);
         confetti({
@@ -120,7 +120,7 @@ export default function ArcadeGame() {
         console.error("Error sharing:", err);
       }
     } else {
-      // Fallback for browsers that don't support Web Share API
+
       navigator.clipboard.writeText(`🏆 I just cleared "${level?.title}" and earned +${level?.xpReward} XP on LearnStack's Coding Arcade!`);
       addToast({ title: "Copied to clipboard!", type: "success" });
     }
@@ -136,8 +136,7 @@ export default function ArcadeGame() {
 
   return (
     <div className={`min-h-screen text-white flex flex-col ${level?.isBossLevel ? 'bg-[#1a0505]' : 'bg-[#0A051A]'}`}>
-      
-      {/* Header Bar */}
+
       <header className={`h-14 sm:h-16 border-b flex items-center justify-between px-4 sm:px-6 shrink-0 ${level?.isBossLevel ? 'border-red-900/50 bg-red-950/20' : 'border-indigo-900/50 bg-indigo-950/20'}`}>
         <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           <Link href="/arcade" className="text-gray-400 hover:text-white transition-colors shrink-0">
@@ -153,10 +152,8 @@ export default function ArcadeGame() {
         </div>
       </header>
 
-      {/* Main Game Interface */}
       <main className="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
-        
-        {/* Left Panel: Narrative & Challenge */}
+
         <div className={`w-full lg:w-1/3 flex flex-col border-b lg:border-b-0 lg:border-r ${level?.isBossLevel ? 'border-red-900/50 bg-[#140202]' : 'border-indigo-900/50 bg-[#070312]'} lg:overflow-y-auto`}>
           <div className="p-8">
             <div className="mb-8">
@@ -182,16 +179,14 @@ export default function ArcadeGame() {
           </div>
         </div>
 
-        {/* Right Panel: Code Editor & Console */}
         <div className="flex-1 flex flex-col min-h-[600px] lg:min-h-0 lg:h-[calc(100vh-64px)]">
-          
-          {/* Editor Area */}
+
           <div className="flex-1 flex flex-col relative bg-[#1E1E1E]">
             <div className="h-10 bg-[#2D2D2D] flex items-center px-4 justify-between shrink-0">
               <div className="text-xs text-gray-400 font-mono flex items-center gap-2">
                 <span className="text-yellow-400">JS</span> main.js
               </div>
-              <button 
+              <button
                 onClick={handleRunCode}
                 disabled={submitting || cleared}
                 className={`text-xs font-bold px-4 py-1.5 rounded bg-indigo-600 hover:bg-indigo-500 text-white transition-colors flex items-center gap-2 ${submitting || cleared ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -199,7 +194,7 @@ export default function ArcadeGame() {
                 {submitting ? 'Running...' : '▶ Run Code'}
               </button>
             </div>
-            
+
             <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
@@ -210,7 +205,6 @@ export default function ArcadeGame() {
             />
           </div>
 
-          {/* Console Output Area */}
           <div className="h-64 shrink-0 bg-[#0A0A0A] border-t border-gray-800 flex flex-col">
             <div className="h-8 bg-[#141414] flex items-center px-4 text-xs text-gray-500 font-mono shrink-0">
               Terminal Output
@@ -236,14 +230,13 @@ export default function ArcadeGame() {
 
       </main>
 
-      {/* Level Cleared Overlay */}
       {cleared && (
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           className="absolute inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm"
         >
-          <motion.div 
+          <motion.div
             initial={{ scale: 0.8, y: 50 }}
             animate={{ scale: 1, y: 0 }}
             className="bg-gray-900 border border-indigo-500/30 p-6 md:p-12 rounded-3xl text-center w-[90%] md:w-auto max-w-lg shadow-[0_0_50px_rgba(79,70,229,0.2)]"
@@ -255,7 +248,7 @@ export default function ArcadeGame() {
             <p className="text-gray-400 mb-6">
               Excellent logic. You have successfully conquered {level?.title}!
             </p>
-            
+
             {newAchievements.length > 0 && (
               <div className="mb-8 space-y-3">
                 <h3 className="text-sm font-bold text-yellow-400 uppercase tracking-widest">⭐ New Achievements Unlocked!</h3>

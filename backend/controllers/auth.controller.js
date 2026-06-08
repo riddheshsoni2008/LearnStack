@@ -1,7 +1,6 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 
-// Generate JWT Token
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
     expiresIn: '30d'
@@ -99,7 +98,7 @@ const login = async (req, res) => {
       data: user,
       token
     });
-    
+
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -162,6 +161,7 @@ const updateProfile = async (req, res) => {
       success: true,
       data: user
     });
+
   } catch (error) {
     res.status(500).json({
       success: false,

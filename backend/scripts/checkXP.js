@@ -25,7 +25,7 @@ async function checkXP() {
         });
       }
     });
-    
+
     history.sort((a, b) => b.time - a.time);
     console.log(history.slice(0, 10));
 

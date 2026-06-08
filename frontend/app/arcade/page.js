@@ -55,14 +55,12 @@ export default function ArcadeHub() {
     <div className="min-h-screen bg-[#0A051A] text-white overflow-hidden relative pb-20">
       <AuthNavbar />
 
-      {/* Dynamic Background */}
       <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] opacity-30 pointer-events-none" />
       <div className="absolute top-0 right-0 w-96 h-96 bg-purple-900/20 rounded-full blur-[100px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-900/20 rounded-full blur-[100px] pointer-events-none translate-y-1/2 -translate-x-1/2" />
 
       <main className="max-w-7xl mx-auto px-6 py-12 relative z-10">
 
-        {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
           <div>
             <h1 className="text-5xl font-black tracking-tight mb-2 text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400">
@@ -73,7 +71,6 @@ export default function ArcadeHub() {
             </p>
           </div>
 
-          {/* Player Stats Card */}
           <div className="bg-indigo-950/40 border border-indigo-500/30 rounded-2xl p-4 flex items-center gap-6 backdrop-blur-sm shadow-[0_0_20px_rgba(79,70,229,0.15)]">
             <div className="text-center border-r border-indigo-500/30 pr-6">
               <div className="text-xs font-bold text-indigo-300 uppercase mb-1">Arcade Level</div>
@@ -96,7 +93,6 @@ export default function ArcadeHub() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
-          {/* World Map Section */}
           <div className="lg:col-span-2 space-y-6">
             <h2 className="text-2xl font-bold flex items-center gap-3">
               <span className="text-3xl">🗺️</span> Explore Worlds
@@ -136,10 +132,8 @@ export default function ArcadeHub() {
             </div>
           </div>
 
-          {/* Right Sidebar */}
           <div className="space-y-8">
 
-            {/* Daily Challenge */}
             <div>
               <h2 className="text-2xl font-bold flex items-center gap-3 mb-6">
                 <span className="text-3xl">🎯</span> Daily Mission
@@ -165,7 +159,6 @@ export default function ArcadeHub() {
               </div>
             </div>
 
-            {/* Arcade Leaderboard Teaser */}
             <div>
               <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold flex items-center gap-3">

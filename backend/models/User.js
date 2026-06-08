@@ -213,7 +213,5 @@ UserSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
-// Export thresholds for use in other modules
+// Export the User model
 module.exports = mongoose.model('User', UserSchema);
-module.exports.LEVEL_THRESHOLDS = LEVEL_THRESHOLDS;
-module.exports.LEVEL_TITLES = LEVEL_TITLES;

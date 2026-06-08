@@ -266,7 +266,6 @@ export default function LessonPage({ params }) {
                       {quizResult.passed && <div className="text-xs mt-2 text-emerald-500">+ {quizResult.xpEarned} XP Awarded</div>}
                     </div>
 
-
                     <div className="space-y-4">
                       {quizResult.results.map((qResult, idx) => (
                         <div key={qResult.questionId} className="border-t border-[var(--border)] pt-4">

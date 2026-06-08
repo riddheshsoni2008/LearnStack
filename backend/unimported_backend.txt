@@ -1,0 +1,56 @@
+
+       summary               unimported v1.31.0 (node)
+────────────────────────────────────────────────────────────────────────────────
+       entry file          : server.js
+
+       unresolved imports  : 0
+       unused dependencies : 2
+       unimported files    : 31
+
+
+─────┬──────────────────────────────────────────────────────────────────────────
+     │ 2 unused dependencies
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ nodemailer
+   2 │ string-similarity
+─────┴──────────────────────────────────────────────────────────────────────────
+
+
+─────┬──────────────────────────────────────────────────────────────────────────
+     │ 31 unimported files
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/data/codingChallenges.js
+   2 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/data/courseContent.js
+   3 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/data/quizDataDictionary.js
+   4 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/dump_db.js
+   5 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/dump_db2.js
+   6 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/dump_db3.js
+   7 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/models/Community.js
+   8 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scratch.js
+   9 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/backfillBadges.js
+  10 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/checkUser.js
+  11 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/checkUserCerts.js
+  12 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/checkXP.js
+  13 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/fixCertIndex.js
+  14 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/fixXp.js
+  15 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/fixXpHistory.js
+  16 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/generateQuizzes.js
+  17 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/migrate-xphistory.js
+  18 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/repairCertificates.js
+  19 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/resetGamification.js
+  20 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/seedArcade.js
+  21 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/seedMysteryBadges.js
+  22 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/testProfileAPI.js
+  23 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/testSubmit.js
+  24 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/scripts/validateQuizzes.js
+  25 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/seed.js
+  26 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/test_ai.js
+  27 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/test_ai2.js
+  28 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/test_db.js
+  29 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/test_history.js
+  30 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/validators/arcade/generic_validation.js
+  31 │ /home/riddhesh/Desktop/fullstack project/learnstack/backend/validators/arcade/variables_boss.js
+─────┴──────────────────────────────────────────────────────────────────────────
+
+
+       Inspect the results and run npx unimported -u to update ignore lists

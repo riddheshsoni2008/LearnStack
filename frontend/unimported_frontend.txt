@@ -1,0 +1,53 @@
+
+       summary               unimported v1.31.0 (next)
+────────────────────────────────────────────────────────────────────────────────
+
+       unresolved imports  : 0
+       unused dependencies : 4
+       unimported files    : 27
+
+
+─────┬──────────────────────────────────────────────────────────────────────────
+     │ 4 unused dependencies
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ canvas-confetti
+   2 │ framer-motion
+   3 │ react-markdown
+   4 │ remark-gfm
+─────┴──────────────────────────────────────────────────────────────────────────
+
+
+─────┬──────────────────────────────────────────────────────────────────────────
+     │ 27 unimported files
+─────┼──────────────────────────────────────────────────────────────────────────
+   1 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/ai-teacher/page.js
+   2 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/arcade/daily/page.js
+   3 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/arcade/leaderboard/page.js
+   4 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/arcade/page.js
+   5 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/arcade/play/[levelId]/page.js
+   6 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/arcade/world/[worldId]/page.js
+   7 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/certificates/[certificateId]/page.js
+   8 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/course/[slug]/page.js
+   9 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/dashboard/page.js
+  10 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/layout.js
+  11 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/leaderboard/page.js
+  12 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/lesson/[id]/page.js
+  13 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/login/page.js
+  14 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/page.js
+  15 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/profile/page.js
+  16 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/providers.js
+  17 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/register/page.js
+  18 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/app/tracks/page.js
+  19 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/components/AuthNavbar.js
+  20 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/components/CelebrationToast.js
+  21 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/components/CodeEditor.js
+  22 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/components/CourseCard.js
+  23 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/components/LessonList.js
+  24 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/components/LevelUpModal.js
+  25 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/components/ProgressBar.js
+  26 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/context/AuthContext.js
+  27 │ /home/riddhesh/Desktop/fullstack project/learnstack/frontend/context/CelebrationContext.js
+─────┴──────────────────────────────────────────────────────────────────────────
+
+
+       Inspect the results and run npx unimported -u to update ignore lists

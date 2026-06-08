@@ -71,7 +71,6 @@ export default function RegisterPage() {
           <p className="text-[var(--text-muted)] text-sm">Start your coding journey — 100% free</p>
         </div>
 
-        {/* Register Form */}
         <div className="glass rounded-2xl p-8">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error && (
@@ -153,7 +152,6 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Back to home */}
         <div className="text-center mt-6">
           <Link href="/" className="text-[var(--text-muted)] text-sm hover:text-[var(--foreground)] transition-colors">
             ← Back to Home

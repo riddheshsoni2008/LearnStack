@@ -108,7 +108,7 @@ export default function WorldLevels() {
                     <h3 className={`text-2xl font-bold ${level.isBossLevel ? 'text-red-100' : 'text-white'} mb-2`}>{level.title}</h3>
                     <p className="text-sm text-gray-400 line-clamp-2">{level.story}</p>
                   </div>
-                  
+
                   <div className="flex items-center gap-6 shrink-0">
                     <div className="text-right">
                       <div className="text-xs text-gray-500 uppercase font-bold tracking-wider mb-1">Reward</div>
