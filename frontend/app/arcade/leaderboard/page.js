@@ -24,6 +24,7 @@ export default function ArcadeLeaderboard() {
       setLoading(true);
       try {
         const res = await fetch(`/api/arcade/leaderboard?timeframe=${timeframe}`, { credentials: "include" });
+        if (!res.ok) return;
         const json = await res.json();
         if (json.success) {
           setLeaderboard(json.data);

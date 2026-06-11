@@ -22,7 +22,7 @@ const CertificateSchema = new mongoose.Schema({
   },
   certificateType: {
     type: String,
-    enum: ['TRACK', 'ADVANCED', 'PROFESSIONAL'],
+    enum: ['TRACK', 'ADVANCED', 'PROFESSIONAL', 'HACKATHON_PARTICIPATION', 'HACKATHON_QUALIFIED', 'HACKATHON_WINNER'],
     required: true,
     default: 'TRACK'
   },
@@ -30,6 +30,15 @@ const CertificateSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Track',
     required: function() { return this.certificateType === 'TRACK'; }
+  },
+  hackathonId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Hackathon',
+    required: function() { return this.certificateType && this.certificateType.startsWith('HACKATHON_'); }
+  },
+  hackathonName: {
+    type: String,
+    required: function() { return this.certificateType && this.certificateType.startsWith('HACKATHON_'); }
   },
   
   // Snapshots (must never change once issued)

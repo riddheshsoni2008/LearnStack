@@ -27,6 +27,10 @@ export default function ArcadeHub() {
     const fetchHubData = async () => {
       try {
         const res = await fetch("/api/arcade/hub", { credentials: "include" });
+        if (!res.ok) {
+          router.push("/dashboard");
+          return;
+        }
         const json = await res.json();
         if (json.success) {
           setData(json.data);

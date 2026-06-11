@@ -25,6 +25,7 @@ export default function WorldLevels() {
     const fetchLevels = async () => {
       try {
         const res = await fetch(`/api/arcade/worlds/${encodeURIComponent(worldIdDecoded)}`, { credentials: "include" });
+        if (!res.ok) return;
         const json = await res.json();
         if (json.success) {
           setLevels(json.data);

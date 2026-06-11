@@ -21,11 +21,16 @@ export const metadata = {
   keywords: "learn coding, web development, full stack, javascript, react, nextjs, free courses",
 };
 
+import HackathonBanner from "@/components/HackathonBanner";
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${greatVibes.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]" suppressHydrationWarning>
-        <Providers>{children}</Providers>
+        <Providers>
+          <HackathonBanner />
+          {children}
+        </Providers>
       </body>
     </html>
   );

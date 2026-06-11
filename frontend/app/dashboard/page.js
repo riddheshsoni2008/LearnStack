@@ -1,5 +1,6 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
+import HackathonTimer from "@/components/HackathonTimer";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
@@ -89,9 +90,6 @@ function StreakCalendar({ streak, longestStreak }) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Badge Card
-// ═══════════════════════════════════════════════════════════════
 const RARITY_STYLES = {
   common: { border: "border-gray-500/30", bg: "bg-gray-500/10", text: "text-gray-300", label: "Common" },
   rare: { border: "border-blue-500/30", bg: "bg-blue-500/10", text: "text-blue-400", label: "Rare" },
@@ -145,20 +143,25 @@ export default function DashboardPage() {
       if (!user) return;
       try {
         const [badgesRes, myBadgesRes, tracksRes, progressRes] = await Promise.all([
-          fetch("/api/badges", { cache: "no-store" }),
-          fetch("/api/badges/me", { cache: "no-store" }),
-          fetch("/api/tracks", { cache: "no-store" }),
-          fetch("/api/progress/me", { cache: "no-store" }),
+          fetch("/api/badges", { cache: "no-store", credentials: "include" }),
+          fetch("/api/badges/me", { cache: "no-store", credentials: "include" }),
+          fetch("/api/tracks", { cache: "no-store", credentials: "include" }),
+          fetch("/api/progress/me", { cache: "no-store", credentials: "include" }),
         ]);
+
+        const parseIfOk = async (res) => {
+          if (!res.ok) return null;
+          return res.json();
+        };
 
         const [badgesData, myBadgesData, tracksData, progressData] = await Promise.all([
-          badgesRes.json(), myBadgesRes.json(), tracksRes.json(), progressRes.json(),
+          parseIfOk(badgesRes), parseIfOk(myBadgesRes), parseIfOk(tracksRes), parseIfOk(progressRes),
         ]);
 
-        if (badgesData.success) setAllBadges(badgesData.data);
-        if (myBadgesData.success) setMyBadges(myBadgesData.data);
-        if (tracksData.success) setTracks(tracksData.data);
-        if (progressData.success) setProgress(progressData.data);
+        if (badgesData?.success) setAllBadges(badgesData.data);
+        if (myBadgesData?.success) setMyBadges(myBadgesData.data);
+        if (tracksData?.success) setTracks(tracksData.data);
+        if (progressData?.success) setProgress(progressData.data);
       } catch (err) {
         console.error("Dashboard fetch error:", err);
       } finally {
@@ -202,6 +205,9 @@ export default function DashboardPage() {
           </h1>
           <p className="text-[var(--text-muted)] text-sm">Here&apos;s your learning dashboard</p>
         </div>
+
+        {/* ═══ Hackathon Timer ═══ */}
+        <HackathonTimer endDate="2026-06-30T23:59:59Z" />
 
         {/* ═══ Top Stats Row ═══ */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -299,7 +305,7 @@ export default function DashboardPage() {
         {/* ═══ Coding Arcade ═══ */}
         <div className="glass rounded-2xl p-6 mb-8 border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.1)] relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
-          
+
           <div className="flex items-center justify-between mb-6 relative z-10">
             <h3 className="text-xl font-bold flex items-center gap-2">🎮 Coding Arcade</h3>
           </div>
@@ -310,14 +316,14 @@ export default function DashboardPage() {
                 <div className="text-5xl mb-4 opacity-70">🔒</div>
                 <h4 className="text-lg font-bold mb-2">Coding Arcade Locked</h4>
                 <p className="text-[var(--text-muted)] text-sm mb-6">Reach 1000 XP to unlock the Arcade.</p>
-                
+
                 <div className="w-full max-w-md">
                   <div className="flex justify-between text-xs font-bold mb-2">
                     <span className="text-[var(--primary-light)]">{user.totalXpEarned || 0} XP</span>
                     <span className="text-[var(--text-muted)]">1000 XP</span>
                   </div>
                   <div className="w-full h-3 bg-[var(--surface)] rounded-full overflow-hidden">
-                    <div 
+                    <div
                       className="h-full bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full transition-all duration-1000"
                       style={{ width: `${Math.min(((user.totalXpEarned || 0) / 1000) * 100, 100)}%` }}
                     />
@@ -330,7 +336,7 @@ export default function DashboardPage() {
                 <div className="text-6xl mb-4 group-hover:scale-110 transition-transform duration-300">🕹️</div>
                 <h4 className="text-2xl font-black mb-2 text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">Arcade Unlocked!</h4>
                 <p className="text-indigo-200 text-sm mb-8">Dive into story-driven coding challenges, defeat bugs, and climb the leaderboard.</p>
-                
+
                 <Link href="/arcade" className="relative inline-flex items-center justify-center px-8 py-4 text-base font-bold text-white transition-all duration-200 bg-indigo-600 border border-transparent rounded-xl shadow-[0_0_20px_rgba(79,70,229,0.4)] hover:bg-indigo-700 hover:shadow-[0_0_30px_rgba(79,70,229,0.6)] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 focus:ring-offset-[var(--background)]">
                   Enter Arcade
                 </Link>

@@ -29,7 +29,17 @@ export default function CourseDetailPage() {
       if (!user) return;
       try {
         // Fetch track by slug
-        const res = await fetch(`/api/tracks/slug/${slug}`, { cache: "no-store" });
+        const res = await fetch(`/api/tracks/slug/${slug}`, {
+          cache: "no-store",
+          credentials: "include"
+        });
+
+        if (!res.ok) {
+          setError("Failed to load course.");
+          setLoading(false);
+          return;
+        }
+
         const data = await res.json();
         
         if (data.success) {
@@ -37,10 +47,15 @@ export default function CourseDetailPage() {
           setLessons(data.data.lessons);
           
           // Fetch user progress
-          const progRes = await fetch("/api/progress/me", { cache: "no-store" });
-          const progData = await progRes.json();
-          if (progData.success) {
-            setProgress(progData.data);
+          const progRes = await fetch("/api/progress/me", {
+            cache: "no-store",
+            credentials: "include"
+          });
+          if (progRes.ok) {
+            const progData = await progRes.json();
+            if (progData.success) {
+              setProgress(progData.data);
+            }
           }
         } else {
           setError(data.message || "Failed to load course.");

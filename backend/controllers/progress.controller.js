@@ -6,9 +6,6 @@ const { checkAndAwardBadges } = require('../services/badgeService');
 const { logExerciseCompletion } = require('../services/exerciseHistoryService');
 const { checkAndAwardCertificate } = require('../services/certificateService');
 
-// @desc    Get user's progress for all tracks
-// @route   GET /api/progress/me
-// @access  Private
 const getMyProgress = async (req, res) => {
   try {
     const history = await ExerciseHistoryDaily.find({ userId: req.user._id })
@@ -45,9 +42,6 @@ const getMyProgress = async (req, res) => {
   }
 };
 
-// @desc    Get progress for a specific track
-// @route   GET /api/progress/track/:trackId
-// @access  Private
 const getTrackProgress = async (req, res) => {
   try {
     const history = await ExerciseHistoryDaily.find({ userId: req.user._id })
@@ -80,9 +74,6 @@ const getTrackProgress = async (req, res) => {
   }
 };
 
-// @desc    Complete a lesson directly (without quiz)
-// @route   POST /api/progress/complete/:lessonId
-// @access  Private
 const completeLessonDirect = async (req, res) => {
   try {
     const lesson = await Lesson.findById(req.params.lessonId);
@@ -90,7 +81,6 @@ const completeLessonDirect = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Lesson not found' });
     }
 
-    // Check if already completed (prevent XP farming)
     let existingProgress = null;
     const existingHistory = await ExerciseHistoryDaily.findOne({
       userId: req.user._id,
@@ -101,7 +91,7 @@ const completeLessonDirect = async (req, res) => {
         }
       }
     });
-    
+
     if (existingHistory) {
       existingProgress = existingHistory.completedExercises.find(
         ex => ex.exerciseId.toString() === lesson._id.toString() && !ex.title.includes(' - Quiz')
@@ -137,7 +127,6 @@ const completeLessonDirect = async (req, res) => {
 
     const baseXP = lesson.xpReward || 10;
 
-    // Log the exercise completion
     await logExerciseCompletion(req.user._id, lesson._id, lesson.title, 100, 'Lesson', lesson.trackId);
 
     const progress = {
@@ -150,20 +139,18 @@ const completeLessonDirect = async (req, res) => {
       completedAt: new Date()
     };
 
-    // ── Gamification ──
     let totalXpEarned = 0;
     let xpBreakdown = [];
 
-    // Award XP
     const xpResult = await awardXP(
       req.user._id, baseXP, 'lesson',
       `Completed lesson: ${lesson.title}`,
       lesson._id
     );
+
     totalXpEarned += baseXP;
     xpBreakdown.push({ label: 'Lesson Complete', amount: baseXP });
 
-    // Update streak
     const user = await User.findById(req.user._id);
     const streakInfo = await updateStreak(user);
     if (streakInfo.streakBonus > 0) {
@@ -171,7 +158,6 @@ const completeLessonDirect = async (req, res) => {
       xpBreakdown.push({ label: `🔥 ${streakInfo.streakBonusMilestone}-Day Streak!`, amount: streakInfo.streakBonus });
     }
 
-    // Check for new badges
     const newBadges = await checkAndAwardBadges(req.user._id, {
       event: 'lesson_complete',
       lessonId: lesson._id,
@@ -185,10 +171,8 @@ const completeLessonDirect = async (req, res) => {
       }
     }
 
-    // Fetch updated user
     const updatedUser = await User.findById(req.user._id);
 
-    // ── Check for Track Completion Certificate ──
     const newCertificate = await checkAndAwardCertificate(req.user._id, lesson.trackId);
 
     res.status(200).json({

@@ -12,6 +12,10 @@ connectDB();
 
 const app = express();
 
+// Initialize automated background tasks
+const { startCronJob } = require('./services/hackathonCron.service');
+startCronJob();
+
 // Middleware
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:3000',
@@ -32,6 +36,9 @@ app.use('/api/leaderboard', require('./routes/leaderboard.routes'));
 app.use('/api/arcade', require('./routes/arcade.routes'));
 app.use('/api/ai', require('./routes/ai.routes'));
 app.use('/api/certificates', require('./routes/certificate.routes'));
+app.use('/api/stats', require('./routes/stats.routes'));
+app.use('/api/hackathons', require('./routes/hackathon.routes'));
+app.use('/api/hackathon-questions', require('./routes/hackathonQuestion.routes'));
 
 // 404 handler
 app.use((req, res) => {

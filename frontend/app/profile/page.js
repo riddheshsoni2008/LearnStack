@@ -64,27 +64,36 @@ export default function ProfilePage() {
     }
 
     const fetchData = async () => {
-      if (!user?._id) return;
+      if (!user?._id) {
+        setDataLoading(false);
+        return;
+      }
       try {
         const [progRes, tracksRes, badgesRes, myBadgesRes, xpRes, certRes] = await Promise.all([
-          fetch("/api/progress/me", { cache: "no-store" }),
-          fetch("/api/tracks", { cache: "no-store" }),
-          fetch("/api/badges", { cache: "no-store" }),
-          fetch("/api/badges/me", { cache: "no-store" }),
-          fetch("/api/badges/xp-history", { cache: "no-store" }),
-          fetch("/api/certificates/me", { cache: "no-store" }),
+          fetch("/api/progress/me", { cache: "no-store", credentials: "include" }),
+          fetch("/api/tracks", { cache: "no-store", credentials: "include" }),
+          fetch("/api/badges", { cache: "no-store", credentials: "include" }),
+          fetch("/api/badges/me", { cache: "no-store", credentials: "include" }),
+          fetch("/api/badges/xp-history", { cache: "no-store", credentials: "include" }),
+          fetch("/api/certificates/me", { cache: "no-store", credentials: "include" }),
         ]);
+
+        const parseIfOk = async (res) => {
+          if (!res.ok) return null;
+          return res.json();
+        };
 
         const [progData, tracksData, badgesData, myBadgesData, xpData, certData] = await Promise.all([
-          progRes.json(), tracksRes.json(), badgesRes.json(), myBadgesRes.json(), xpRes.json(), certRes.json(),
+          parseIfOk(progRes), parseIfOk(tracksRes), parseIfOk(badgesRes),
+          parseIfOk(myBadgesRes), parseIfOk(xpRes), parseIfOk(certRes),
         ]);
 
-        if (progData.success) setProgress(progData.data);
-        if (tracksData.success) setTracks(tracksData.data);
-        if (badgesData.success) setAllBadges(badgesData.data);
-        if (myBadgesData.success) setMyBadges(myBadgesData.data);
-        if (xpData.success) setXpHistory(xpData.data);
-        if (certData.success) setCertificates(certData.data);
+        if (progData?.success) setProgress(progData.data);
+        if (tracksData?.success) setTracks(tracksData.data);
+        if (badgesData?.success) setAllBadges(badgesData.data);
+        if (myBadgesData?.success) setMyBadges(myBadgesData.data);
+        if (xpData?.success) setXpHistory(xpData.data);
+        if (certData?.success) setCertificates(certData.data);
       } catch (err) {
         console.error("Failed to load profile data:", err);
       } finally {

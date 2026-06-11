@@ -31,6 +31,10 @@ export default function ArcadeGame() {
     const fetchLevel = async () => {
       try {
         const res = await fetch(`/api/arcade/levels/${params.levelId}`, { credentials: "include" });
+        if (!res.ok) {
+          router.push("/arcade");
+          return;
+        }
         const json = await res.json();
         if (json.success) {
           setLevel(json.data);

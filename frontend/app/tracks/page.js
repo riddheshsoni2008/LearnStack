@@ -24,8 +24,13 @@ export default function TracksPage() {
       if (!user) return; // Wait for user to be available
       try {
         const res = await fetch("/api/tracks", {
-          cache: "no-store"
+          cache: "no-store",
+          credentials: "include"
         });
+        if (!res.ok) {
+          setError("Failed to load tracks.");
+          return;
+        }
         const data = await res.json();
         if (data.success) {
           setTracks(data.data);

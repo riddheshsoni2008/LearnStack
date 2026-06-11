@@ -36,7 +36,20 @@ export default function LessonPage({ params }) {
     // 2. Fetch lesson detail & progress status
     const fetchLessonData = async () => {
       try {
-        const res = await fetch(`/api/lessons/${lessonId}`, { cache: "no-store" });
+        const res = await fetch(`/api/lessons/${lessonId}`, {
+          cache: "no-store",
+          credentials: "include"
+        });
+
+        if (!res.ok) {
+          const errData = res.headers.get("content-type")?.includes("application/json")
+            ? await res.json()
+            : { message: "Failed to load lesson details." };
+          setError(errData.message || "Failed to load lesson details.");
+          setLoading(false);
+          return;
+        }
+
         const data = await res.json();
 
         if (!data.success) {
@@ -51,14 +64,20 @@ export default function LessonPage({ params }) {
         setPrevLesson(data.data.prevLesson);
 
         // Fetch user progress to check if completed
-        const progressRes = await fetch("/api/progress/me", { cache: "no-store" });
-        const progressData = await progressRes.json();
-
-        if (progressData.success) {
-          const completed = progressData.data.some(
-            (p) => p.lessonId?._id === lessonId && p.completed
-          );
-          setIsCompleted(completed);
+        const progressRes = await fetch("/api/progress/me", {
+          cache: "no-store",
+          credentials: "include"
+        });
+        if (progressRes.ok) {
+          const progressData = await progressRes.json();
+          if (progressData.success) {
+            const completed = progressData.data.some(
+              (p) =>
+                p.lessonId?._id?.toString() === lessonId ||
+                p.lessonId?.toString() === lessonId
+            );
+            setIsCompleted(completed);
+          }
         }
       } catch (err) {
         setError("Error connecting to backend server.");

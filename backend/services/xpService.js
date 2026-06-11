@@ -65,25 +65,29 @@ const awardXP = async (userId, amount, source, description, referenceId = null) 
  * @returns {object} { streakUpdated, streakBonus, streakBonusMilestone }
  */
 const updateStreak = async (user) => {
-  const today = new Date().toDateString();
-  const lastExerciseDateRaw = user.lastExerciseDate || user.lastActive;
-  const lastExerciseDate = lastExerciseDateRaw ? new Date(lastExerciseDateRaw).toDateString() : null;
+  const todayStr = new Date().toDateString();
+  const lastExerciseDateStr = user.lastExerciseDate ? new Date(user.lastExerciseDate).toDateString() : null;
 
   let streakBonus = 0;
   let streakBonusMilestone = null;
 
-  if (lastExerciseDate !== today) {
-    const yesterday = new Date();
-    yesterday.setDate(yesterday.getDate() - 1);
+  if (lastExerciseDateStr === todayStr) {
+    await User.updateOne({ _id: user._id }, { $set: { lastActive: new Date() } });
+    return { streakUpdated: false, streakBonus: 0, streakBonusMilestone: null };
+  }
 
-    let newStreak = user.streak;
-    if (lastExerciseDate === yesterday.toDateString()) {
-      newStreak += 1;
-    } else {
-      newStreak = 1;
-    }
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate() - 1);
+  const yesterdayStr = yesterday.toDateString();
 
-    const newLongestStreak = Math.max(newStreak, user.longestStreak);
+  let newStreak = user.streak;
+  if (lastExerciseDateStr === yesterdayStr) {
+    newStreak += 1;
+  } else {
+    newStreak = 1;
+  }
+
+  const newLongestStreak = Math.max(newStreak, user.longestStreak);
 
     // Calculate streak bonus
     if (STREAK_MILESTONES[newStreak]) {
@@ -118,10 +122,6 @@ const updateStreak = async (user) => {
         updatedUser.level
       );
     }
-  } else {
-
-    await User.updateOne({ _id: user._id }, { $set: { lastActive: new Date() } });
-  }
 
   return { streakUpdated: true, streakBonus, streakBonusMilestone };
 };

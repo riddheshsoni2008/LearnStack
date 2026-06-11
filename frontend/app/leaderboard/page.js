@@ -25,7 +25,11 @@ export default function LeaderboardPage() {
     const fetchLeaderboard = async () => {
       if (!user) return;
       try {
-        const res = await fetch("/api/leaderboard", { cache: "no-store" });
+        const res = await fetch("/api/leaderboard", {
+          cache: "no-store",
+          credentials: "include"
+        });
+        if (!res.ok) return;
         const json = await res.json();
         if (json.success) setData(json.data);
       } catch (err) {
@@ -40,9 +44,16 @@ export default function LeaderboardPage() {
 
   const togglePrivacy = async () => {
     try {
-      await fetch("/api/leaderboard/privacy", { method: "PUT" });
+      await fetch("/api/leaderboard/privacy", {
+        method: "PUT",
+        credentials: "include"
+      });
       // Refresh
-      const res = await fetch("/api/leaderboard", { cache: "no-store" });
+      const res = await fetch("/api/leaderboard", {
+        cache: "no-store",
+        credentials: "include"
+      });
+      if (!res.ok) return;
       const json = await res.json();
       if (json.success) setData(json.data);
     } catch (err) {

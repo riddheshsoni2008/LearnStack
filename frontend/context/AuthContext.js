@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
@@ -10,16 +10,16 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const handleSetUser = (userData) => {
+  const handleSetUser = useCallback((userData) => {
     setUser(userData);
     if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));
     } else {
       localStorage.removeItem("user");
     }
-  };
+  }, []);
 
-  const fetchUser = async () => {
+  const fetchUser = useCallback(async () => {
     try {
       const res = await fetch("/api/auth/me", {
         credentials: "include",
@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [handleSetUser]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -61,35 +61,59 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-      credentials: "include", // For setting cookie from backend response
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+        credentials: "include", // For setting cookie from backend response
+      });
+      if (!res.ok) {
+        // Fallback if the server crashes and sends non-JSON
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          return { success: false, message: "Server error. Please try again later." };
+        }
+      }
+      const data = await res.json();
 
-    if (data.success) {
-      handleSetUser(data.data);
-      router.push("/dashboard");
+      if (data.success) {
+        handleSetUser(data.data);
+        router.push("/dashboard");
+      }
+      return data;
+    } catch (error) {
+      console.error("Login failed:", error);
+      return { success: false, message: "Network error. Please try again." };
     }
-    return data;
   };
 
   const register = async (name, email, password) => {
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password }),
-      credentials: "include",
-    });
-    const data = await res.json();
+    try {
+      const res = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name, email, password }),
+        credentials: "include",
+      });
+      if (!res.ok) {
+        // Fallback if the server crashes and sends non-JSON
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          return { success: false, message: "Server error. Please try again later." };
+        }
+      }
+      const data = await res.json();
 
-    if (data.success) {
-      handleSetUser(data.data);
-      router.push("/dashboard");
+      if (data.success) {
+        handleSetUser(data.data);
+        router.push("/dashboard");
+      }
+      return data;
+    } catch (error) {
+      console.error("Registration failed:", error);
+      return { success: false, message: "Network error. Please try again." };
     }
-    return data;
   };
 
   const logout = async () => {
