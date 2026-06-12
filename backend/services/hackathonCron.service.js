@@ -79,7 +79,7 @@ const processCompletedHackathons = async () => {
           completedLessons: 0,
           totalQuizzes: hackathon.rounds.length,
           completedQuizzes: rank <= 3 ? hackathon.rounds.length : (reg.currentRound || 1) - 1,
-          verificationUrl: `${process.env.FRONTEND_URL || 'http://localhost:3000'}/certificates/verify`
+          verificationUrl: `${(process.env.FRONTEND_URL || 'http://localhost:3000').replace(new RegExp('/$'), '')}/certificates/verify`
         },
         { upsert: true, new: true }
       );

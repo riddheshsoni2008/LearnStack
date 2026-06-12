@@ -13,7 +13,13 @@ const generateCertId = () => {
   return `LS-${year}-${random}`;
 };
 
-const getBaseUrl = () => process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+const getBaseUrl = () => {
+  let url = process.env.FRONTEND_URL || process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  if (url.endsWith('/')) {
+    url = url.slice(0, -1);
+  }
+  return url;
+};
 
 const generateQrCodeUrl = (url) => `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(url)}`;
 
@@ -119,7 +125,7 @@ const checkAndAwardCertificate = async (userId, trackId) => {
 
         const publishedLessons = await Lesson.find({ trackId, isPublished: true }).select('_id');
         const lessonIds = publishedLessons.map(l => l._id.toString());
-        const totalLessons = lessonIds.length;
+        const totalLessons = track.totalLessons > 0 ? track.totalLessons : lessonIds.length;
 
         if (totalLessons > 0) {
           const quizzes = await Quiz.find({ lessonId: { $in: lessonIds } }).select('lessonId');
