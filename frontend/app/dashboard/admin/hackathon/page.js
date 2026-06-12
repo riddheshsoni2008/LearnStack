@@ -142,8 +142,6 @@ function HackathonsTab() {
       description: h.description || "",
       shortDescription: h.shortDescription || "",
       status: h.status || "draft",
-      registrationStart: h.registrationStart?.slice(0, 16) || "",
-      registrationEnd: h.registrationEnd?.slice(0, 16) || "",
       startDate: h.startDate?.slice(0, 16) || "",
       endDate: h.endDate?.slice(0, 16) || "",
       registrationType: h.registrationType || "free",
@@ -270,10 +268,6 @@ function HackathonsTab() {
                   options={["solo", "team"]} />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <Field label="Registration Start" value={form.registrationStart} onChange={(v) => setForm({ ...form, registrationStart: v })} type="datetime-local" />
-                <Field label="Registration End" value={form.registrationEnd} onChange={(v) => setForm({ ...form, registrationEnd: v })} type="datetime-local" />
-              </div>
               <div className="grid grid-cols-2 gap-4">
                 <Field label="Start Date" value={form.startDate} onChange={(v) => setForm({ ...form, startDate: v })} type="datetime-local" />
                 <Field label="End Date" value={form.endDate} onChange={(v) => setForm({ ...form, endDate: v })} type="datetime-local" />
@@ -688,7 +682,7 @@ function SelectField({ label, value, onChange, options }) {
 function getDefaultHackathonForm() {
   return {
     title: "", description: "", shortDescription: "", status: "draft",
-    registrationStart: "", registrationEnd: "", startDate: "", endDate: "",
+    startDate: "", endDate: "",
     registrationType: "free", entryFee: 0,
     participantLimitMode: "unlimited", maxParticipants: 0,
     questionBankMode: "global", hackathonMode: "solo",

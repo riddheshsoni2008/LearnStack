@@ -6,12 +6,14 @@ const inter = Inter({
   variable: "--font-inter",
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const greatVibes = Great_Vibes({
   variable: "--font-signature",
   subsets: ["latin"],
   weight: ["400"],
+  display: "swap",
 });
 
 export const metadata = {

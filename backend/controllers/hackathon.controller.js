@@ -4,6 +4,15 @@ const HackathonSubmission = require('../models/HackathonSubmission');
 const HackathonQuestion = require('../models/HackathonQuestion');
 const Certificate = require('../models/Certificate');
 
+// Fisher-Yates shuffle for randomizing MCQ option order
+const shuffleArrayFisherYates = (arr) => {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+};
+
 // ═══════════════════════════════════════════════════════════════
 // PUBLIC ENDPOINTS
 // ═══════════════════════════════════════════════════════════════
@@ -87,13 +96,13 @@ const getCurrentHackathon = async (req, res) => {
   try {
     // 1. Try to find an active hackathon first
     let hackathon = await Hackathon.findOne({ status: 'active' })
-      .select('title slug shortDescription status registrationStart registrationEnd startDate endDate participantLimitMode maxParticipants currentParticipants hackathonMode')
+      .select('title slug shortDescription status startDate endDate participantLimitMode maxParticipants currentParticipants hackathonMode')
       .sort({ startDate: 1 });
 
     // 2. If no active, try to find an upcoming one (registration_open)
     if (!hackathon) {
       hackathon = await Hackathon.findOne({ status: 'registration_open' })
-        .select('title slug shortDescription status registrationStart registrationEnd startDate endDate participantLimitMode maxParticipants currentParticipants hackathonMode')
+        .select('title slug shortDescription status startDate endDate participantLimitMode maxParticipants currentParticipants hackathonMode')
         .sort({ startDate: 1 });
     }
 
@@ -116,19 +125,35 @@ const getCurrentHackathon = async (req, res) => {
 // @access  Private
 const registerForHackathon = async (req, res) => {
   try {
-    const hackathon = await Hackathon.findOne({ slug: req.params.slug });
+    let hackathon = await Hackathon.findOne({ slug: req.params.slug });
     if (!hackathon) {
       return res.status(404).json({ success: false, message: 'Hackathon not found' });
     }
 
     // Check registration window
     const now = new Date();
-    if (hackathon.registrationStart && now < hackathon.registrationStart) {
-      return res.status(400).json({ success: false, message: 'Registration has not started yet.' });
+    const cutoffTime = hackathon.endDate ? new Date(hackathon.endDate.getTime() - 12 * 60 * 60 * 1000) : null;
+    
+    console.log(`\n[DEBUG] === Registration Check ===`);
+    console.log(`[DEBUG] Current Server Time: ${now.toISOString()}`);
+    console.log(`[DEBUG] Hackathon End Time: ${hackathon.endDate ? hackathon.endDate.toISOString() : 'N/A'}`);
+    console.log(`[DEBUG] Registration Cutoff Time: ${cutoffTime ? cutoffTime.toISOString() : 'N/A'}`);
+    console.log(`[DEBUG] Hackathon status: ${hackathon.status}`);
+
+    if (cutoffTime && now >= cutoffTime) {
+      console.log(`[DEBUG] REASON: Current Time >= Cutoff Time => Registration Closed`);
+      
+      const nextHackathon = await Hackathon.findOne({ status: 'registration_open' }).sort({ startDate: 1 });
+      if (nextHackathon) {
+        console.log(`[DEBUG] Redirecting registration to next upcoming hackathon: ${nextHackathon.title}`);
+        hackathon = nextHackathon;
+      } else {
+        return res.status(400).json({ success: false, message: 'Registration has closed for this hackathon.' });
+      }
+    } else {
+      console.log(`[DEBUG] Current Time < Cutoff Time => Registration Open`);
     }
-    if (hackathon.registrationEnd && now > hackathon.registrationEnd) {
-      return res.status(400).json({ success: false, message: 'Registration has closed.' });
-    }
+
     if (hackathon.status !== 'registration_open' && hackathon.status !== 'active') {
       return res.status(400).json({ success: false, message: 'Hackathon is not open for registration.' });
     }
@@ -180,7 +205,7 @@ const registerForHackathon = async (req, res) => {
     // Increment participant count
     await Hackathon.findByIdAndUpdate(hackathon._id, { $inc: { currentParticipants: 1 } });
 
-    res.status(201).json({ success: true, data: registration, message: 'Successfully registered!' });
+    res.status(201).json({ success: true, data: registration, message: 'Successfully registered!', redirectSlug: hackathon.slug });
   } catch (error) {
     if (error.code === 11000) {
       return res.status(400).json({ success: false, message: 'You are already registered for this hackathon.' });
@@ -276,13 +301,15 @@ const getRoundQuestions = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Round not found.' });
     }
 
-    // Check round timing
-    const now = new Date();
-    if (now < roundData.startTime) {
-      return res.status(400).json({ success: false, message: 'This round has not started yet.' });
-    }
-    if (now > roundData.endTime) {
-      return res.status(400).json({ success: false, message: 'This round has ended.' });
+    // Check round timing — Round 1 is always accessible after registration
+    if (round > 1) {
+      const now = new Date();
+      if (now < roundData.startTime) {
+        return res.status(400).json({ success: false, message: 'This round has not started yet.' });
+      }
+      if (now > roundData.endTime) {
+        return res.status(400).json({ success: false, message: 'This round has ended.' });
+      }
     }
 
     // Check if already submitted
@@ -290,34 +317,57 @@ const getRoundQuestions = async (req, res) => {
       hackathonId: hackathon._id,
       userId: req.user._id,
       roundNumber: round,
-      status: { $in: ['submitted', 'evaluated', 'qualified', 'disqualified'] }
+      status: { $in: ['AUTO_SUBMITTED', 'COMPLETED', 'QUALIFIED', 'DISQUALIFIED', 'evaluated', 'submitted'] }
     });
     if (existingSubmission) {
       return res.status(400).json({ success: false, message: 'You have already submitted this round.' });
     }
 
-    // Fetch questions (hide correct answers)
-    const questions = await HackathonQuestion.find({
-      _id: { $in: roundData.questionIds }
-    }).select('-correctAnswer -testCases -explanation');
-
-    // Create or find in-progress submission
+    // Check if in progress
     let submission = await HackathonSubmission.findOne({
       hackathonId: hackathon._id,
       userId: req.user._id,
       roundNumber: round,
-      status: 'in_progress'
+      status: 'IN_PROGRESS'
     });
 
     if (!submission) {
-      submission = await HackathonSubmission.create({
-        hackathonId: hackathon._id,
-        userId: req.user._id,
-        roundNumber: round,
-        startedAt: new Date(),
-        maxPossibleScore: questions.reduce((acc, q) => acc + q.points, 0)
+      // Not started yet
+      return res.status(200).json({
+        success: true,
+        data: {
+          round: {
+            roundNumber: roundData.roundNumber,
+            title: roundData.title,
+            duration: roundData.duration,
+            endTime: roundData.endTime,
+            type: roundData.type,
+            qualifyingScore: roundData.qualifyingScore
+          },
+          started: false
+        }
       });
     }
+
+    // Already started, return questions and timer state
+    const questionIdsToFetch = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0 
+      ? submission.assignedQuestionIds 
+      : roundData.questionIds;
+
+    const questions = await HackathonQuestion.find({
+      _id: { $in: questionIdsToFetch }
+    }).select('-correctAnswer -testCases -explanation');
+
+    // Shuffle MCQ options and strip isCorrect (security: don't leak correct answer to frontend)
+    const shuffledQuestions = questions.map(q => {
+      const qObj = q.toObject();
+      if (qObj.questionType === 'mcq' && qObj.options && qObj.options.length > 1) {
+        qObj.options = shuffleArrayFisherYates([...qObj.options]).map(opt => ({
+          text: opt.text
+        }));
+      }
+      return qObj;
+    });
 
     res.status(200).json({
       success: true,
@@ -327,11 +377,140 @@ const getRoundQuestions = async (req, res) => {
           title: roundData.title,
           duration: roundData.duration,
           endTime: roundData.endTime,
-          type: roundData.type
+          type: roundData.type,
+          qualifyingScore: roundData.qualifyingScore
         },
-        questions,
+        questions: shuffledQuestions,
         submissionId: submission._id,
-        startedAt: submission.startedAt
+        startedAt: submission.startedAt,
+        started: true
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// @desc    Start a round (starts timer and fetches questions)
+// @route   POST /api/hackathons/:slug/rounds/:roundNumber/start
+// @access  Private
+const startRound = async (req, res) => {
+  try {
+    const { slug, roundNumber } = req.params;
+    const round = parseInt(roundNumber);
+
+    const hackathon = await Hackathon.findOne({ slug });
+    if (!hackathon) {
+      return res.status(404).json({ success: false, message: 'Hackathon not found' });
+    }
+
+    const roundData = hackathon.rounds.find(r => r.roundNumber === round);
+    if (!roundData) return res.status(404).json({ success: false, message: 'Round not found.' });
+
+    // Check round timing — Round 1 is always accessible after registration
+    if (round > 1) {
+      const now = new Date();
+      if (now < roundData.startTime) return res.status(400).json({ success: false, message: 'This round has not started yet.' });
+      if (now > roundData.endTime) return res.status(400).json({ success: false, message: 'This round has ended.' });
+    }
+
+    // Check if submission exists
+    let submission = await HackathonSubmission.findOne({
+      hackathonId: hackathon._id,
+      userId: req.user._id,
+      roundNumber: round
+    });
+
+    if (submission) {
+      return res.status(400).json({ success: false, message: 'You have already started or submitted this round.' });
+    }
+
+    // Dynamic Question Selection & Anti-Repeat System
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+    const pastSubmissions = await HackathonSubmission.find({
+      userId: req.user._id,
+      createdAt: { $gte: thirtyDaysAgo }
+    });
+    let seenQuestionIds = [];
+    pastSubmissions.forEach(sub => {
+      if (sub.assignedQuestionIds) {
+        seenQuestionIds = seenQuestionIds.concat(sub.assignedQuestionIds);
+      }
+    });
+
+    let questions = [];
+    if (round === 1) {
+       questions = await HackathonQuestion.aggregate([
+         { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
+         { $sample: { size: 3 } }
+       ]);
+       if (questions.length < 3) {
+           questions = await HackathonQuestion.aggregate([
+             { $match: { scope: 'global', questionType: 'mcq' } },
+             { $sample: { size: 3 } }
+           ]);
+       }
+    } else if (round === 2) {
+       questions = await HackathonQuestion.aggregate([
+         { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
+         { $sample: { size: 2 } }
+       ]);
+       if (questions.length < 2) {
+           questions = await HackathonQuestion.aggregate([
+             { $match: { scope: 'global', questionType: 'mcq' } },
+             { $sample: { size: 2 } }
+           ]);
+       }
+    } else if (round === 3) {
+       questions = await HackathonQuestion.aggregate([
+         { $match: { scope: 'global', questionType: 'project', _id: { $nin: seenQuestionIds } } },
+         { $sample: { size: 1 } }
+       ]);
+       if (questions.length < 1) {
+           questions = await HackathonQuestion.aggregate([
+             { $match: { scope: 'global', questionType: 'project' } },
+             { $sample: { size: 1 } }
+           ]);
+       }
+    } else {
+       questions = await HackathonQuestion.find({ _id: { $in: roundData.questionIds } }).lean();
+    }
+
+    const questionIds = questions.map(q => q._id);
+
+    // Shuffle MCQ options and strip sensitive data
+    const shuffledQuestions = questions.map(q => {
+      const qObj = { ...q };
+      delete qObj.correctAnswer;
+      delete qObj.testCases;
+      delete qObj.explanation;
+      
+      if (qObj.questionType === 'mcq' && qObj.options && qObj.options.length > 1) {
+        qObj.options = shuffleArrayFisherYates([...qObj.options]).map(opt => ({
+          text: opt.text
+        }));
+      }
+      return qObj;
+    });
+
+    submission = await HackathonSubmission.create({
+      hackathonId: hackathon._id,
+      userId: req.user._id,
+      roundNumber: round,
+      status: 'IN_PROGRESS',
+      assignedQuestionIds: questionIds,
+      startedAt: new Date(),
+      maxPossibleScore: questions.reduce((acc, q) => acc + (q.points || 10), 0)
+    });
+
+    res.status(200).json({
+      success: true,
+      data: {
+        questions: shuffledQuestions,
+        submissionId: submission._id,
+        startedAt: submission.startedAt,
+        started: true
       }
     });
   } catch (error) {
@@ -354,25 +533,34 @@ const submitRound = async (req, res) => {
     }
 
     const roundData = hackathon.rounds.find(r => r.roundNumber === round);
-    if (!roundData) {
-      return res.status(404).json({ success: false, message: 'Round not found.' });
-    }
+    if (!roundData) return res.status(404).json({ success: false, message: 'Round not found.' });
 
     // Find in-progress submission
     let submission = await HackathonSubmission.findOne({
       hackathonId: hackathon._id,
       userId: req.user._id,
       roundNumber: round,
-      status: 'in_progress'
+      status: 'IN_PROGRESS'
     });
 
     if (!submission) {
-      return res.status(400).json({ success: false, message: 'No active submission found for this round.' });
+      return res.status(400).json({ success: false, message: 'No active submission found for this round or already submitted.' });
     }
 
-    // Grade answers
+    // Verify timeTaken (Anti-cheat)
+    const totalTimeTaken = submission.startedAt
+      ? Math.round((Date.now() - new Date(submission.startedAt).getTime()) / 1000)
+      : 0;
+
+    // Optional: if timeTaken > roundData.duration * 60 + grace period (e.g. 60s), we could flag it, but for now just cap it.
+    
     let totalScore = 0;
     const gradedAnswers = [];
+
+    let answeredCount = 0;
+    let correctCount = 0;
+    let wrongCount = 0;
+    let unansweredCount = roundData.questionIds.length;
 
     if (answers && answers.length > 0) {
       const questionIds = answers.map(a => a.questionId);
@@ -386,18 +574,36 @@ const submitRound = async (req, res) => {
 
         let isCorrect = false;
         let pointsAwarded = 0;
+        let isAnswered = false;
 
         if (question.questionType === 'mcq') {
-          const correctOption = question.options.findIndex(o => o.isCorrect);
-          isCorrect = ans.selectedOptionIndex === correctOption;
-          pointsAwarded = isCorrect ? question.points : 0;
+          isAnswered = ans.selectedOptionIndex !== -1 && ans.selectedOptionIndex !== undefined && ans.selectedOptionIndex !== null;
+          if (isAnswered) {
+            // Match by option TEXT, not index — options are shuffled before being sent to the frontend,
+            // so the selectedOptionIndex doesn't correspond to the original DB order.
+            // The frontend sends the selected option's text in ans.answer (see QuestionDisplay.js handleMCQSelect).
+            const correctOptionText = question.options.find(o => o.isCorrect)?.text;
+            const selectedText = (ans.answer || '').trim();
+            isCorrect = !!correctOptionText && selectedText === correctOptionText.trim();
+            pointsAwarded = isCorrect ? question.points : 0;
+          }
         } else if (question.questionType === 'coding') {
-          // Simple string match for now
-          isCorrect = ans.answer?.trim() === question.correctAnswer?.trim();
-          pointsAwarded = isCorrect ? question.points : 0;
+          isAnswered = !!ans.answer?.trim();
+          if (isAnswered) {
+            isCorrect = ans.answer?.trim() === question.correctAnswer?.trim();
+            pointsAwarded = isCorrect ? question.points : 0;
+          }
         } else {
-          // Case study, scenario, project — manual grading or partial scoring
-          pointsAwarded = 0; // Will be evaluated by judges
+          isAnswered = !!ans.answer?.trim();
+          pointsAwarded = 0; // Manual grading
+        }
+
+        if (isAnswered) {
+          answeredCount++;
+          if (question.questionType !== 'case_study' && question.questionType !== 'scenario' && question.questionType !== 'project') {
+             if (isCorrect) correctCount++;
+             else wrongCount++;
+          }
         }
 
         totalScore += pointsAwarded;
@@ -412,17 +618,32 @@ const submitRound = async (req, res) => {
       }
     }
 
-    const totalTimeTaken = submission.startedAt
-      ? Math.round((Date.now() - new Date(submission.startedAt).getTime()) / 1000)
-      : 0;
+    const questionIdsToEval = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0
+        ? submission.assignedQuestionIds
+        : roundData.questionIds;
+    unansweredCount = questionIdsToEval.length - answeredCount;
 
     const maxPossibleScore = submission.maxPossibleScore || 1;
-    const percentage = Math.round((totalScore / maxPossibleScore) * 100);
+    const percentage = maxPossibleScore > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
 
-    // Determine qualification
-    const qualifyingScore = roundData.qualifyingScore || 50;
-    const qualified = percentage >= qualifyingScore;
-    const status = qualified ? 'qualified' : 'disqualified';
+    // Determine qualification based on strict rules
+    let qualified = false;
+    if (round === 1) {
+        qualified = correctCount >= 2;
+    } else if (round === 2) {
+        qualified = correctCount >= 1; // At least 1 correct
+    } else {
+        const qualifyingScore = roundData.qualifyingScore || 50;
+        qualified = totalScore >= qualifyingScore;
+    }
+    
+    // Status
+    let finalStatus = qualified ? 'QUALIFIED' : 'DISQUALIFIED';
+    if (roundData.type === 'project') {
+      finalStatus = autoSubmitted ? 'AUTO_SUBMITTED' : 'COMPLETED';
+    } else if (autoSubmitted) {
+       // We can mark it as AUTO_SUBMITTED or just store the boolean
+    }
 
     // Update submission
     submission.answers = gradedAnswers;
@@ -431,9 +652,17 @@ const submitRound = async (req, res) => {
     submission.totalTimeTaken = totalTimeTaken;
     submission.submittedAt = new Date();
     submission.autoSubmitted = autoSubmitted || false;
-    submission.status = roundData.type === 'project' ? 'submitted' : status;
+    submission.status = finalStatus;
+    submission.stats = {
+      answered: answeredCount,
+      correct: correctCount,
+      wrong: wrongCount,
+      unanswered: unansweredCount
+    };
 
-    // Project fields (Round 3)
+    // We can attach stats to the submission object dynamically or save them. Since they are derived, we return them in the response.
+
+    // Project fields
     if (projectUrl) submission.projectUrl = projectUrl;
     if (projectDescription) submission.projectDescription = projectDescription;
     if (projectTechStack) submission.projectTechStack = projectTechStack;
@@ -450,10 +679,10 @@ const submitRound = async (req, res) => {
       registration.totalScore = (registration.totalScore || 0) + totalScore;
       registration.totalTimeTaken = (registration.totalTimeTaken || 0) + totalTimeTaken;
 
-      if (status === 'qualified') {
+      if (finalStatus === 'QUALIFIED') {
         registration.currentRound = round + 1;
         registration.status = 'qualified';
-      } else if (status === 'disqualified') {
+      } else if (finalStatus === 'DISQUALIFIED') {
         registration.status = 'disqualified';
       }
 
@@ -468,11 +697,17 @@ const submitRound = async (req, res) => {
         percentage,
         qualified,
         status: submission.status,
-        timeTaken: totalTimeTaken
+        timeTaken: totalTimeTaken,
+        stats: {
+          answered: answeredCount,
+          correct: correctCount,
+          wrong: wrongCount,
+          unanswered: unansweredCount
+        }
       },
       message: qualified
         ? `Congratulations! You qualified for Round ${round + 1}! 🎉`
-        : `Round ${round} completed. Score: ${percentage}%. Required: ${qualifyingScore}%.`
+        : `Round ${round} completed. Score: ${totalScore}. Required: ${qualifyingScore}.`
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
@@ -922,6 +1157,7 @@ module.exports = {
   getCurrentHackathon,
   assignQuestionsToRound,
   removeQuestionFromRound,
-  generateAIQuestions
+  generateAIQuestions,
+  startRound
 };
 

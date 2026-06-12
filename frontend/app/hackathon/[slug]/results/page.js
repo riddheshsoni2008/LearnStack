@@ -121,11 +121,10 @@ export default function ResultsPage() {
             >
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold ${
-                    sub.status === "qualified" ? "bg-emerald-500/20 text-emerald-400" :
-                    sub.status === "disqualified" ? "bg-red-500/20 text-red-400" :
-                    "bg-[var(--primary)]/20 text-[var(--primary-light)]"
-                  }`}>
+                  <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold ${sub.status === "qualified" ? "bg-emerald-500/20 text-emerald-400" :
+                      sub.status === "disqualified" ? "bg-red-500/20 text-red-400" :
+                        "bg-[var(--primary)]/20 text-[var(--primary-light)]"
+                    }`}>
                     {sub.roundNumber}
                   </span>
                   <div>
@@ -142,7 +141,7 @@ export default function ResultsPage() {
               </div>
 
               {/* Score Bar */}
-              <div className="mb-3">
+              <div className="mb-4">
                 <div className="flex items-center justify-between text-xs mb-1">
                   <span className="text-[var(--text-muted)]">Score</span>
                   <span className="font-bold">
@@ -151,21 +150,53 @@ export default function ResultsPage() {
                 </div>
                 <div className="w-full h-2.5 bg-[var(--surface)] rounded-full overflow-hidden">
                   <div
-                    className={`h-full rounded-full transition-all duration-1000 ${
-                      sub.status === "qualified"
+                    className={`h-full rounded-full transition-all duration-1000 ${sub.status === "QUALIFIED"
                         ? "bg-gradient-to-r from-emerald-500 to-emerald-400"
-                        : sub.status === "disqualified"
-                        ? "bg-gradient-to-r from-red-500 to-red-400"
-                        : "bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]"
-                    }`}
+                        : sub.status === "DISQUALIFIED"
+                          ? "bg-gradient-to-r from-red-500 to-red-400"
+                          : "bg-gradient-to-r from-[var(--primary)] to-[var(--accent)]"
+                      }`}
                     style={{ width: `${sub.percentage}%` }}
                   />
                 </div>
               </div>
 
+              {/* Qualification Status */}
+              {(sub.status === "QUALIFIED" || sub.status === "DISQUALIFIED") && (
+                <div className={`rounded-xl p-3 mb-4 text-center text-sm font-bold ${sub.status === "QUALIFIED"
+                    ? "bg-emerald-500/10 border border-emerald-500/30 text-emerald-400"
+                    : "bg-red-500/10 border border-red-500/30 text-red-400"
+                  }`}>
+                  {sub.status === "QUALIFIED"
+                    ? `✅ Qualified for Round ${sub.roundNumber + 1}!`
+                    : `❌ Did Not Qualify — Required: ${sub.maxPossibleScore > 0 ? Math.round((20 / sub.maxPossibleScore) * sub.maxPossibleScore) : 20} pts`
+                  }
+                </div>
+              )}
+
+              {sub.stats && (
+                <div className="grid grid-cols-4 gap-2 mb-3">
+                  <div className="bg-[var(--surface-light)] rounded-lg p-2 text-center border border-[var(--border)]">
+                    <div className="text-sm font-bold text-blue-400">{sub.stats.answered}</div>
+                    <div className="text-[9px] uppercase text-[var(--text-muted)] font-bold">Answered</div>
+                  </div>
+                  <div className="bg-emerald-500/10 rounded-lg p-2 text-center border border-emerald-500/20">
+                    <div className="text-sm font-bold text-emerald-400">{sub.stats.correct}</div>
+                    <div className="text-[9px] uppercase text-emerald-500/70 font-bold">Correct</div>
+                  </div>
+                  <div className="bg-red-500/10 rounded-lg p-2 text-center border border-red-500/20">
+                    <div className="text-sm font-bold text-red-400">{sub.stats.wrong}</div>
+                    <div className="text-[9px] uppercase text-red-500/70 font-bold">Wrong</div>
+                  </div>
+                  <div className="bg-orange-500/10 rounded-lg p-2 text-center border border-orange-500/20">
+                    <div className="text-sm font-bold text-orange-400">{sub.stats.unanswered}</div>
+                    <div className="text-[9px] uppercase text-orange-500/70 font-bold">Unanswered</div>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center gap-4 text-[10px] text-[var(--text-muted)]">
                 <span>⏱️ {Math.round(sub.totalTimeTaken / 60)} minutes</span>
-                <span>📝 {sub.answers?.length || 0} answers</span>
               </div>
             </motion.div>
           ))}

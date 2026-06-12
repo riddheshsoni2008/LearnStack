@@ -38,6 +38,9 @@ export default function RoundPage() {
         if (data.success) {
           setRoundData(data.data);
           setQuestions(data.data.questions || []);
+          if (data.data.started) {
+            setExamStarted(true);
+          }
         } else {
           setError(data.message || "Failed to load round.");
         }
@@ -50,6 +53,32 @@ export default function RoundPage() {
 
     if (user) fetchRound();
   }, [user, authLoading, router, params.slug, params.roundNumber]);
+
+  const handleStartExam = async () => {
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/hackathons/${params.slug}/rounds/${params.roundNumber}/start`, {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (data.success) {
+        setQuestions(data.data.questions || []);
+        setRoundData(prev => ({
+          ...prev,
+          startedAt: data.data.startedAt,
+          started: true
+        }));
+        setExamStarted(true);
+      } else {
+        setError(data.message || "Failed to start exam.");
+      }
+    } catch (err) {
+      setError("Failed to start exam.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleAnswer = useCallback((answerData) => {
     setAnswers((prev) => ({
@@ -161,8 +190,8 @@ export default function RoundPage() {
                   <div className="text-xs text-[var(--text-muted)] uppercase font-bold mt-1">Questions</div>
                 </div>
                 <div className="glass rounded-xl p-4 text-center border border-[var(--border)]">
-                  <div className="text-2xl font-black text-yellow-400">{round?.qualifyingScore || 50}%</div>
-                  <div className="text-xs text-[var(--text-muted)] uppercase font-bold mt-1">To Qualify</div>
+                  <div className="text-2xl font-black text-yellow-400">{round?.qualifyingScore || 20}</div>
+                  <div className="text-xs text-[var(--text-muted)] uppercase font-bold mt-1">Pts to Qualify</div>
                 </div>
                 <div className="glass rounded-xl p-4 text-center border border-[var(--border)]">
                   <div className={`text-2xl font-black ${
@@ -185,13 +214,13 @@ export default function RoundPage() {
                 </ul>
               </div>
 
-              {!hasQuestions ? (
+              {!round ? (
                 <div className="text-center">
                   <div className="glass rounded-xl p-6 border border-orange-500/30 bg-orange-500/5 mb-4">
                     <div className="text-3xl mb-3">⚠️</div>
-                    <h3 className="text-lg font-bold text-orange-400 mb-2">No Questions Assigned</h3>
+                    <h3 className="text-lg font-bold text-orange-400 mb-2">Round Details Unavailable</h3>
                     <p className="text-sm text-[var(--text-muted)]">
-                      No questions have been assigned to this round yet. Please contact the organizer or try again later.
+                      Please contact the organizer or try again later.
                     </p>
                   </div>
                   <button onClick={() => router.push(`/hackathon/${params.slug}`)} className="btn-secondary !py-3 !px-8">
@@ -200,10 +229,10 @@ export default function RoundPage() {
                 </div>
               ) : (
                 <button
-                  onClick={() => setExamStarted(true)}
+                  onClick={handleStartExam}
                   className="w-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] text-white font-black py-4 rounded-2xl text-lg shadow-[0_0_20px_rgba(108,92,231,0.4)] hover:shadow-[0_0_30px_rgba(108,92,231,0.6)] transition-all hover:scale-[1.02]"
                 >
-                  🚀 Start Exam ({questions.length} Questions • {round?.duration} min)
+                  🚀 Start Exam ({round?.duration} min)
                 </button>
               )}
             </div>
@@ -231,9 +260,9 @@ export default function RoundPage() {
           </div>
 
           <div className="flex items-center gap-4">
-            {round?.endTime && (
+            {roundData?.startedAt && (
               <RoundTimer
-                endTime={round.endTime}
+                endTime={new Date(new Date(roundData.startedAt).getTime() + round.duration * 60000).toISOString()}
                 duration={round.duration}
                 onTimeUp={handleTimeUp}
                 compact
@@ -252,10 +281,10 @@ export default function RoundPage() {
 
       <div className="max-w-7xl mx-auto px-4 py-6">
         {/* ═══ Timer (full) ═══ */}
-        {round?.endTime && (
+        {roundData?.startedAt && (
           <div className="mb-6">
             <RoundTimer
-              endTime={round.endTime}
+              endTime={new Date(new Date(roundData.startedAt).getTime() + round.duration * 60000).toISOString()}
               duration={round.duration}
               onTimeUp={handleTimeUp}
             />

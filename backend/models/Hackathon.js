@@ -52,8 +52,6 @@ const HackathonSchema = new mongoose.Schema({
     default: 'draft',
     index: true
   },
-  registrationStart: { type: Date },
-  registrationEnd: { type: Date },
   startDate: { type: Date },
   endDate: { type: Date },
 

@@ -38,6 +38,10 @@ const HackathonSubmissionSchema = new mongoose.Schema({
 
   // ── Answers ──
   answers: [AnswerSchema],
+  assignedQuestionIds: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'HackathonQuestion'
+  }],
 
   // ── Scoring ──
   totalScore: { type: Number, default: 0 },
@@ -49,6 +53,14 @@ const HackathonSubmissionSchema = new mongoose.Schema({
   startedAt: { type: Date },
   submittedAt: { type: Date },
   autoSubmitted: { type: Boolean, default: false },
+
+  // ── Detailed Stats ──
+  stats: {
+    answered: { type: Number, default: 0 },
+    correct: { type: Number, default: 0 },
+    wrong: { type: Number, default: 0 },
+    unanswered: { type: Number, default: 0 }
+  },
 
   // ── Project Submission (Round 3) ──
   projectUrl: { type: String, default: '' },
@@ -66,8 +78,8 @@ const HackathonSubmissionSchema = new mongoose.Schema({
   // ── Status ──
   status: {
     type: String,
-    enum: ['in_progress', 'submitted', 'evaluated', 'qualified', 'disqualified'],
-    default: 'in_progress',
+    enum: ['NOT_STARTED', 'IN_PROGRESS', 'AUTO_SUBMITTED', 'COMPLETED', 'QUALIFIED', 'DISQUALIFIED', 'evaluated'],
+    default: 'NOT_STARTED',
     index: true
   }
 }, {

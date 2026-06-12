@@ -17,17 +17,13 @@ const FORCE_REGENERATE = args.includes('--force');
 async function main() {
   try {
     await mongoose.connect(process.env.MONGO_URI);
-    console.log('✅ Connected to MongoDB');
 
     const allLessons = await Lesson.find().sort({ trackId: 1, order: 1 });
-    console.log(`Found ${allLessons.length} lessons in DB.`);
 
     let processedCount = 0;
 
-    // Global Set to ensure absolute zero duplicates across the ENTIRE platform
     const globalQuestionSet = new Set();
 
-    // Load existing questions into the set if not forcing regenerate
     if (!FORCE_REGENERATE) {
       const existingQuizzes = await Quiz.find({}, 'questions.question').lean();
       existingQuizzes.forEach(quiz => {
@@ -49,7 +45,7 @@ async function main() {
         continue;
       }
 
-      console.log(`⚙️  Generating specific manual quiz for: ${lesson.title}`);
+
 
       const generatedQuestions = generateQuestionsForLesson(lesson.title, lesson.topic || lesson.language);
 

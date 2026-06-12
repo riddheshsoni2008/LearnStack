@@ -66,7 +66,10 @@ export default function HackathonDetailsPage() {
   const now = new Date();
   const isActive = hackathon.status === "active";
   const isCompleted = hackathon.status === "completed";
-  const canRegister = hackathon.status === "registration_open" || hackathon.status === "active";
+  
+  // Registration cutoff is 12 hours before hackathon ends
+  const cutoffTime = hackathon.endDate ? new Date(new Date(hackathon.endDate).getTime() - 12 * 60 * 60 * 1000) : null;
+  const canRegister = cutoffTime && now < cutoffTime;
 
   // ═══════════════════════════════════════════════════════════════
   // Participant Status System
@@ -92,34 +95,39 @@ export default function HackathonDetailsPage() {
       primaryColor = "from-red-500 to-orange-500";
     } else {
       // Determine based on active rounds and submissions
-      // regData.currentRound is the round they are eligible for (1-indexed)
       const eligibleRound = regData.currentRound || 1;
       const roundConfig = hackathon.rounds.find(r => r.roundNumber === eligibleRound);
       const submission = submissions.find(s => s.roundNumber === eligibleRound);
 
       if (submission && (submission.status === "in_progress" || submission.status === "submitted" || submission.status === "evaluated")) {
-        // Round submitted, waiting for results or they are done with it and not yet qualified for next
-        // Actually, 'evaluated' with qualified=false leads to disqualified, which is handled above.
-        // If qualified=true, currentRound would be updated.
         primaryState = "ROUND_EVALUATION";
         primaryCtaTitle = `⏳ Round ${eligibleRound} Evaluation in Progress`;
         primaryCtaLabel = "View Results";
         primaryCtaAction = () => router.push(`/hackathon/${params.slug}/results`);
         primaryColor = "from-blue-500 to-indigo-500";
       } else if (roundConfig) {
-        const isRoundActive = now >= new Date(roundConfig.startTime) && now <= new Date(roundConfig.endTime);
-        if (isRoundActive && isActive) {
-          primaryState = `ROUND_${eligibleRound}_AVAILABLE`;
-          primaryCtaTitle = eligibleRound === 1 ? "🔥 Round 1 is Live" : eligibleRound === hackathon.rounds.length ? "🏆 Final Round Live" : "✅ Congratulations! You qualified for Round " + eligibleRound;
-          primaryCtaLabel = eligibleRound === hackathon.rounds.length ? "Start Final Round" : `Start Round ${eligibleRound}`;
-          primaryCtaAction = () => router.push(`/hackathon/${params.slug}/round/${eligibleRound}`);
+        // Round 1 is ALWAYS available after registration — no timing checks
+        if (eligibleRound === 1) {
+          primaryState = "ROUND_1_AVAILABLE";
+          primaryCtaTitle = "🚀 Round 1 is Ready";
+          primaryCtaLabel = "🚀 Start Round 1";
+          primaryCtaAction = () => router.push(`/hackathon/${params.slug}/round/1`);
           primaryColor = "from-green-500 to-emerald-500";
         } else {
-          primaryState = "REGISTERED_WAITING";
-          primaryCtaTitle = "✅ Registered Successfully";
-          primaryCtaLabel = `Waiting for Round ${eligibleRound} to start`;
-          primaryCtaAction = null; // Disabled button
-          primaryColor = "from-gray-600 to-gray-500";
+          const isRoundActive = now >= new Date(roundConfig.startTime) && now <= new Date(roundConfig.endTime);
+          if (isRoundActive && isActive) {
+            primaryState = `ROUND_${eligibleRound}_AVAILABLE`;
+            primaryCtaTitle = eligibleRound === hackathon.rounds.length ? "🏆 Final Round Live" : "✅ Congratulations! You qualified for Round " + eligibleRound;
+            primaryCtaLabel = eligibleRound === hackathon.rounds.length ? "Start Final Round" : `Start Round ${eligibleRound}`;
+            primaryCtaAction = () => router.push(`/hackathon/${params.slug}/round/${eligibleRound}`);
+            primaryColor = "from-green-500 to-emerald-500";
+          } else {
+            primaryState = "REGISTERED_WAITING";
+            primaryCtaTitle = "✅ Registered Successfully";
+            primaryCtaLabel = `Waiting for Round ${eligibleRound} to start`;
+            primaryCtaAction = null;
+            primaryColor = "from-gray-600 to-gray-500";
+          }
         }
       } else {
         primaryState = "COMPLETED_ALL_ROUNDS";
@@ -293,8 +301,9 @@ export default function HackathonDetailsPage() {
                     
                     const isEligible = isRegistered && regData.currentRound >= round.roundNumber;
                     const isLocked = !isEligible && round.roundNumber > 1;
-                    const isDone = submission?.status === 'qualified' || submission?.status === 'submitted' || submission?.status === 'disqualified';
-                    const canAccess = isEligible && isRoundActive && !isDone && isActive;
+                    const isDone = submission?.status === 'qualified' || submission?.status === 'submitted' || submission?.status === 'disqualified' || submission?.status === 'QUALIFIED' || submission?.status === 'DISQUALIFIED';
+                    // Round 1: always accessible after registration (no timing checks)
+                    const canAccess = isEligible && !isDone && (round.roundNumber === 1 || (isRoundActive && isActive));
 
                     let badgeColor = "bg-gray-500/20 text-gray-400";
                     let badgeLabel = "Locked";
@@ -304,7 +313,7 @@ export default function HackathonDetailsPage() {
                     } else if (canAccess) {
                       badgeColor = "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30";
                       badgeLabel = "Available";
-                    } else if (isEligible && !isRoundActive) {
+                    } else if (isEligible && !isRoundActive && round.roundNumber > 1) {
                       badgeColor = "bg-yellow-500/20 text-yellow-400";
                       badgeLabel = "Waiting";
                     }
@@ -331,7 +340,7 @@ export default function HackathonDetailsPage() {
                             <div className="text-xs text-[var(--text-muted)] mt-1 flex flex-wrap gap-2">
                               <span>⏱️ {round.duration} mins</span>
                               <span>•</span>
-                              <span>🎯 {round.qualifyingScore}% to qualify</span>
+                              <span>🎯 {round.qualifyingScore} pts to qualify</span>
                               <span>•</span>
                               <span className="uppercase text-[var(--primary-light)] font-bold">{round.difficulty}</span>
                             </div>
@@ -341,7 +350,7 @@ export default function HackathonDetailsPage() {
                         <div className="w-full sm:w-auto flex-shrink-0">
                           {canAccess ? (
                             <Link href={`/hackathon/${params.slug}/round/${round.roundNumber}`} className="btn-primary !py-2 w-full sm:w-auto text-center block">
-                              Start Round →
+                              {round.roundNumber === 1 ? "🚀 Start Round 1" : `Start Round ${round.roundNumber} →`}
                             </Link>
                           ) : submission ? (
                             <QualificationBadge status={submission.status} size="md" />

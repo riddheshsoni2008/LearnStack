@@ -9,12 +9,12 @@ export default function HackathonRegistrationPage() {
   const params = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  
+
   const [hackathon, setHackathon] = useState(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
   const [error, setError] = useState("");
-  
+
   const [form, setForm] = useState({
     collegeName: "",
     studentId: "",
@@ -106,9 +106,10 @@ export default function HackathonRegistrationPage() {
         body: JSON.stringify(form),
       });
       const data = await res.json();
-      
+
       if (data.success) {
-        router.push(`/hackathon/${params.slug}`);
+        const redirectSlug = data.redirectSlug || params.slug;
+        router.push(`/hackathon/${redirectSlug}`);
       } else {
         setError(`❌ ${data.message || "Registration failed"}`);
       }
@@ -130,7 +131,7 @@ export default function HackathonRegistrationPage() {
   return (
     <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] pb-20">
       <AuthNavbar />
-      
+
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -138,7 +139,7 @@ export default function HackathonRegistrationPage() {
           className="glass rounded-3xl p-8 md:p-12 border border-[var(--primary)]/20 shadow-2xl relative overflow-hidden"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-[var(--primary)]/10 rounded-full blur-[80px] pointer-events-none -translate-y-1/2 translate-x-1/2" />
-          
+
           <div className="mb-8 relative z-10">
             <h1 className="text-3xl md:text-4xl font-black mb-2 flex items-center gap-3">
               📝 Registration
@@ -195,7 +196,7 @@ export default function HackathonRegistrationPage() {
                 />
                 {touched.collegeName && errors.collegeName && <p className="text-red-400 text-xs mt-1 font-medium">{errors.collegeName}</p>}
               </div>
-              
+
               <div>
                 <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2 block">Student ID *</label>
                 <input

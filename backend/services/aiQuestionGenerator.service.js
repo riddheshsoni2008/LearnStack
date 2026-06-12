@@ -25,19 +25,27 @@ const ROUND_PROMPTS = {
   1: {
     count: 3,
     difficulty: 'easy',
-    instructions: `Generate exactly 3 hackathon questions for Round 1 (Easy difficulty).
+    instructions: `Generate exactly 3 hackathon questions for Round 1. The UI label shows "Easy" but the questions should be GENUINELY CHALLENGING — test real thinking ability, not textbook basics.
 
-Question 1: SQL MCQ
-- Create a practical SQL query question with 4 options (exactly one correct).
-- Real-world database scenario (e.g., e-commerce, student management).
+Question 1: SQL Problem Solving (MCQ)
+- Create a complex SQL question involving multi-table JOINs, subqueries, window functions, or GROUP BY with HAVING.
+- Use a realistic scenario (e-commerce analytics, HR payroll, inventory management).
+- All 4 options should look plausible. The wrong options should contain subtle but real mistakes.
 
-Question 2: HTML/CSS Debugging
-- Provide a broken HTML/CSS code snippet.
-- Ask what fix is needed. Format as MCQ with 4 options.
+Question 2: HTML/CSS/Frontend Debugging (MCQ)
+- Present a non-trivial HTML/CSS bug: CSS specificity conflicts, z-index stacking context issues, flexbox/grid edge cases, or unexpected inheritance.
+- Show a realistic code snippet and ask what the fix is.
+- All 4 options should be reasonable-looking fixes, but only one is correct.
 
-Question 3: Real World Logic Problem
-- A logical reasoning problem that tests analytical thinking.
-- Format as MCQ with 4 options.
+Question 3: Logic & Algorithmic Thinking (MCQ)
+- A real algorithmic or logical reasoning problem — not basic math.
+- Could involve: time complexity analysis, recursion tracing, state machine transitions, or optimization puzzles.
+- All 4 options should require careful thought to evaluate.
+
+CRITICAL: Randomize the position of the correct answer across questions!
+- Question 1: Place correct answer as option B (index 1)
+- Question 2: Place correct answer as option D (index 3)
+- Question 3: Place correct answer as option A (index 0)
 
 IMPORTANT: Return ONLY a valid JSON array, no markdown fences, no extra text.
 Each object must have these exact fields:
@@ -119,46 +127,46 @@ Each object must have these exact fields:
 const FALLBACK_QUESTIONS = {
   1: [
     {
-      questionText: "You have a table 'orders' with columns: id, customer_id, product_name, quantity, order_date. Write a SQL query to find the total quantity of each product ordered in the last 30 days. Which of the following is correct?",
+      questionText: "Given tables `employees(id, name, department_id, salary)` and `departments(id, name)`, you need to find employees whose salary is above the average salary of their own department. Which query correctly solves this?\n\nNote: The query must work correctly even if a department has only one employee.",
       questionType: "mcq",
       category: "sql",
       difficulty: "easy",
       points: 10,
       options: [
-        { text: "SELECT product_name, SUM(quantity) FROM orders WHERE order_date > NOW() - INTERVAL 30 DAY GROUP BY product_name", isCorrect: true },
-        { text: "SELECT product_name, COUNT(quantity) FROM orders WHERE order_date > 30 GROUP BY product_name", isCorrect: false },
-        { text: "SELECT product_name, SUM(quantity) FROM orders GROUP BY order_date", isCorrect: false },
-        { text: "SELECT product_name, quantity FROM orders WHERE order_date BETWEEN 0 AND 30", isCorrect: false }
+        { text: "SELECT e.name FROM employees e JOIN departments d ON e.department_id = d.id WHERE e.salary > AVG(e.salary) GROUP BY e.department_id", isCorrect: false },
+        { text: "SELECT e.name FROM employees e WHERE e.salary > (SELECT AVG(salary) FROM employees GROUP BY department_id)", isCorrect: false },
+        { text: "SELECT e.name FROM employees e WHERE e.salary > (SELECT AVG(e2.salary) FROM employees e2 WHERE e2.department_id = e.department_id)", isCorrect: true },
+        { text: "SELECT e.name FROM employees e HAVING e.salary > AVG(e.salary) OVER (PARTITION BY e.department_id)", isCorrect: false }
       ],
-      explanation: "SUM(quantity) aggregates the total, WHERE filters the last 30 days, and GROUP BY groups by product."
+      explanation: "A correlated subquery is needed here. Option C correctly correlates the subquery to the outer query's department_id, computing the average per-department. Option A fails because you can't use WHERE with aggregate functions directly. Option B's subquery returns multiple rows without correlation. Option D incorrectly uses HAVING with a window function."
     },
     {
-      questionText: "A developer wrote the following CSS to center a div both horizontally and vertically, but it's not working:\n\n```css\n.container {\n  display: flex;\n  justify-content: center;\n}\n.box {\n  width: 200px;\n  height: 200px;\n  background: blue;\n}\n```\n\nWhat is missing to center the box vertically as well?",
+      questionText: "A developer has the following CSS and HTML. The `.modal` should appear above the `.sidebar`, but it renders behind it. Why?\n\n```html\n<div class=\"sidebar-container\">\n  <div class=\"sidebar\">Sidebar</div>\n</div>\n<div class=\"modal-container\">\n  <div class=\"modal\">Modal</div>\n</div>\n```\n\n```css\n.sidebar-container { position: relative; z-index: 10; }\n.sidebar { position: absolute; z-index: 1; }\n.modal-container { position: relative; z-index: 5; }\n.modal { position: fixed; z-index: 9999; }\n```",
       questionType: "mcq",
       category: "frontend",
       difficulty: "easy",
       points: 10,
       options: [
-        { text: "Add align-items: center and min-height: 100vh to .container", isCorrect: true },
-        { text: "Add vertical-align: middle to .box", isCorrect: false },
-        { text: "Add margin: auto to .box", isCorrect: false },
-        { text: "Add position: absolute; top: 50% to .box", isCorrect: false }
+        { text: "The .modal's z-index (9999) is scoped to .modal-container's stacking context (z-index: 5), which is lower than .sidebar-container's stacking context (z-index: 10). The fix is to set .modal-container's z-index higher than 10, or remove it to avoid creating a stacking context.", isCorrect: true },
+        { text: "The .modal needs `position: absolute` instead of `position: fixed` to break out of the stacking context.", isCorrect: false },
+        { text: "The z-index on .modal is being overridden by the CSS cascade. Adding `!important` to .modal's z-index will fix this.", isCorrect: false },
+        { text: "The .sidebar has `position: absolute` which always takes priority over `position: fixed` in the rendering order.", isCorrect: false }
       ],
-      explanation: "Flexbox needs align-items: center for vertical centering, and the container needs a height (min-height: 100vh) to have space to center within."
+      explanation: "This is a CSS stacking context problem. When a parent creates a stacking context (via position + z-index), all children's z-index values are scoped within that context. The .modal-container has z-index: 5, so no matter how high .modal's z-index is (9999), it can't exceed the parent's stacking context level of 5 compared to .sidebar-container's 10."
     },
     {
-      questionText: "A startup has 100 users. Every month, 20% of existing users leave, but 30 new users join. After 3 months, approximately how many users will the startup have?",
+      questionText: "Consider the following recursive function:\n\n```javascript\nfunction mystery(n) {\n  if (n <= 1) return n;\n  return mystery(n - 1) + mystery(n - 2);\n}\n```\n\nHow many total function calls (including the initial call) are made when executing `mystery(6)`?",
       questionType: "mcq",
       category: "logical_reasoning",
       difficulty: "easy",
       points: 10,
       options: [
-        { text: "About 103 users", isCorrect: true },
-        { text: "About 130 users", isCorrect: false },
-        { text: "About 90 users", isCorrect: false },
-        { text: "About 160 users", isCorrect: false }
+        { text: "13", isCorrect: false },
+        { text: "15", isCorrect: false },
+        { text: "21", isCorrect: false },
+        { text: "25", isCorrect: true }
       ],
-      explanation: "Month 1: 100*0.8 + 30 = 110. Month 2: 110*0.8 + 30 = 118. Month 3: 118*0.8 + 30 ≈ 124.4 → ~103 is closest considering compounding churn."
+      explanation: "This is the Fibonacci function. The total call count follows the pattern: calls(n) = calls(n-1) + calls(n-2) + 1. calls(0)=1, calls(1)=1, calls(2)=3, calls(3)=5, calls(4)=9, calls(5)=15, calls(6)=25. Each call branches into two recursive calls until reaching the base cases, creating an exponential call tree."
     }
   ],
   2: [
@@ -220,7 +228,6 @@ const generateQuestionsForRound = async (hackathonId, roundNumber, createdBy, fo
     if (hackathon) {
       const round = hackathon.rounds.find(r => r.roundNumber === roundNumber);
       if (round && round.questionIds && round.questionIds.length >= roundConfig.count) {
-        console.log(`✅ Round ${roundNumber} already has ${round.questionIds.length} questions. Skipping generation.`);
         return []; // Already cached
       }
     }
@@ -255,16 +262,13 @@ const generateQuestionsForRound = async (hackathonId, roundNumber, createdBy, fo
         throw new Error('Gemini returned empty or invalid array.');
       }
 
-      console.log(`✨ Gemini generated ${parsedQuestions.length} questions for Round ${roundNumber}.`);
     } catch (err) {
-      console.error(`⚠️ Gemini failed for Round ${roundNumber}:`, err.message);
       parsedQuestions = null; // Fall through to fallback
     }
   }
 
   // ── Fallback if Gemini unavailable or failed ──
   if (!parsedQuestions) {
-    console.log(`🔄 Using fallback questions for Round ${roundNumber}.`);
     parsedQuestions = FALLBACK_QUESTIONS[roundNumber] || FALLBACK_QUESTIONS[1];
   }
 
@@ -275,7 +279,7 @@ const generateQuestionsForRound = async (hackathonId, roundNumber, createdBy, fo
       const doc = await HackathonQuestion.create({
         questionText: q.questionText,
         questionType: q.questionType || 'mcq',
-        category: q.category || 'problem_solving',
+        category: ['web_dev', 'frontend', 'backend', 'database', 'sql', 'ai_ml', 'cybersecurity', 'cloud_computing', 'problem_solving', 'logical_reasoning', 'system_design'].includes(q.category) ? q.category : 'problem_solving',
         difficulty: q.difficulty || roundConfig.difficulty,
         points: q.points || 10,
         options: q.options || [],
@@ -332,7 +336,6 @@ const generateAllRoundQuestions = async (hackathonId, createdBy, forceRegenerate
   results.round3 = await generateQuestionsForRound(hackathonId, 3, createdBy, forceRegenerate);
 
   const total = results.round1.length + results.round2.length + results.round3.length;
-  console.log(`🏁 AI Question Generation complete. ${total} new questions created.`);
 
   return results;
 };

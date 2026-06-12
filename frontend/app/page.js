@@ -1,220 +1,6 @@
-"use client";
-import { useState, useEffect } from "react";
 import Link from "next/link";
-import { useAuth } from "@/context/AuthContext";
-import { motion } from "framer-motion";
-import StatCard from "@/components/StatCard";
-
-// ─── Navbar ─────────────────────────────────────────────
-function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const { user, loading } = useAuth();
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  return (
-    <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled ? "glass py-3" : "bg-transparent py-5"
-        }`}
-    >
-      <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-white font-bold text-lg transition-transform group-hover:scale-110">
-            L
-          </div>
-          <span className="text-xl font-bold tracking-tight">
-            Learn<span className="gradient-text">Stack</span>
-          </span>
-        </Link>
-
-        <div className="hidden lg:flex items-center gap-8">
-          <a href="#features" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Features</a>
-          <a href="#tracks" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Course</a>
-          <a href="#how-it-works" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">How It Works</a>
-          <a href="#community" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Community</a>
-        </div>
-
-        <div className="hidden lg:flex items-center gap-3">
-          {!loading && user ? (
-            <>
-              <Link href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">
-                Profile
-              </Link>
-              <Link href="/dashboard" className="btn-primary text-sm !py-2.5 !px-6">
-                Go to Dashboard
-              </Link>
-            </>
-          ) : (
-            <>
-              <Link href="/login" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors px-4 py-2">
-                Log In
-              </Link>
-              <Link href="/register" className="btn-primary text-sm !py-2.5 !px-6">
-                Start Learning — Free
-              </Link>
-            </>
-          )}
-        </div>
-
-        <button className="lg:hidden text-[var(--foreground)] p-2" onClick={() => setMobileOpen(!mobileOpen)} aria-label="Toggle menu">
-          {mobileOpen ? (
-            <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M18 6L6 18M6 6l12 12" /></svg>
-          ) : (
-            <svg width="24" height="24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 12h18M3 6h18M3 18h18" /></svg>
-          )}
-        </button>
-      </div>
-
-      {mobileOpen && (
-        <div className="lg:hidden glass mt-2 mx-4 rounded-xl p-6 animate-slide-up">
-          <div className="flex flex-col gap-4">
-            <a href="#features" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium" onClick={() => setMobileOpen(false)}>Features</a>
-            <a href="#tracks" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium" onClick={() => setMobileOpen(false)}>Tracks</a>
-            <a href="#how-it-works" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium" onClick={() => setMobileOpen(false)}>How It Works</a>
-            <hr className="border-[var(--border)]" />
-            {!loading && user ? (
-              <>
-                <Link href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium">Profile</Link>
-                <Link href="/dashboard" className="btn-primary text-center text-sm !py-3">Go to Dashboard</Link>
-              </>
-            ) : (
-              <>
-                <Link href="/login" className="text-[var(--text-muted)] font-medium">Log In</Link>
-                <Link href="/register" className="btn-primary text-center text-sm !py-3">Start Learning — Free</Link>
-              </>
-            )}
-          </div>
-        </div>
-      )}
-    </nav>
-  );
-}
-
-// ─── Hero Section ───────────────────────────────────────
-function HeroSection() {
-  const [stats, setStats] = useState({
-    tracks: 7,
-    lessons: 100,
-    questions: 500,
-    users: 0,
-    certificates: 0,
-    maxStreak: 0
-  });
-
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        const res = await fetch("/api/stats");
-        const data = await res.json();
-        if (data.success) {
-          setStats(data.data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch statistics:", err);
-      }
-    };
-    fetchStats();
-  }, []);
-
-  const statItems = [
-    { value: `${stats.tracks}+`, label: "Learning Tracks", type: "tracks" },
-    { value: `${stats.lessons}+`, label: "Lessons", type: "lessons" },
-    { value: `${stats.questions}+`, label: "Quiz Questions", type: "questions" },
-    { value: `${stats.users}+`, label: "Global Learners", type: "learners" },
-    { value: `${stats.certificates}+`, label: "Certificates", type: "certificates" },
-    { value: `${stats.maxStreak}+`, label: "Streak Record", type: "streak", glow: true }
-  ];
-
-  return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[var(--primary)] rounded-full opacity-10 blur-[120px]" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-[var(--accent)] rounded-full opacity-10 blur-[100px]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-[var(--primary-dark)] rounded-full opacity-5 blur-[150px]" />
-        <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: "linear-gradient(var(--foreground) 1px, transparent 1px), linear-gradient(90deg, var(--foreground) 1px, transparent 1px)", backgroundSize: "60px 60px" }} />
-      </div>
-
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
-        <motion.div 
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, ease: "easeOut" }}
-          className="inline-flex items-center gap-2 glass rounded-full px-5 py-2 mb-8"
-        >
-          <span className="w-2 h-2 rounded-full bg-[var(--accent)] animate-pulse" />
-          <span className="text-sm text-[var(--text-muted)]">100% Free · No Credit Card Required</span>
-        </motion.div>
-
-        <motion.h1 
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.1, type: "spring", stiffness: 100, damping: 15 }}
-          className="text-5xl sm:text-6xl md:text-7xl font-extrabold leading-tight mb-6"
-        >
-          Learn the Full Stack,<br />
-          <span className="gradient-text animate-gradient">Step by Step</span>
-        </motion.h1>
-
-        <motion.p 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.25 }}
-          className="text-lg sm:text-xl text-[var(--text-muted)] max-w-2xl mx-auto mb-10 leading-relaxed"
-        >
-          Master web development with structured roadmaps, interactive quizzes, daily streaks, and earn certificates — all for free. From HTML to Full&nbsp;Stack Developer.
-        </motion.p>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.4 }}
-          className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16"
-        >
-          <Link href="/register" className="btn-primary text-lg !py-4 !px-10 animate-pulse-glow">
-            🚀 Start Learning for Free
-          </Link>
-          <a href="#how-it-works" className="btn-secondary text-lg !py-4 !px-10">
-            See How It Works
-          </a>
-        </motion.div>
-
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8, delay: 0.55 }}
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-5 max-w-6xl mx-auto"
-        >
-          {statItems.map((stat, index) => (
-            <motion.div
-              key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.55 + index * 0.08 }}
-            >
-              <StatCard
-                value={stat.value}
-                label={stat.label}
-                type={stat.type}
-                glow={stat.glow}
-              />
-            </motion.div>
-          ))}
-        </motion.div>
-      </div>
-
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-float">
-        <div className="w-6 h-10 rounded-full border-2 border-[var(--border)] flex justify-center pt-2">
-          <div className="w-1 h-3 bg-[var(--primary-light)] rounded-full animate-pulse" />
-        </div>
-      </div>
-    </section>
-  );
-}
+import Navbar from "@/components/home/Navbar";
+import HeroSection from "@/components/home/HeroSection";
 
 // ─── Features Section ───────────────────────────────────
 const features = [
@@ -425,12 +211,28 @@ function Footer() {
   );
 }
 
+// ─── Data Fetching ──────────────────────────────────────
+async function getStats() {
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/stats`, { 
+      next: { revalidate: 3600 } // Revalidate every hour
+    });
+    const data = await res.json();
+    return data.success ? data.data : { tracks: 7, lessons: 100, questions: 500, users: 0, certificates: 0, maxStreak: 0 };
+  } catch (err) {
+    console.error("Failed to fetch statistics:", err);
+    return { tracks: 7, lessons: 100, questions: 500, users: 0, certificates: 0, maxStreak: 0 };
+  }
+}
+
 // ─── Main Page ──────────────────────────────────────────
-export default function HomePage() {
+export default async function HomePage() {
+  const stats = await getStats();
+
   return (
     <main className="flex-1">
       <Navbar />
-      <HeroSection />
+      <HeroSection stats={stats} />
       <FeaturesSection />
       <TracksSection />
       <HowItWorksSection />

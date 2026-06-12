@@ -21,7 +21,8 @@ const {
   getCurrentHackathon,
   assignQuestionsToRound,
   removeQuestionFromRound,
-  generateAIQuestions
+  generateAIQuestions,
+  startRound
 } = require('../controllers/hackathon.controller');
 
 // ── Public Routes ──
@@ -46,6 +47,7 @@ router.get('/:slug/details', getHackathonBySlug);
 router.post('/:slug/register', protect, registerForHackathon);
 router.get('/:slug/my-status', protect, getMyStatus);
 router.get('/:slug/rounds/:roundNumber', protect, getRoundQuestions);
+router.post('/:slug/rounds/:roundNumber/start', protect, startRound);
 router.post('/:slug/rounds/:roundNumber/submit', protect, submitRound);
 router.get('/:slug/results', protect, getResults);
 

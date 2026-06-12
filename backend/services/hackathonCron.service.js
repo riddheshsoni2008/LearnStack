@@ -142,10 +142,6 @@ const autoCreateNextHackathon = async () => {
   const startDate = new Date(now.getTime() + HACKATHON_BREAK_MINUTES * 60000);
   const endDate = new Date(startDate.getTime() + HACKATHON_DURATION_HOURS * 60 * 60000);
   
-  // Users can register anytime before the hackathon starts
-  const registrationStart = now;
-  const registrationEnd = startDate;
-
   // Find an admin user to set as creator
   let adminUser = await User.findOne({ role: 'admin' });
   if (!adminUser) {
@@ -154,22 +150,21 @@ const autoCreateNextHackathon = async () => {
 
   // Generate Rounds from global questions
   const allQuestions = await HackathonQuestion.find({ scope: 'global', isActive: true });
-  const easyQs = shuffleArray(allQuestions.filter(q => q.difficulty === 'easy')).slice(0, 5).map(q => q._id);
+  const easyQs = shuffleArray(allQuestions.filter(q => q.difficulty === 'easy')).slice(0, 3).map(q => q._id);
   const medQs = shuffleArray(allQuestions.filter(q => q.difficulty === 'intermediate')).slice(0, 5).map(q => q._id);
   const hardQs = shuffleArray(allQuestions.filter(q => q.difficulty === 'advanced')).slice(0, 3).map(q => q._id);
 
-  // Stagger rounds sequentially: Round 1 runs during the hackathon window,
-  // Round 2 after Round 1 ends, Round 3 after Round 2 ends.
-  // Each round's endTime = its startTime + its duration in minutes.
+  // Stagger rounds: Round 1 spans the entire hackathon (always available),
+  // Round 2 after a break, Round 3 after Round 2.
   const rounds = [];
-  let roundStart = startDate;
 
+  // Round 1: Spans entire hackathon duration (always accessible after registration)
   if (easyQs.length > 0) {
     const r1Duration = 30; // minutes
-    const r1End = new Date(roundStart.getTime() + r1Duration * 60000);
-    rounds.push(createRoundObj(1, 'Qualification Round', 'easy', roundStart, r1End, r1Duration, 50, easyQs));
-    roundStart = r1End;
+    rounds.push(createRoundObj(1, 'Qualification Round', 'easy', startDate, endDate, r1Duration, 20, easyQs));
   }
+  // Round 2 and 3: Sequential after hackathon start
+  let roundStart = new Date(startDate.getTime() + 30 * 60000); // After Round 1 duration
   if (medQs.length > 0) {
     const r2Duration = 45;
     const r2End = new Date(roundStart.getTime() + r2Duration * 60000);
@@ -184,9 +179,8 @@ const autoCreateNextHackathon = async () => {
 
   // If no questions exist in DB, still create one round with correct timing
   if (rounds.length === 0) {
-    const defaultDuration = 60;
-    const defaultEnd = new Date(startDate.getTime() + defaultDuration * 60000);
-    rounds.push(createRoundObj(1, 'Default Round', 'easy', startDate, defaultEnd, defaultDuration, 50, []));
+    const defaultDuration = 30;
+    rounds.push(createRoundObj(1, 'Qualification Round', 'easy', startDate, endDate, defaultDuration, 20, []));
   }
 
   const newHackathon = await Hackathon.create({
@@ -196,8 +190,6 @@ const autoCreateNextHackathon = async () => {
     status: 'registration_open',
     startDate,
     endDate,
-    registrationStart,
-    registrationEnd,
     prizePool: {
       first: "₹5,000",
       second: "₹2,500",
