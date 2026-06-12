@@ -148,6 +148,12 @@ const autoCreateNextHackathon = async () => {
     adminUser = await User.findOne(); // fallback
   }
 
+  // Cannot create hackathon without a valid creator
+  if (!adminUser) {
+    console.warn('⚠️ No users found in database. Skipping hackathon auto-creation. Register at least one user first.');
+    return;
+  }
+
   // Generate Rounds from global questions
   const allQuestions = await HackathonQuestion.find({ scope: 'global', isActive: true });
   const easyQs = shuffleArray(allQuestions.filter(q => q.difficulty === 'easy')).slice(0, 3).map(q => q._id);
