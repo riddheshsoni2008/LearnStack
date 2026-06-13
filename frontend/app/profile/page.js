@@ -106,8 +106,11 @@ export default function ProfilePage() {
 
   if (authLoading || dataLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
-        <div className="text-[var(--text-muted)] text-lg animate-pulse">Loading profile...</div>
+      <div key="loading-profile" className="min-h-screen bg-[var(--background)] pb-20">
+        <AuthNavbar />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="text-[var(--text-muted)] text-lg animate-pulse">Loading profile...</div>
+        </div>
       </div>
     );
   }
@@ -139,7 +142,7 @@ export default function ProfilePage() {
   let displayTitle = user?.levelTitle || "Learner";
 
   return (
-    <div className={`min-h-screen pb-20 bg-[var(--background)]`}>
+    <div key="loaded-profile" className={`min-h-screen pb-20 bg-[var(--background)]`}>
       <AuthNavbar />
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-8 sm:mt-12">

@@ -9,10 +9,7 @@ export default function HackathonTimer({ endDate, title = "Hackathon Ends In..."
     seconds: 0
   });
 
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
     const calculateTimeLeft = () => {
       const difference = new Date(endDate) - new Date();
       
@@ -34,8 +31,6 @@ export default function HackathonTimer({ endDate, title = "Hackathon Ends In..."
     return () => clearInterval(timer);
   }, [endDate]);
 
-  if (!mounted) return null;
-
   return (
     <div className="glass rounded-2xl p-6 mb-8 border border-[var(--primary)]/30 relative overflow-hidden group">
       <div className="absolute inset-0 bg-gradient-to-br from-[var(--primary)]/10 to-transparent opacity-50"></div>
@@ -50,7 +45,7 @@ export default function HackathonTimer({ endDate, title = "Hackathon Ends In..."
           </p>
         </div>
         
-        <div className="flex gap-4">
+        <div className="flex gap-4" suppressHydrationWarning>
           <TimeUnit value={timeLeft.days} label="Days" />
           <TimeUnit value={timeLeft.hours} label="Hours" />
           <TimeUnit value={timeLeft.minutes} label="Minutes" />

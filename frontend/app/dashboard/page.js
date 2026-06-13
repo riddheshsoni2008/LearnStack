@@ -174,8 +174,11 @@ export default function DashboardPage() {
 
   if (loading || !user) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-[var(--text-muted)] animate-pulse">Loading...</div>
+      <div key="loading-dashboard" className="min-h-screen bg-[var(--background)] pb-20">
+        <AuthNavbar />
+        <div className="flex items-center justify-center h-[60vh]">
+          <div className="text-[var(--text-muted)] animate-pulse">Loading dashboard...</div>
+        </div>
       </div>
     );
   }
@@ -194,7 +197,7 @@ export default function DashboardPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[var(--background)] pb-20">
+    <div key="loaded-dashboard" className="min-h-screen bg-[var(--background)] pb-20">
       <AuthNavbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
@@ -246,7 +249,7 @@ export default function DashboardPage() {
         </div>
 
         {/* ═══ Badges Section ═══ */}
-        <div className="glass rounded-2xl p-6 mb-8">
+        <div className="glass rounded-2xl p-6 mb-8 min-h-[160px]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-bold">🏆 Achievements</h3>
             <Link href="/profile" className="text-xs text-[var(--primary-light)] hover:underline">
@@ -254,7 +257,11 @@ export default function DashboardPage() {
             </Link>
           </div>
           {dataLoading ? (
-            <div className="text-xs text-[var(--text-muted)] animate-pulse">Loading badges...</div>
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-2">
+              {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((i) => (
+                <div key={i} className="animate-pulse bg-[var(--surface-light)] border border-[var(--border)] rounded-xl h-24"></div>
+              ))}
+            </div>
           ) : (
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-2">
               {allBadges.slice(0, 9).map((badge) => (
@@ -269,37 +276,49 @@ export default function DashboardPage() {
         </div>
 
         {/* ═══ Track Progress ═══ */}
-        <div className="glass rounded-2xl p-6 mb-8">
+        <div className="glass rounded-2xl p-6 mb-8 min-h-[220px]">
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-sm font-bold">📚 Track Progress</h3>
             <Link href="/tracks" className="text-xs text-[var(--primary-light)] hover:underline">
               All Tracks →
             </Link>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {tracks.map((track) => {
-              const completed = trackProgressMap[track._id] || 0;
-              const total = track.totalLessons || 1;
-              const pct = Math.round((completed / total) * 100);
-              return (
-                <Link key={track._id} href={`/course/${track.title.toLowerCase().replace(/[\s&]+/g, "-").replace(/[.]/g, "-js")}`}>
-                  <div className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 hover:border-[var(--primary)] transition-all cursor-pointer group">
-                    <div className="flex justify-between items-center mb-2">
-                      <h4 className="text-sm font-bold group-hover:text-[var(--primary-light)] transition-colors truncate">{track.title}</h4>
-                      <span className="text-xs font-bold text-[var(--primary-light)]">{pct}%</span>
+          {dataLoading ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24">
+                  <div className="h-4 bg-[var(--surface)] w-32 rounded mb-4"></div>
+                  <div className="w-full h-2 bg-[var(--surface)] rounded-full mb-2"></div>
+                  <div className="h-3 bg-[var(--surface)] w-20 rounded"></div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {tracks.map((track) => {
+                const completed = trackProgressMap[track._id] || 0;
+                const total = track.totalLessons || 1;
+                const pct = Math.round((completed / total) * 100);
+                return (
+                  <Link key={track._id} href={`/course/${track.title.toLowerCase().replace(/[\s&]+/g, "-").replace(/[.]/g, "-js")}`}>
+                    <div className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 hover:border-[var(--primary)] transition-all cursor-pointer group">
+                      <div className="flex justify-between items-center mb-2">
+                        <h4 className="text-sm font-bold group-hover:text-[var(--primary-light)] transition-colors truncate">{track.title}</h4>
+                        <span className="text-xs font-bold text-[var(--primary-light)]">{pct}%</span>
+                      </div>
+                      <div className="w-full h-2 bg-[var(--surface)] rounded-full overflow-hidden">
+                        <div
+                          className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-full transition-all duration-500"
+                          style={{ width: `${pct}%` }}
+                        />
+                      </div>
+                      <div className="text-[10px] text-[var(--text-muted)] mt-1">{completed}/{total} lessons</div>
                     </div>
-                    <div className="w-full h-2 bg-[var(--surface)] rounded-full overflow-hidden">
-                      <div
-                        className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] rounded-full transition-all duration-500"
-                        style={{ width: `${pct}%` }}
-                      />
-                    </div>
-                    <div className="text-[10px] text-[var(--text-muted)] mt-1">{completed}/{total} lessons</div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         {/* ═══ Coding Arcade ═══ */}
