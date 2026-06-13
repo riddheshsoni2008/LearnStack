@@ -112,14 +112,17 @@ export default function RoundPage() {
 
       const data = await res.json();
       if (data.success) {
+        setShowConfirm(false);
         router.push(`/hackathon/${params.slug}/results`);
       } else {
         setError(data.message);
         setSubmitting(false);
+        setShowConfirm(false);
       }
     } catch (err) {
       setError("Submission failed. Please try again.");
       setSubmitting(false);
+      setShowConfirm(false);
     }
   }, [answers, params.slug, params.roundNumber, router, submitting]);
 

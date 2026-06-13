@@ -13,7 +13,7 @@ export default function HackathonDetailsPage() {
   const params = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  
+
   const [hackathon, setHackathon] = useState(null);
   const [myStatus, setMyStatus] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -39,6 +39,7 @@ export default function HackathonDetailsPage() {
             setMyStatus(statusData.data);
           }
         }
+
       } catch (err) {
         console.error("Error:", err);
       } finally {
@@ -62,11 +63,11 @@ export default function HackathonDetailsPage() {
   const isRegistered = myStatus?.registered;
   const regData = myStatus?.registration || {};
   const submissions = myStatus?.submissions || [];
-  
+
   const now = new Date();
   const isActive = hackathon.status === "active";
   const isCompleted = hackathon.status === "completed";
-  
+
   // Registration cutoff is 12 hours before hackathon ends
   const cutoffTime = hackathon.endDate ? new Date(new Date(hackathon.endDate).getTime() - 12 * 60 * 60 * 1000) : null;
   const canRegister = cutoffTime && now < cutoffTime;
@@ -156,7 +157,7 @@ export default function HackathonDetailsPage() {
       <AuthNavbar />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-8">
-        
+
         {/* ═══ Header ═══ */}
         <div className="mb-8">
           <Link href="/hackathon" className="text-sm text-[var(--primary-light)] hover:underline mb-4 inline-block">
@@ -166,11 +167,10 @@ export default function HackathonDetailsPage() {
             <div>
               <div className="flex items-center gap-3 mb-3">
                 <h1 className="text-3xl sm:text-5xl font-black">{hackathon.title}</h1>
-                <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${
-                  hackathon.status === "registration_open" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" :
+                <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-wider px-3 py-1 rounded-full ${hackathon.status === "registration_open" ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30" :
                   hackathon.status === "active" ? "bg-blue-500/20 text-blue-400 border border-blue-500/30" :
-                  "bg-gray-500/20 text-gray-400 border border-gray-500/30"
-                }`}>
+                    "bg-gray-500/20 text-gray-400 border border-gray-500/30"
+                  }`}>
                   {hackathon.status?.replace("_", " ")}
                 </span>
               </div>
@@ -178,6 +178,7 @@ export default function HackathonDetailsPage() {
             </div>
           </div>
         </div>
+
 
         {/* ═══ User Progress Visual Tracker ═══ */}
         {isRegistered && hackathon.rounds?.length > 0 && (
@@ -191,13 +192,13 @@ export default function HackathonDetailsPage() {
                 </div>
                 <span className="text-xs font-bold mt-2">Registered</span>
               </div>
-              
+
               {hackathon.rounds.map((round, idx) => {
                 const isEligible = regData.currentRound >= round.roundNumber;
                 const submission = submissions.find(s => s.roundNumber === round.roundNumber);
                 const isDone = submission?.status === 'qualified' || submission?.status === 'submitted';
                 const isFail = submission?.status === 'disqualified';
-                
+
                 // Determine line color from previous node
                 const prevDone = idx === 0 ? true : submissions.find(s => s.roundNumber === round.roundNumber - 1)?.status === 'qualified';
                 const lineClass = prevDone ? "bg-emerald-500" : "bg-[var(--border)]";
@@ -220,7 +221,7 @@ export default function HackathonDetailsPage() {
                   <div key={round.roundNumber} className="flex items-center">
                     {/* Connecting Line */}
                     <div className={`w-16 sm:w-24 h-1 ${lineClass} transition-colors`} />
-                    
+
                     {/* Node */}
                     <div className="flex flex-col items-center relative">
                       <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-sm font-bold z-10 transition-colors ${nodeClass}`}>
@@ -233,25 +234,24 @@ export default function HackathonDetailsPage() {
                   </div>
                 );
               })}
-
+              i
               {/* Winner Node */}
               <div className="flex items-center">
                 <div className={`w-16 sm:w-24 h-1 transition-colors ${regData.status === 'winner' ? "bg-yellow-500" : "bg-[var(--border)]"}`} />
                 <div className="flex flex-col items-center relative">
-                  <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-lg z-10 transition-colors ${
-                    regData.status === 'winner' ? "bg-yellow-500/20 border-yellow-500 text-yellow-400" : "bg-[var(--surface-light)] border-[var(--border)] grayscale opacity-50"
-                  }`}>
+                  <div className={`w-10 h-10 rounded-full border-2 flex items-center justify-center text-lg z-10 transition-colors ${regData.status === 'winner' ? "bg-yellow-500/20 border-yellow-500 text-yellow-400" : "bg-[var(--surface-light)] border-[var(--border)] grayscale opacity-50"
+                    }`}>
                     🏆
                   </div>
                   <span className="text-xs font-bold mt-2 absolute top-12">Winner</span>
                 </div>
               </div>
             </div>
-            <div className="h-6" /> {/* Spacer for absolute text */}
+            <div className="h-6" />
           </div>
         )}
 
-        {/* ═══ Primary Action Section (Giant CTA) ═══ */}
+
         <motion.div
           initial={{ scale: 0.98, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -287,7 +287,7 @@ export default function HackathonDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left: Details */}
           <div className="lg:col-span-2 space-y-8">
-            
+
             {/* Rounds Section */}
             {hackathon.rounds?.length > 0 && (
               <div>
@@ -298,7 +298,7 @@ export default function HackathonDetailsPage() {
                   {hackathon.rounds.map((round) => {
                     const isRoundActive = now >= new Date(round.startTime) && now <= new Date(round.endTime);
                     const submission = submissions.find(s => s.roundNumber === round.roundNumber);
-                    
+
                     const isEligible = isRegistered && regData.currentRound >= round.roundNumber;
                     const isLocked = !isEligible && round.roundNumber > 1;
                     const isDone = submission?.status === 'qualified' || submission?.status === 'submitted' || submission?.status === 'disqualified' || submission?.status === 'QUALIFIED' || submission?.status === 'DISQUALIFIED';
@@ -319,15 +319,13 @@ export default function HackathonDetailsPage() {
                     }
 
                     return (
-                      <div key={round.roundNumber} className={`glass rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all ${
-                        canAccess ? "border-[var(--primary)] shadow-[0_0_15px_rgba(108,92,231,0.2)]" : "border-[var(--border)] opacity-80"
-                      }`}>
+                      <div key={round.roundNumber} className={`glass rounded-2xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-all ${canAccess ? "border-[var(--primary)] shadow-[0_0_15px_rgba(108,92,231,0.2)]" : "border-[var(--border)] opacity-80"
+                        }`}>
                         <div className="flex items-center gap-4">
-                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-black ${
-                            isDone ? "bg-purple-500/20 text-purple-400" :
+                          <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-xl font-black ${isDone ? "bg-purple-500/20 text-purple-400" :
                             canAccess ? "bg-[var(--primary)] text-white" :
-                            "bg-[var(--surface)] text-[var(--text-muted)]"
-                          }`}>
+                              "bg-[var(--surface)] text-[var(--text-muted)]"
+                            }`}>
                             {isDone ? "✓" : round.roundNumber}
                           </div>
                           <div>

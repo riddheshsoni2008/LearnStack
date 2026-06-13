@@ -620,12 +620,12 @@ const submitRound = async (req, res) => {
 
     // Determine qualification based on strict rules
     let qualified = false;
+    const qualifyingScore = roundData.qualifyingScore || 50;
     if (round === 1) {
       qualified = correctCount >= 2;
     } else if (round === 2) {
       qualified = correctCount >= 1; // At least 1 correct
     } else {
-      const qualifyingScore = roundData.qualifyingScore || 50;
       qualified = totalScore >= qualifyingScore;
     }
 

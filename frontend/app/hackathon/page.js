@@ -139,7 +139,6 @@ export default function HackathonLandingPage() {
         </div>
       </section>
 
-      {/* ═══ Prize Pool Section ═══ */}
       {featured?.prizePool && (featured.prizePool.first || featured.prizePool.second || featured.prizePool.third) && (
         <section className="py-16 relative">
           <div className="max-w-5xl mx-auto px-4 sm:px-6">
@@ -213,7 +212,6 @@ export default function HackathonLandingPage() {
         </section>
       )}
 
-      {/* ═══ Rules Section ═══ */}
       {featured?.rules?.length > 0 && (
         <section className="py-16 bg-[var(--surface)]/50">
           <div className="max-w-4xl mx-auto px-4 sm:px-6">
@@ -249,7 +247,6 @@ export default function HackathonLandingPage() {
         </section>
       )}
 
-      {/* ═══ FAQ Section ═══ */}
       {featured?.faqs?.length > 0 && (
         <section className="py-16">
           <div className="max-w-3xl mx-auto px-4 sm:px-6">
@@ -313,7 +310,6 @@ export default function HackathonLandingPage() {
         </section>
       )}
 
-      {/* ═══ Previous Winners Section ═══ */}
       {featured?.previousWinners?.length > 0 && (
         <section className="py-16">
           <div className="max-w-5xl mx-auto px-4 sm:px-6">
