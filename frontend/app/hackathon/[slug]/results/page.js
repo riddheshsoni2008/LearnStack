@@ -175,7 +175,7 @@ export default function ResultsPage() {
               )}
 
               {sub.stats && (
-                <div className="grid grid-cols-4 gap-2 mb-3">
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
                   <div className="bg-[var(--surface-light)] rounded-lg p-2 text-center border border-[var(--border)]">
                     <div className="text-sm font-bold text-blue-400">{sub.stats.answered}</div>
                     <div className="text-[9px] uppercase text-[var(--text-muted)] font-bold">Answered</div>
@@ -203,11 +203,11 @@ export default function ResultsPage() {
         </div>
 
         {/* ═══ Actions ═══ */}
-        <div className="mt-8 flex flex-wrap justify-center gap-4">
-          <Link href={`/hackathon/${params.slug}/leaderboard`} className="btn-primary !py-3 !px-6">
+        <div className="mt-8 flex flex-col sm:flex-row justify-center gap-4 w-full">
+          <Link href={`/hackathon/${params.slug}/leaderboard`} className="btn-primary !py-3 !px-6 w-full sm:w-auto text-center">
             🏅 View Leaderboard
           </Link>
-          <Link href={`/hackathon/${params.slug}`} className="btn-secondary !py-3 !px-6">
+          <Link href={`/hackathon/${params.slug}`} className="btn-secondary !py-3 !px-6 w-full sm:w-auto text-center">
             Back to Hackathon
           </Link>
         </div>

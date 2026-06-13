@@ -133,16 +133,10 @@ const registerForHackathon = async (req, res) => {
     // Check registration window
     const now = new Date();
     const cutoffTime = hackathon.endDate ? new Date(hackathon.endDate.getTime() - 12 * 60 * 60 * 1000) : null;
-    
-    console.log(`\n[DEBUG] === Registration Check ===`);
-    console.log(`[DEBUG] Current Server Time: ${now.toISOString()}`);
-    console.log(`[DEBUG] Hackathon End Time: ${hackathon.endDate ? hackathon.endDate.toISOString() : 'N/A'}`);
-    console.log(`[DEBUG] Registration Cutoff Time: ${cutoffTime ? cutoffTime.toISOString() : 'N/A'}`);
-    console.log(`[DEBUG] Hackathon status: ${hackathon.status}`);
 
     if (cutoffTime && now >= cutoffTime) {
       console.log(`[DEBUG] REASON: Current Time >= Cutoff Time => Registration Closed`);
-      
+
       const nextHackathon = await Hackathon.findOne({ status: 'registration_open' }).sort({ startDate: 1 });
       if (nextHackathon) {
         console.log(`[DEBUG] Redirecting registration to next upcoming hackathon: ${nextHackathon.title}`);
@@ -158,14 +152,12 @@ const registerForHackathon = async (req, res) => {
       return res.status(400).json({ success: false, message: 'Hackathon is not open for registration.' });
     }
 
-    // Check participant limit
     if (hackathon.participantLimitMode === 'custom' && hackathon.maxParticipants > 0) {
       if (hackathon.currentParticipants >= hackathon.maxParticipants) {
         return res.status(400).json({ success: false, message: 'Hackathon is full. No more registrations allowed.' });
       }
     }
 
-    // Check if already registered
     const existing = await HackathonRegistration.findOne({
       hackathonId: hackathon._id,
       userId: req.user._id
@@ -350,8 +342,8 @@ const getRoundQuestions = async (req, res) => {
     }
 
     // Already started, return questions and timer state
-    const questionIdsToFetch = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0 
-      ? submission.assignedQuestionIds 
+    const questionIdsToFetch = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0
+      ? submission.assignedQuestionIds
       : roundData.questionIds;
 
     const questions = await HackathonQuestion.find({
@@ -441,40 +433,40 @@ const startRound = async (req, res) => {
 
     let questions = [];
     if (round === 1) {
-       questions = await HackathonQuestion.aggregate([
-         { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
-         { $sample: { size: 3 } }
-       ]);
-       if (questions.length < 3) {
-           questions = await HackathonQuestion.aggregate([
-             { $match: { scope: 'global', questionType: 'mcq' } },
-             { $sample: { size: 3 } }
-           ]);
-       }
+      questions = await HackathonQuestion.aggregate([
+        { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
+        { $sample: { size: 3 } }
+      ]);
+      if (questions.length < 3) {
+        questions = await HackathonQuestion.aggregate([
+          { $match: { scope: 'global', questionType: 'mcq' } },
+          { $sample: { size: 3 } }
+        ]);
+      }
     } else if (round === 2) {
-       questions = await HackathonQuestion.aggregate([
-         { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
-         { $sample: { size: 2 } }
-       ]);
-       if (questions.length < 2) {
-           questions = await HackathonQuestion.aggregate([
-             { $match: { scope: 'global', questionType: 'mcq' } },
-             { $sample: { size: 2 } }
-           ]);
-       }
+      questions = await HackathonQuestion.aggregate([
+        { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
+        { $sample: { size: 2 } }
+      ]);
+      if (questions.length < 2) {
+        questions = await HackathonQuestion.aggregate([
+          { $match: { scope: 'global', questionType: 'mcq' } },
+          { $sample: { size: 2 } }
+        ]);
+      }
     } else if (round === 3) {
-       questions = await HackathonQuestion.aggregate([
-         { $match: { scope: 'global', questionType: 'project', _id: { $nin: seenQuestionIds } } },
-         { $sample: { size: 1 } }
-       ]);
-       if (questions.length < 1) {
-           questions = await HackathonQuestion.aggregate([
-             { $match: { scope: 'global', questionType: 'project' } },
-             { $sample: { size: 1 } }
-           ]);
-       }
+      questions = await HackathonQuestion.aggregate([
+        { $match: { scope: 'global', questionType: 'project', _id: { $nin: seenQuestionIds } } },
+        { $sample: { size: 1 } }
+      ]);
+      if (questions.length < 1) {
+        questions = await HackathonQuestion.aggregate([
+          { $match: { scope: 'global', questionType: 'project' } },
+          { $sample: { size: 1 } }
+        ]);
+      }
     } else {
-       questions = await HackathonQuestion.find({ _id: { $in: roundData.questionIds } }).lean();
+      questions = await HackathonQuestion.find({ _id: { $in: roundData.questionIds } }).lean();
     }
 
     const questionIds = questions.map(q => q._id);
@@ -485,7 +477,7 @@ const startRound = async (req, res) => {
       delete qObj.correctAnswer;
       delete qObj.testCases;
       delete qObj.explanation;
-      
+
       if (qObj.questionType === 'mcq' && qObj.options && qObj.options.length > 1) {
         qObj.options = shuffleArrayFisherYates([...qObj.options]).map(opt => ({
           text: opt.text
@@ -553,7 +545,7 @@ const submitRound = async (req, res) => {
       : 0;
 
     // Optional: if timeTaken > roundData.duration * 60 + grace period (e.g. 60s), we could flag it, but for now just cap it.
-    
+
     let totalScore = 0;
     const gradedAnswers = [];
 
@@ -601,8 +593,8 @@ const submitRound = async (req, res) => {
         if (isAnswered) {
           answeredCount++;
           if (question.questionType !== 'case_study' && question.questionType !== 'scenario' && question.questionType !== 'project') {
-             if (isCorrect) correctCount++;
-             else wrongCount++;
+            if (isCorrect) correctCount++;
+            else wrongCount++;
           }
         }
 
@@ -619,8 +611,8 @@ const submitRound = async (req, res) => {
     }
 
     const questionIdsToEval = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0
-        ? submission.assignedQuestionIds
-        : roundData.questionIds;
+      ? submission.assignedQuestionIds
+      : roundData.questionIds;
     unansweredCount = questionIdsToEval.length - answeredCount;
 
     const maxPossibleScore = submission.maxPossibleScore || 1;
@@ -629,20 +621,20 @@ const submitRound = async (req, res) => {
     // Determine qualification based on strict rules
     let qualified = false;
     if (round === 1) {
-        qualified = correctCount >= 2;
+      qualified = correctCount >= 2;
     } else if (round === 2) {
-        qualified = correctCount >= 1; // At least 1 correct
+      qualified = correctCount >= 1; // At least 1 correct
     } else {
-        const qualifyingScore = roundData.qualifyingScore || 50;
-        qualified = totalScore >= qualifyingScore;
+      const qualifyingScore = roundData.qualifyingScore || 50;
+      qualified = totalScore >= qualifyingScore;
     }
-    
+
     // Status
     let finalStatus = qualified ? 'QUALIFIED' : 'DISQUALIFIED';
     if (roundData.type === 'project') {
       finalStatus = autoSubmitted ? 'AUTO_SUBMITTED' : 'COMPLETED';
     } else if (autoSubmitted) {
-       // We can mark it as AUTO_SUBMITTED or just store the boolean
+      // We can mark it as AUTO_SUBMITTED or just store the boolean
     }
 
     // Update submission

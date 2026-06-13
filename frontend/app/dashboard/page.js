@@ -209,7 +209,7 @@ export default function DashboardPage() {
         {/* ═══ Hackathon Timer ═══ */}
         <HackathonTimer endDate="2026-06-30T23:59:59Z" />
 
-        {/* ═══ Top Stats Row ═══ */}
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* XP Ring Card */}
           <div className="glass rounded-2xl p-6 flex items-center justify-center">
