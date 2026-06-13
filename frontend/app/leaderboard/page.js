@@ -71,7 +71,7 @@ export default function LeaderboardPage() {
             <div className="h-10 bg-[var(--surface-light)] w-48 rounded mx-auto mb-2"></div>
             <div className="h-4 bg-[var(--surface-light)] w-64 rounded mx-auto"></div>
           </div>
-          
+
           {/* My Rank Card Skeleton */}
           <div className="glass border border-[var(--primary)]/30 rounded-2xl p-4 sm:p-6 mb-6">
             <div className="flex items-center justify-between">
@@ -136,7 +136,6 @@ export default function LeaderboardPage() {
           </p>
         </div>
 
-        {/* My Rank Card */}
         {myRank && (
           <div className="glass border border-[var(--primary)]/30 rounded-2xl p-4 sm:p-6 mb-6 shadow-lg shadow-[var(--primary)]/10">
             <div className="flex items-center justify-between">
@@ -179,13 +178,12 @@ export default function LeaderboardPage() {
             return (
               <div
                 key={entry._id}
-                className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border transition-all ${
-                  isMe
-                    ? "border-[var(--primary)]/40 bg-[var(--primary)]/5 shadow-lg shadow-[var(--primary)]/10"
-                    : isTop3 && rankStyle
+                className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border transition-all ${isMe
+                  ? "border-[var(--primary)]/40 bg-[var(--primary)]/5 shadow-lg shadow-[var(--primary)]/10"
+                  : isTop3 && rankStyle
                     ? `bg-gradient-to-r ${rankStyle.bg} ${rankStyle.border} shadow-lg ${rankStyle.glow}`
                     : "border-[var(--border)] bg-[var(--surface-light)] hover:border-[var(--primary)]/30"
-                }`}
+                  }`}
               >
                 {/* Rank */}
                 <div className="w-10 text-center flex-shrink-0">
@@ -197,9 +195,8 @@ export default function LeaderboardPage() {
                 </div>
 
                 {/* Avatar */}
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${
-                  isMe ? "bg-gradient-to-br from-[var(--primary)] to-[var(--accent)]" : "bg-[var(--surface)] border border-[var(--border)]"
-                }`}>
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${isMe ? "bg-gradient-to-br from-[var(--primary)] to-[var(--accent)]" : "bg-[var(--surface)] border border-[var(--border)]"
+                  }`}>
                   {entry.initial}
                 </div>
 

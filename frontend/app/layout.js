@@ -24,12 +24,14 @@ export const metadata = {
 };
 
 import HackathonBanner from "@/components/HackathonBanner";
+import GlobalLoader from "@/components/loaders/GlobalLoader";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en" className={`${inter.variable} ${greatVibes.variable} h-full antialiased`} suppressHydrationWarning>
       <body className="min-h-full flex flex-col bg-[var(--background)] text-[var(--foreground)]" suppressHydrationWarning>
         <Providers>
+          <GlobalLoader />
           <HackathonBanner />
           {children}
         </Providers>

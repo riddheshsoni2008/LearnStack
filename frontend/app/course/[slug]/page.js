@@ -6,6 +6,8 @@ import { useAuth } from "@/context/AuthContext";
 import ProgressBar from "@/components/ProgressBar";
 import LessonList from "@/components/LessonList";
 import AuthNavbar from "@/components/AuthNavbar";
+import TransitionLink from "@/components/loaders/TransitionLink";
+import { SidebarSkeleton } from "@/components/loaders/Skeletons";
 
 export default function CourseDetailPage() {
   const router = useRouter();
@@ -72,8 +74,16 @@ export default function CourseDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
-        <div className="text-[var(--text-muted)] text-lg animate-pulse">Loading course data...</div>
+      <div key="loading-course-detail" className="min-h-screen bg-[var(--background)] pb-20">
+        <AuthNavbar />
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-6 animate-pulse space-y-6">
+          <div className="h-4 bg-[var(--surface-light)] w-28 rounded" />
+          <div className="h-10 bg-[var(--surface-light)] w-72 rounded-lg" />
+          <div className="h-4 bg-[var(--surface-light)] w-full rounded" />
+          <div className="h-4 bg-[var(--surface-light)] w-5/6 rounded" />
+          <div className="h-14 bg-[var(--surface-light)] rounded-xl border border-[var(--border)]" />
+          <SidebarSkeleton />
+        </div>
       </div>
     );
   }
@@ -117,9 +127,9 @@ export default function CourseDetailPage() {
 
       {/* Track Header */}
       <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-8 sm:pt-12 pb-6">
-        <Link href="/tracks" className="text-sm text-[var(--primary-light)] hover:text-[var(--primary)] transition-colors mb-4 sm:mb-6 inline-block">
+        <TransitionLink href="/tracks" className="text-sm text-[var(--primary-light)] hover:text-[var(--primary)] transition-colors mb-4 sm:mb-6 inline-block">
           ← Back to Tracks
-        </Link>
+        </TransitionLink>
         <h1 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3">{track.title}</h1>
         <p className="text-[var(--text-muted)] mb-8 leading-relaxed">{track.description}</p>
 

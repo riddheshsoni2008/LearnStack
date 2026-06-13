@@ -2,6 +2,8 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import TransitionLink from "@/components/loaders/TransitionLink";
+import LearnStackLogo from "@/components/loaders/LearnStackLogo";
 
 export default function AuthNavbar() {
   const { user, logout } = useAuth();
@@ -10,53 +12,48 @@ export default function AuthNavbar() {
   return (
     <nav className="glass border-b border-[var(--border)] px-6 py-4 sticky top-0 z-50 transition-all">
       <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-white font-bold text-sm transition-transform group-hover:scale-110">
-            L
-          </div>
-          <span className="text-lg font-bold tracking-tight">
-            Learn<span className="gradient-text">Stack</span>
-          </span>
-        </Link>
+        <TransitionLink href="/" className="flex items-center gap-2 group">
+          <LearnStackLogo size={32} showText={true} />
+        </TransitionLink>
 
         
         <div className="hidden lg:flex items-center gap-4 xl:gap-6">
-          <Link
+          <TransitionLink
             href="/"
             className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
           >
             Home
-          </Link>
-          <Link
+          </TransitionLink>
+          <TransitionLink
             href="/tracks"
             className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
           >
             Tracks
-          </Link>
-          <Link
+          </TransitionLink>
+          <TransitionLink
             href="/dashboard"
             className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
           >
             Dashboard
-          </Link>
-          <Link
+          </TransitionLink>
+          <TransitionLink
             href="/profile"
             className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
           >
             Profile
-          </Link>
-          <Link
+          </TransitionLink>
+          <TransitionLink
             href="/leaderboard"
             className="text-sm font-medium text-[var(--text-muted)] hover:text-white transition-colors"
           >
             Leaderboard
-          </Link>
-          <Link
+          </TransitionLink>
+          <TransitionLink
             href="/ai-teacher"
             className="text-sm font-medium text-indigo-400 hover:text-indigo-300 transition-colors flex items-center gap-1"
           >
             🤖 AI
-          </Link>
+          </TransitionLink>
 
           <div className="flex items-center gap-4 border-l border-[var(--border)] pl-6 ml-2">
             {user?.totalXpEarned !== undefined && (
@@ -114,48 +111,48 @@ export default function AuthNavbar() {
               )}
             </div>
 
-            <Link
+            <TransitionLink
               href="/"
               className="text-[var(--text-muted)] hover:text-white transition-colors font-medium py-2 flex items-center gap-3"
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">🏠</span> Home
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/tracks"
               className="text-[var(--text-muted)] hover:text-white transition-colors font-medium py-2 flex items-center gap-3"
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">🗺️</span> Tracks
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/dashboard"
               className="text-[var(--text-muted)] hover:text-white transition-colors font-medium py-2 flex items-center gap-3"
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">📊</span> Dashboard
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/profile"
               className="text-[var(--text-muted)] hover:text-white transition-colors font-medium py-2 flex items-center gap-3"
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">👤</span> Profile
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/leaderboard"
               className="text-[var(--text-muted)] hover:text-white transition-colors font-medium py-2 flex items-center gap-3"
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">🏅</span> Leaderboard
-            </Link>
-            <Link
+            </TransitionLink>
+            <TransitionLink
               href="/ai-teacher"
               className="text-indigo-400 hover:text-indigo-300 transition-colors font-medium py-2 flex items-center gap-3"
               onClick={() => setMobileOpen(false)}
             >
               <span className="text-xl">🤖</span> AI Teacher
-            </Link>
+            </TransitionLink>
 
             <button
               onClick={() => {

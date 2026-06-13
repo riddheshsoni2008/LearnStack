@@ -6,6 +6,8 @@ import AuthNavbar from "@/components/AuthNavbar";
 import HackathonCard from "@/components/hackathon/HackathonCard";
 import PrizeCard from "@/components/hackathon/PrizeCard";
 import TimelineStep from "@/components/hackathon/TimelineStep";
+import TransitionLink from "@/components/loaders/TransitionLink";
+import { HackathonBannerSkeleton } from "@/components/loaders/Skeletons";
 
 export default function HackathonLandingPage() {
   const [hackathons, setHackathons] = useState([]);
@@ -34,8 +36,32 @@ export default function HackathonLandingPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary)]"></div>
+      <div key="loading-hackathon-landing" className="min-h-screen bg-[var(--background)] pb-20">
+        <AuthNavbar />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-20 animate-pulse space-y-16">
+          <div className="text-center space-y-4">
+            <div className="h-8 bg-[var(--surface-light)] w-32 rounded-full mx-auto" />
+            <div className="h-16 bg-[var(--surface-light)] w-2/3 rounded-2xl mx-auto" />
+            <div className="h-6 bg-[var(--surface-light)] w-1/2 rounded-lg mx-auto" />
+            <div className="flex justify-center gap-4 pt-4">
+              <div className="h-12 bg-[var(--surface-light)] w-40 rounded-xl" />
+              <div className="h-12 bg-[var(--surface-light)] w-40 rounded-xl" />
+            </div>
+          </div>
+
+          {/* Stats Bar Skeleton */}
+          <div className="glass rounded-2xl p-6 grid grid-cols-2 sm:grid-cols-4 gap-6 border border-[var(--border)]">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="text-center space-y-2">
+                <div className="w-8 h-8 rounded-full bg-[var(--surface-light)] mx-auto" />
+                <div className="h-6 bg-[var(--surface-light)] w-12 rounded mx-auto" />
+                <div className="h-3 bg-[var(--surface-light)] w-24 rounded mx-auto" />
+              </div>
+            ))}
+          </div>
+
+          <HackathonBannerSkeleton />
+        </div>
       </div>
     );
   }
@@ -76,9 +102,9 @@ export default function HackathonLandingPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               {featured ? (
-                <Link href={`/hackathon/${featured.slug}`} className="btn-primary !py-4 !px-10 text-lg">
+                <TransitionLink href={`/hackathon/${featured.slug}`} className="btn-primary !py-4 !px-10 text-lg">
                   🚀 Register Now
-                </Link>
+                </TransitionLink>
               ) : (
                 <span className="btn-primary !py-4 !px-10 text-lg opacity-60 cursor-not-allowed">
                   Coming Soon
@@ -388,13 +414,13 @@ export default function HackathonLandingPage() {
               Join thousands of students from across India. Show your skills, win prizes, and earn recognition.
             </p>
             {featured ? (
-              <Link href={`/hackathon/${featured.slug}`} className="btn-primary !py-4 !px-10 text-lg">
+              <TransitionLink href={`/hackathon/${featured.slug}`} className="btn-primary !py-4 !px-10 text-lg">
                 🚀 Register Now — It&apos;s Free!
-              </Link>
+              </TransitionLink>
             ) : (
-              <Link href="/dashboard" className="btn-primary !py-4 !px-10 text-lg">
+              <TransitionLink href="/dashboard" className="btn-primary !py-4 !px-10 text-lg">
                 Go to Dashboard
-              </Link>
+              </TransitionLink>
             )}
           </motion.div>
         </div>

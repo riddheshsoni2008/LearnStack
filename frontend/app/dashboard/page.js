@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import AuthNavbar from "@/components/AuthNavbar";
+import { HackathonBannerSkeleton, StatsCardsSkeleton } from "@/components/loaders/Skeletons";
 
 // ═══════════════════════════════════════════════════════════════
 // XP Progress Ring Component
@@ -183,64 +184,8 @@ export default function DashboardPage() {
             <div className="h-4 bg-[var(--surface-light)] w-48 rounded"></div>
           </div>
 
-          {/* Hackathon Timer Placeholder */}
-          <div className="glass rounded-2xl p-6 mb-8 border border-[var(--border)]">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-              <div>
-                <div className="h-8 bg-[var(--surface-light)] w-48 rounded mb-2"></div>
-                <div className="h-4 bg-[var(--surface-light)] w-64 rounded"></div>
-              </div>
-              <div className="flex gap-4">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex flex-col items-center">
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-[var(--surface-light)] rounded-xl border border-[var(--border)]"></div>
-                    <div className="h-3 bg-[var(--surface-light)] w-10 rounded mt-2"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Stats Grid Skeleton */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            {/* XP Ring Card Skeleton */}
-            <div className="glass rounded-2xl p-6 flex flex-col items-center justify-center h-[218px]">
-              <div className="w-[140px] h-[140px] rounded-full border-8 border-[var(--surface-light)] flex items-center justify-center">
-                <div className="w-12 h-6 bg-[var(--surface-light)] rounded"></div>
-              </div>
-              <div className="h-4 bg-[var(--surface-light)] w-28 rounded mt-4"></div>
-            </div>
-
-            {/* Streak Calendar Skeleton */}
-            <div className="glass rounded-2xl p-6 h-[218px]">
-              <div className="flex justify-between mb-4">
-                <div className="h-4 bg-[var(--surface-light)] w-28 rounded"></div>
-                <div className="h-3 bg-[var(--surface-light)] w-16 rounded"></div>
-              </div>
-              <div className="grid grid-cols-7 gap-2">
-                {[1, 2, 3, 4, 5, 6, 7].map((i) => (
-                  <div key={i} className="flex flex-col items-center gap-1">
-                    <div className="h-2 bg-[var(--surface-light)] w-6 rounded"></div>
-                    <div className="w-9 h-9 bg-[var(--surface-light)] rounded-lg border border-[var(--border)]"></div>
-                  </div>
-                ))}
-              </div>
-              <div className="h-6 bg-[var(--surface-light)] w-24 rounded mx-auto mt-4"></div>
-            </div>
-
-            {/* Quick Stats Skeleton */}
-            <div className="glass rounded-2xl p-6 flex flex-col justify-between gap-4 h-[218px]">
-              <div className="h-4 bg-[var(--surface-light)] w-24 rounded"></div>
-              <div className="space-y-3">
-                {[1, 2, 3, 4].map((i) => (
-                  <div key={i} className="flex justify-between items-center">
-                    <div className="h-3 bg-[var(--surface-light)] w-32 rounded"></div>
-                    <div className="h-4 bg-[var(--surface-light)] w-8 rounded"></div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <HackathonBannerSkeleton />
+          <StatsCardsSkeleton />
 
           {/* Badges Section Skeleton */}
           <div className="glass rounded-2xl p-6 mb-8 h-[160px]">

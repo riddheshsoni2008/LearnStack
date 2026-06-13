@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
+import TransitionLink from "@/components/loaders/TransitionLink";
+import LearnStackLogo from "@/components/loaders/LearnStackLogo";
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false);
@@ -20,14 +22,9 @@ export default function Navbar() {
         }`}
     >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group">
-          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-[var(--primary)] to-[var(--accent)] flex items-center justify-center text-white font-bold text-lg transition-transform group-hover:scale-110">
-            L
-          </div>
-          <span className="text-xl font-bold tracking-tight">
-            Learn<span className="gradient-text">Stack</span>
-          </span>
-        </Link>
+        <TransitionLink href="/" className="flex items-center gap-2 group">
+          <LearnStackLogo size={36} showText={true} />
+        </TransitionLink>
 
         <div className="hidden lg:flex items-center gap-8">
           <a href="#features" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">Features</a>
@@ -39,21 +36,21 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-3">
           {!loading && user ? (
             <>
-              <Link href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">
+              <TransitionLink href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors text-sm font-medium">
                 Profile
-              </Link>
-              <Link href="/dashboard" className="btn-primary text-sm !py-2.5 !px-6">
+              </TransitionLink>
+              <TransitionLink href="/dashboard" className="btn-primary text-sm !py-2.5 !px-6">
                 Go to Dashboard
-              </Link>
+              </TransitionLink>
             </>
           ) : (
             <>
-              <Link href="/login" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors px-4 py-2">
+              <TransitionLink href="/login" className="text-sm font-medium text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors px-4 py-2">
                 Log In
-              </Link>
-              <Link href="/register" className="btn-primary text-sm !py-2.5 !px-6">
+              </TransitionLink>
+              <TransitionLink href="/register" className="btn-primary text-sm !py-2.5 !px-6">
                 Start Learning — Free
-              </Link>
+              </TransitionLink>
             </>
           )}
         </div>
@@ -76,13 +73,13 @@ export default function Navbar() {
             <hr className="border-[var(--border)]" />
             {!loading && user ? (
               <>
-                <Link href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium">Profile</Link>
-                <Link href="/dashboard" className="btn-primary text-center text-sm !py-3">Go to Dashboard</Link>
+                <TransitionLink href="/profile" className="text-[var(--text-muted)] hover:text-[var(--foreground)] transition-colors font-medium" onClick={() => setMobileOpen(false)}>Profile</TransitionLink>
+                <TransitionLink href="/dashboard" className="btn-primary text-center text-sm !py-3" onClick={() => setMobileOpen(false)}>Go to Dashboard</TransitionLink>
               </>
             ) : (
               <>
-                <Link href="/login" className="text-[var(--text-muted)] font-medium">Log In</Link>
-                <Link href="/register" className="btn-primary text-center text-sm !py-3">Start Learning — Free</Link>
+                <TransitionLink href="/login" className="text-[var(--text-muted)] font-medium" onClick={() => setMobileOpen(false)}>Log In</TransitionLink>
+                <TransitionLink href="/register" className="btn-primary text-center text-sm !py-3" onClick={() => setMobileOpen(false)}>Start Learning — Free</TransitionLink>
               </>
             )}
           </div>
