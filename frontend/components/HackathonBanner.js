@@ -32,7 +32,22 @@ export default function HackathonBanner() {
     return () => clearInterval(interval);
   }, []);
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div className="bg-gradient-to-r from-[#6c5ce7] via-[#4834d4] to-[#00cec9] text-white relative z-[60] w-full border-b border-white/10 shadow-md">
+        <div className="max-w-7xl mx-auto px-4 py-3 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm sm:text-base font-medium opacity-70 animate-pulse">
+          <div className="flex items-center gap-2 text-center sm:text-left">
+            <span className="text-xl">⏳</span>
+            <div className="h-5 bg-white/20 w-48 sm:w-64 rounded"></div>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="h-8 bg-white/20 w-24 rounded-full"></div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
 
   // Fallback if DB is literally empty (cron hasn't run yet)
   if (!hackathon) {

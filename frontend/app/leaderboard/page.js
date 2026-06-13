@@ -63,10 +63,56 @@ export default function LeaderboardPage() {
 
   if (authLoading || loading || !user) {
     return (
-      <div className="min-h-screen bg-[var(--background)]">
+      <div key="loading-leaderboard" className="min-h-screen bg-[var(--background)] pb-20">
         <AuthNavbar />
-        <div className="flex items-center justify-center min-h-[60vh]">
-          <div className="text-[var(--text-muted)] animate-pulse">Loading leaderboard...</div>
+        <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
+          {/* Header Skeleton */}
+          <div className="text-center mb-8">
+            <div className="h-10 bg-[var(--surface-light)] w-48 rounded mx-auto mb-2"></div>
+            <div className="h-4 bg-[var(--surface-light)] w-64 rounded mx-auto"></div>
+          </div>
+          
+          {/* My Rank Card Skeleton */}
+          <div className="glass border border-[var(--primary)]/30 rounded-2xl p-4 sm:p-6 mb-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-[var(--surface-light)]"></div>
+                <div>
+                  <div className="h-4 bg-[var(--surface-light)] w-24 rounded mb-1"></div>
+                  <div className="h-3 bg-[var(--surface-light)] w-32 rounded"></div>
+                </div>
+              </div>
+              <div className="text-right flex flex-col items-end">
+                <div className="h-6 bg-[var(--surface-light)] w-12 rounded mb-1"></div>
+                <div className="h-3 bg-[var(--surface-light)] w-16 rounded"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Privacy Toggle Skeleton */}
+          <div className="flex justify-end mb-4">
+            <div className="h-6 bg-[var(--surface-light)] w-32 rounded-lg"></div>
+          </div>
+
+          {/* List Skeleton */}
+          <div className="space-y-2">
+            {[1, 2, 3, 4, 5].map((i) => (
+              <div key={i} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-light)] h-[74px]">
+                <div className="w-10 flex-shrink-0 flex justify-center">
+                  <div className="h-6 w-6 bg-[var(--surface)] rounded"></div>
+                </div>
+                <div className="w-10 h-10 rounded-full bg-[var(--surface)] flex-shrink-0"></div>
+                <div className="flex-1">
+                  <div className="h-4 bg-[var(--surface)] w-32 rounded mb-1"></div>
+                  <div className="h-3 bg-[var(--surface)] w-24 rounded"></div>
+                </div>
+                <div className="text-right flex-shrink-0 flex flex-col items-end">
+                  <div className="h-4 bg-[var(--surface)] w-12 rounded mb-1"></div>
+                  <div className="h-3 bg-[var(--surface)] w-6 rounded"></div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -76,7 +122,7 @@ export default function LeaderboardPage() {
   const myRank = data?.myRank;
 
   return (
-    <div className="min-h-screen bg-[var(--background)] pb-20">
+    <div key="loaded-leaderboard" className="min-h-screen bg-[var(--background)] pb-20">
       <AuthNavbar />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">

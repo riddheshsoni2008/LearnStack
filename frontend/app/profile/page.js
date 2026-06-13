@@ -108,8 +108,70 @@ export default function ProfilePage() {
     return (
       <div key="loading-profile" className="min-h-screen bg-[var(--background)] pb-20">
         <AuthNavbar />
-        <div className="flex items-center justify-center h-[60vh]">
-          <div className="text-[var(--text-muted)] text-lg animate-pulse">Loading profile...</div>
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 mt-8 sm:mt-12 animate-pulse">
+          {/* Profile Header Skeleton */}
+          <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-8 mb-10 sm:mb-12 text-center md:text-left">
+            <div className="relative">
+              <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full bg-[var(--surface-light)] border-4 border-[var(--surface)]"></div>
+              <div className="absolute -bottom-1 -right-1 bg-[var(--surface-light)] rounded-full w-8 h-8 border-2 border-[var(--background)]"></div>
+            </div>
+            <div className="flex-1">
+              <div className="h-8 bg-[var(--surface-light)] w-48 rounded mb-2 mx-auto md:mx-0"></div>
+              <div className="h-4 bg-[var(--surface-light)] w-64 rounded mb-4 mx-auto md:mx-0"></div>
+              <div className="h-8 bg-[var(--surface-light)] w-56 rounded-full mx-auto md:mx-0"></div>
+              <div className="flex flex-wrap justify-center md:justify-start gap-4 mt-4">
+                <div className="h-3 bg-[var(--surface-light)] w-36 rounded"></div>
+                <div className="h-3 bg-[var(--surface-light)] w-44 rounded"></div>
+              </div>
+            </div>
+          </div>
+
+          {/* Level Progress Bar Skeleton */}
+          <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <div>
+                <div className="h-4 bg-[var(--surface-light)] w-28 rounded mb-1"></div>
+                <div className="h-3 bg-[var(--surface-light)] w-36 rounded"></div>
+              </div>
+              <div className="h-6 bg-[var(--surface-light)] w-12 rounded"></div>
+            </div>
+            <div className="w-full h-3 bg-[#0a0a0f] rounded-full border border-[var(--border)]"></div>
+            <div className="flex justify-between mt-2">
+              <div className="h-3 bg-[var(--surface-light)] w-24 rounded"></div>
+              <div className="h-3 bg-[var(--surface-light)] w-24 rounded"></div>
+            </div>
+          </div>
+
+          {/* Stats Grid Skeleton */}
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+            {[1, 2, 3, 4].map((i) => (
+              <div key={i} className="glass border border-[var(--border)] rounded-xl p-4 text-center">
+                <div className="w-8 h-8 rounded-full bg-[var(--surface-light)] mx-auto mb-1"></div>
+                <div className="h-6 bg-[var(--surface-light)] w-12 rounded mx-auto mb-1"></div>
+                <div className="h-3 bg-[var(--surface-light)] w-16 rounded mx-auto"></div>
+              </div>
+            ))}
+          </div>
+
+          {/* Achievements / Badges Grid Skeleton */}
+          <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8">
+            <div className="h-5 bg-[var(--surface-light)] w-32 rounded mb-4"></div>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              {[1, 2, 3, 4, 5, 6].map((i) => (
+                <div key={i} className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-3 h-28"></div>
+              ))}
+            </div>
+          </div>
+
+          {/* Track Progress Skeleton */}
+          <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8">
+            <div className="h-5 bg-[var(--surface-light)] w-32 rounded mb-4"></div>
+            <div className="space-y-3">
+              {[1, 2].map((i) => (
+                <div key={i} className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24"></div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     );
