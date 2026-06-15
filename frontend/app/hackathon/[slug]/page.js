@@ -9,6 +9,10 @@ import HackathonTimer from "@/components/HackathonTimer";
 import PrizeCard from "@/components/hackathon/PrizeCard";
 import QualificationBadge from "@/components/hackathon/QualificationBadge";
 
+// DEVELOPMENT MODE FLAG
+// Set to true to disable registration and round time restrictions for local testing
+const DEVELOPMENT_MODE = true;
+
 export default function HackathonDetailsPage() {
   const params = useParams();
   const router = useRouter();
@@ -70,7 +74,7 @@ export default function HackathonDetailsPage() {
 
   // Registration cutoff is 12 hours before hackathon ends
   const cutoffTime = hackathon.endDate ? new Date(new Date(hackathon.endDate).getTime() - 12 * 60 * 60 * 1000) : null;
-  const canRegister = cutoffTime && now < cutoffTime;
+  const canRegister = DEVELOPMENT_MODE || (cutoffTime && now < cutoffTime);
 
   // ═══════════════════════════════════════════════════════════════
   // Participant Status System
@@ -115,8 +119,8 @@ export default function HackathonDetailsPage() {
           primaryCtaAction = () => router.push(`/hackathon/${params.slug}/round/1`);
           primaryColor = "from-green-500 to-emerald-500";
         } else {
-          const isRoundActive = now >= new Date(roundConfig.startTime) && now <= new Date(roundConfig.endTime);
-          if (isRoundActive && isActive) {
+          const isRoundActive = DEVELOPMENT_MODE || (now >= new Date(roundConfig.startTime) && now <= new Date(roundConfig.endTime));
+          if (isRoundActive && (isActive || DEVELOPMENT_MODE)) {
             primaryState = `ROUND_${eligibleRound}_AVAILABLE`;
             primaryCtaTitle = eligibleRound === hackathon.rounds.length ? "🏆 Final Round Live" : "✅ Congratulations! You qualified for Round " + eligibleRound;
             primaryCtaLabel = eligibleRound === hackathon.rounds.length ? "Start Final Round" : `Start Round ${eligibleRound}`;

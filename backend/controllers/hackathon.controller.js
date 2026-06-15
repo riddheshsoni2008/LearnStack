@@ -4,6 +4,10 @@ const HackathonSubmission = require('../models/HackathonSubmission');
 const HackathonQuestion = require('../models/HackathonQuestion');
 const Certificate = require('../models/Certificate');
 
+// DEVELOPMENT MODE FLAG
+// Set to true to disable registration and round time restrictions for local testing
+const DEVELOPMENT_MODE = true;
+
 // Fisher-Yates shuffle for randomizing MCQ option order
 const shuffleArrayFisherYates = (arr) => {
   for (let i = arr.length - 1; i > 0; i--) {
@@ -258,22 +262,24 @@ const registerForHackathon = async (req, res) => {
     const now = new Date();
     const cutoffTime = hackathon.endDate ? new Date(hackathon.endDate.getTime() - 12 * 60 * 60 * 1000) : null;
 
-    if (cutoffTime && now >= cutoffTime) {
-      console.log(`[DEBUG] REASON: Current Time >= Cutoff Time => Registration Closed`);
+    if (!DEVELOPMENT_MODE) {
+      if (cutoffTime && now >= cutoffTime) {
+        console.log(`[DEBUG] REASON: Current Time >= Cutoff Time => Registration Closed`);
 
-      const nextHackathon = await Hackathon.findOne({ status: 'registration_open' }).sort({ startDate: 1 });
-      if (nextHackathon) {
-        console.log(`[DEBUG] Redirecting registration to next upcoming hackathon: ${nextHackathon.title}`);
-        hackathon = nextHackathon;
+        const nextHackathon = await Hackathon.findOne({ status: 'registration_open' }).sort({ startDate: 1 });
+        if (nextHackathon) {
+          console.log(`[DEBUG] Redirecting registration to next upcoming hackathon: ${nextHackathon.title}`);
+          hackathon = nextHackathon;
+        } else {
+          return res.status(400).json({ success: false, message: 'Registration has closed for this hackathon.' });
+        }
       } else {
-        return res.status(400).json({ success: false, message: 'Registration has closed for this hackathon.' });
+        console.log(`[DEBUG] Current Time < Cutoff Time => Registration Open`);
       }
-    } else {
-      console.log(`[DEBUG] Current Time < Cutoff Time => Registration Open`);
-    }
 
-    if (hackathon.status !== 'registration_open' && hackathon.status !== 'active') {
-      return res.status(400).json({ success: false, message: 'Hackathon is not open for registration.' });
+      if (hackathon.status !== 'registration_open' && hackathon.status !== 'active') {
+        return res.status(400).json({ success: false, message: 'Hackathon is not open for registration.' });
+      }
     }
 
     if (hackathon.participantLimitMode === 'custom' && hackathon.maxParticipants > 0) {
@@ -431,19 +437,21 @@ const getRoundQuestions = async (req, res) => {
 
     // Check round timing for all rounds (including Round 1)
     const now = new Date();
-    if (now < roundData.startTime) {
-      return res.status(403).json({
-        success: false,
-        message: 'This round has not started yet.',
-        redirectUrl: `/hackathon/${slug}`
-      });
-    }
-    if (now > roundData.endTime) {
-      return res.status(403).json({
-        success: false,
-        message: 'This round has ended.',
-        redirectUrl: `/hackathon/${slug}/results`
-      });
+    if (!DEVELOPMENT_MODE) {
+      if (now < roundData.startTime) {
+        return res.status(403).json({
+          success: false,
+          message: 'This round has not started yet.',
+          redirectUrl: `/hackathon/${slug}`
+        });
+      }
+      if (now > roundData.endTime) {
+        return res.status(403).json({
+          success: false,
+          message: 'This round has ended.',
+          redirectUrl: `/hackathon/${slug}/results`
+        });
+      }
     }
 
     // Retrieve the submission
@@ -552,8 +560,10 @@ const startRound = async (req, res) => {
 
     // Check round timing for all rounds (including Round 1)
     const now = new Date();
-    if (now < roundData.startTime) return res.status(400).json({ success: false, message: 'This round has not started yet.' });
-    if (now > roundData.endTime) return res.status(400).json({ success: false, message: 'This round has ended.' });
+    if (!DEVELOPMENT_MODE) {
+      if (now < roundData.startTime) return res.status(400).json({ success: false, message: 'This round has not started yet.' });
+      if (now > roundData.endTime) return res.status(400).json({ success: false, message: 'This round has ended.' });
+    }
 
     // Check if submission exists
     let submission = await HackathonSubmission.findOne({
