@@ -188,27 +188,11 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
 
       {/* ═══ Project ═══ */}
       {question.questionType === "project" && (
-        <div className="space-y-4">
-          <div>
-            <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2 block">
-              🔗 Project Repository URL *
-            </label>
-            <input
-              type="url"
-              value={answer?.answer || ""}
-              onChange={(e) => handleTextAnswer(e.target.value)}
-              className="w-full bg-[var(--surface-light)] border border-[var(--border)] rounded-xl px-4 py-3 text-sm focus:border-[var(--primary)] focus:outline-none transition-colors"
-              placeholder="https://github.com/your-project"
-            />
-          </div>
-          <div className="glass rounded-xl p-4 border border-blue-500/20 bg-blue-500/5">
-            <h4 className="text-xs font-bold text-blue-400 mb-2">📌 Submission Guidelines</h4>
-            <ul className="text-xs text-[var(--text-muted)] space-y-1">
-              <li>• Include a clear README with setup instructions</li>
-              <li>• Ensure the project is accessible (public repo or shared link)</li>
-              <li>• Include relevant screenshots or a demo video</li>
-            </ul>
-          </div>
+        <div className="glass rounded-xl p-6 border border-indigo-500/20 bg-indigo-500/5 text-center">
+          <p className="text-sm font-semibold text-indigo-400 mb-2">💻 Multi-File Project Workspace</p>
+          <p className="text-xs text-[var(--text-muted)]">
+            Please solve this project challenge using the built-in interactive workspace.
+          </p>
         </div>
       )}
     </div>

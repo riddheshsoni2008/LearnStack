@@ -40,6 +40,10 @@ app.use('/api/stats', require('./routes/stats.routes'));
 app.use('/api/hackathons', require('./routes/hackathon.routes'));
 app.use('/api/hackathon-questions', require('./routes/hackathonQuestion.routes'));
 
+// ── Automated Round 2 APIs ──
+app.use('/api', require('./routes/roundAutomation.routes'));
+app.use('/api/project-workspace', require('./routes/projectWorkspace.routes'));
+
 // 404 handler
 app.use((req, res) => {
   res.status(404).json({
@@ -61,5 +65,5 @@ const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`\n🚀 LearnStack API running on port ${PORT}`);
-  console.log(`📡 Health check: http://localhost:${PORT}/api/health\n`);
+  console.log(`Health check: http://localhost:${PORT}/api/health\n`);
 });

@@ -17,11 +17,20 @@ export default function LeaderboardTable({ leaderboard, currentUserId }) {
   };
 
   const STATUS_COLORS = {
-    qualified: "text-emerald-400",
-    disqualified: "text-red-400",
-    participating: "text-blue-400",
+    qualified: "text-green-500",
+    failed: "text-red-500",
+    disqualified: "text-gray-500",
+    pending: "text-yellow-500",
+    round_2_active: "text-blue-500",
+    round_3_qualified: "text-emerald-400",
+    passed: "text-emerald-500",
     winner: "text-yellow-400",
+    // Fallbacks for schema statuses
+    participating: "text-blue-500",
+    registered: "text-yellow-500",
     runner_up: "text-purple-400",
+    completed: "text-blue-500",
+    submitted: "text-cyan-400"
   };
 
   return (
@@ -92,8 +101,8 @@ export default function LeaderboardTable({ leaderboard, currentUserId }) {
 
               {/* Status */}
               <div className="col-span-2 text-right">
-                <span className={`text-[10px] font-bold uppercase ${STATUS_COLORS[entry.status] || "text-[var(--text-muted)]"}`}>
-                  {entry.status?.replace("_", " ")}
+                <span className={`text-[10px] font-bold uppercase ${STATUS_COLORS[entry.status?.toLowerCase()] || "text-[var(--text-muted)]"}`}>
+                  {entry.status?.replace(/_/g, " ")}
                 </span>
               </div>
             </div>

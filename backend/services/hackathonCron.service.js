@@ -63,6 +63,9 @@ const processCompletedHackathons = async () => {
 
       reg.status = status;
       reg.rank = rank;
+      if (status === 'qualified' || status === 'runner_up') {
+        reg.currentRound = (reg.currentRound || 1) + 1;
+      }
       await reg.save();
 
       // Generate Certificate
@@ -171,17 +174,14 @@ const autoCreateNextHackathon = async () => {
   }
   // Round 2 and 3: Sequential after hackathon start
   let roundStart = new Date(startDate.getTime() + 30 * 60000); // After Round 1 duration
-  if (medQs.length > 0) {
-    const r2Duration = 45;
-    const r2End = new Date(roundStart.getTime() + r2Duration * 60000);
-    rounds.push(createRoundObj(2, 'Technical Challenge', 'intermediate', roundStart, r2End, r2Duration, 60, medQs));
-    roundStart = r2End;
-  }
-  if (hardQs.length > 0) {
-    const r3Duration = 60;
-    const r3End = new Date(roundStart.getTime() + r3Duration * 60000);
-    rounds.push(createRoundObj(3, 'Final Showdown', 'advanced', roundStart, r3End, r3Duration, 75, hardQs));
-  }
+  const r2Duration = 45;
+  const r2End = new Date(roundStart.getTime() + r2Duration * 60000);
+  rounds.push(createRoundObj(2, 'Technical Challenge', 'intermediate', roundStart, r2End, r2Duration, 60, medQs || []));
+  roundStart = r2End;
+
+  const r3Duration = 60;
+  const r3End = new Date(roundStart.getTime() + r3Duration * 60000);
+  rounds.push(createRoundObj(3, 'Final Showdown', 'advanced', roundStart, r3End, r3Duration, 75, hardQs || []));
 
   // If no questions exist in DB, still create one round with correct timing
   if (rounds.length === 0) {

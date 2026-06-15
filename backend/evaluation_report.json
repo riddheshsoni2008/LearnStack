@@ -1,0 +1,598 @@
+{
+  "results": [
+    {
+      "userId": "6a2fa29829a1e8c2fee934d6",
+      "email": "om@gamil.com",
+      "name": "om",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fb9f4555769096134e77d",
+      "email": "rahul@gmail.com",
+      "name": "rahul",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fa0725b2f3acadf3134a2",
+      "email": "jaydip@gamil.com",
+      "name": "jaydip",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 10,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Attendance system lacks data flow implementation",
+        "Leave request system missing",
+        "Monthly report feature missing",
+        "Basic or missing style layout"
+      ],
+      "criticalErrors": [
+        "Empty files detected in submission"
+      ],
+      "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance frontend components or routes exist, but they have no functional code to mark or save records.",
+        "No leave request form, leaves model, or leave routes are present.",
+        "No report generator or reports page is present.",
+        "The submission includes empty source files which will cause build or execution failures.",
+        "The styling is minimal or absent, leaving the visual interface layout unstyled."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Connect the \"Present/Absent\" buttons to trigger a POST request to the backend attendance endpoint.",
+        "Add a leave submission form for students, an approval table for teachers, and backend handlers to update statuses.",
+        "Create a reports component displaying monthly attendance rates and summaries for students.",
+        "Remove unused files or complete their implementation.",
+        "Implement CSS rules or integrate Tailwind CSS to provide a clean and polished responsive user interface."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 10,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Attendance system lacks data flow implementation",
+        "Leave request system missing",
+        "Monthly report feature missing",
+        "Basic or missing style layout"
+      ],
+      "criticalErrors": [
+        "Empty files detected in submission"
+      ],
+      "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance frontend components or routes exist, but they have no functional code to mark or save records.",
+        "No leave request form, leaves model, or leave routes are present.",
+        "No report generator or reports page is present.",
+        "The submission includes empty source files which will cause build or execution failures.",
+        "The styling is minimal or absent, leaving the visual interface layout unstyled."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Connect the \"Present/Absent\" buttons to trigger a POST request to the backend attendance endpoint.",
+        "Add a leave submission form for students, an approval table for teachers, and backend handlers to update statuses.",
+        "Create a reports component displaying monthly attendance rates and summaries for students.",
+        "Remove unused files or complete their implementation.",
+        "Implement CSS rules or integrate Tailwind CSS to provide a clean and polished responsive user interface."
+      ]
+    },
+    {
+      "userId": "6a2fd39e0b262f49ca90fb4d",
+      "email": "kahan@gmail.com",
+      "name": "kahan",
+      "score": 22,
+      "status": "QUALIFIED",
+      "unlockRound3": true,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists",
+        "Leave request system structure exists",
+        "No compilation-blocking syntax or import errors found",
+        "React component hierarchy and visual styles verified"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Mocked attendance data store detected",
+        "Mocked leave data store detected",
+        "Monthly report feature missing"
+      ],
+      "criticalErrors": [],
+      "summary": "Automatic Audit Summary: Received 22/60 points. Passed threshold",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance marking system stores records in an in-memory array that resets whenever the server restarts.",
+        "Leave request system stores requests in an in-memory array without persistence.",
+        "No report generator or reports page is present."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Define a Mongoose schema for Attendance and save/retrieve records from MongoDB.",
+        "Implement a Mongoose Leave model with fields studentId, reason, status (Pending, Approved, Rejected), and date range.",
+        "Create a reports component displaying monthly attendance rates and summaries for students."
+      ]
+    }
+  ],
+  "qualifiedList": [
+    {
+      "userId": "6a2fd39e0b262f49ca90fb4d",
+      "email": "kahan@gmail.com",
+      "name": "kahan",
+      "score": 22,
+      "status": "QUALIFIED",
+      "unlockRound3": true,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists",
+        "Leave request system structure exists",
+        "No compilation-blocking syntax or import errors found",
+        "React component hierarchy and visual styles verified"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Mocked attendance data store detected",
+        "Mocked leave data store detected",
+        "Monthly report feature missing"
+      ],
+      "criticalErrors": [],
+      "summary": "Automatic Audit Summary: Received 22/60 points. Passed threshold",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance marking system stores records in an in-memory array that resets whenever the server restarts.",
+        "Leave request system stores requests in an in-memory array without persistence.",
+        "No report generator or reports page is present."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Define a Mongoose schema for Attendance and save/retrieve records from MongoDB.",
+        "Implement a Mongoose Leave model with fields studentId, reason, status (Pending, Approved, Rejected), and date range.",
+        "Create a reports component displaying monthly attendance rates and summaries for students."
+      ]
+    }
+  ],
+  "disqualifiedList": [
+    {
+      "userId": "6a2fa29829a1e8c2fee934d6",
+      "email": "om@gamil.com",
+      "name": "om",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fb9f4555769096134e77d",
+      "email": "rahul@gmail.com",
+      "name": "rahul",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fa0725b2f3acadf3134a2",
+      "email": "jaydip@gamil.com",
+      "name": "jaydip",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 10,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Attendance system lacks data flow implementation",
+        "Leave request system missing",
+        "Monthly report feature missing",
+        "Basic or missing style layout"
+      ],
+      "criticalErrors": [
+        "Empty files detected in submission"
+      ],
+      "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance frontend components or routes exist, but they have no functional code to mark or save records.",
+        "No leave request form, leaves model, or leave routes are present.",
+        "No report generator or reports page is present.",
+        "The submission includes empty source files which will cause build or execution failures.",
+        "The styling is minimal or absent, leaving the visual interface layout unstyled."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Connect the \"Present/Absent\" buttons to trigger a POST request to the backend attendance endpoint.",
+        "Add a leave submission form for students, an approval table for teachers, and backend handlers to update statuses.",
+        "Create a reports component displaying monthly attendance rates and summaries for students.",
+        "Remove unused files or complete their implementation.",
+        "Implement CSS rules or integrate Tailwind CSS to provide a clean and polished responsive user interface."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 10,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Attendance system lacks data flow implementation",
+        "Leave request system missing",
+        "Monthly report feature missing",
+        "Basic or missing style layout"
+      ],
+      "criticalErrors": [
+        "Empty files detected in submission"
+      ],
+      "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance frontend components or routes exist, but they have no functional code to mark or save records.",
+        "No leave request form, leaves model, or leave routes are present.",
+        "No report generator or reports page is present.",
+        "The submission includes empty source files which will cause build or execution failures.",
+        "The styling is minimal or absent, leaving the visual interface layout unstyled."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Connect the \"Present/Absent\" buttons to trigger a POST request to the backend attendance endpoint.",
+        "Add a leave submission form for students, an approval table for teachers, and backend handlers to update statuses.",
+        "Create a reports component displaying monthly attendance rates and summaries for students.",
+        "Remove unused files or complete their implementation.",
+        "Implement CSS rules or integrate Tailwind CSS to provide a clean and polished responsive user interface."
+      ]
+    }
+  ],
+  "leaderboard": [
+    {
+      "userId": "6a2fd39e0b262f49ca90fb4d",
+      "email": "kahan@gmail.com",
+      "name": "kahan",
+      "score": 22,
+      "status": "QUALIFIED",
+      "unlockRound3": true,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists",
+        "Leave request system structure exists",
+        "No compilation-blocking syntax or import errors found",
+        "React component hierarchy and visual styles verified"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Mocked attendance data store detected",
+        "Mocked leave data store detected",
+        "Monthly report feature missing"
+      ],
+      "criticalErrors": [],
+      "summary": "Automatic Audit Summary: Received 22/60 points. Passed threshold",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance marking system stores records in an in-memory array that resets whenever the server restarts.",
+        "Leave request system stores requests in an in-memory array without persistence.",
+        "No report generator or reports page is present."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Define a Mongoose schema for Attendance and save/retrieve records from MongoDB.",
+        "Implement a Mongoose Leave model with fields studentId, reason, status (Pending, Approved, Rejected), and date range.",
+        "Create a reports component displaying monthly attendance rates and summaries for students."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 10,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Attendance system lacks data flow implementation",
+        "Leave request system missing",
+        "Monthly report feature missing",
+        "Basic or missing style layout"
+      ],
+      "criticalErrors": [
+        "Empty files detected in submission"
+      ],
+      "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance frontend components or routes exist, but they have no functional code to mark or save records.",
+        "No leave request form, leaves model, or leave routes are present.",
+        "No report generator or reports page is present.",
+        "The submission includes empty source files which will cause build or execution failures.",
+        "The styling is minimal or absent, leaving the visual interface layout unstyled."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Connect the \"Present/Absent\" buttons to trigger a POST request to the backend attendance endpoint.",
+        "Add a leave submission form for students, an approval table for teachers, and backend handlers to update statuses.",
+        "Create a reports component displaying monthly attendance rates and summaries for students.",
+        "Remove unused files or complete their implementation.",
+        "Implement CSS rules or integrate Tailwind CSS to provide a clean and polished responsive user interface."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 10,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [
+        "Project integrity verification passed",
+        "Authentication routes/files exist",
+        "Attendance system structure exists"
+      ],
+      "failedChecks": [
+        "Mocked authentication detected",
+        "Attendance system lacks data flow implementation",
+        "Leave request system missing",
+        "Monthly report feature missing",
+        "Basic or missing style layout"
+      ],
+      "criticalErrors": [
+        "Empty files detected in submission"
+      ],
+      "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
+      "failureReasons": [
+        "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
+        "Attendance frontend components or routes exist, but they have no functional code to mark or save records.",
+        "No leave request form, leaves model, or leave routes are present.",
+        "No report generator or reports page is present.",
+        "The submission includes empty source files which will cause build or execution failures.",
+        "The styling is minimal or absent, leaving the visual interface layout unstyled."
+      ],
+      "suggestedFixes": [
+        "Integrate User model (mongoose) inside authController, hash passwords with bcrypt, and sign JWT tokens upon successful authentication.",
+        "Connect the \"Present/Absent\" buttons to trigger a POST request to the backend attendance endpoint.",
+        "Add a leave submission form for students, an approval table for teachers, and backend handlers to update statuses.",
+        "Create a reports component displaying monthly attendance rates and summaries for students.",
+        "Remove unused files or complete their implementation.",
+        "Implement CSS rules or integrate Tailwind CSS to provide a clean and polished responsive user interface."
+      ]
+    },
+    {
+      "userId": "6a2fa29829a1e8c2fee934d6",
+      "email": "om@gamil.com",
+      "name": "om",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fb9f4555769096134e77d",
+      "email": "rahul@gmail.com",
+      "name": "rahul",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fa0725b2f3acadf3134a2",
+      "email": "jaydip@gamil.com",
+      "name": "jaydip",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    },
+    {
+      "userId": "6a2fbfc1bd35f556f76f758a",
+      "email": "kabir@gmail.com",
+      "name": "kabir",
+      "score": 0,
+      "status": "DISQUALIFIED",
+      "unlockRound3": false,
+      "passedChecks": [],
+      "failedChecks": [],
+      "criticalErrors": [
+        "No project files submitted."
+      ],
+      "summary": "Evaluation failed: Empty submission.",
+      "failureReasons": [
+        "Submission is completely empty."
+      ],
+      "suggestedFixes": [
+        "Submit your codebase via the Monaco workspace."
+      ]
+    }
+  ]
+}

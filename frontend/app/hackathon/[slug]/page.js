@@ -26,6 +26,10 @@ export default function HackathonDetailsPage() {
     const fetchData = async () => {
       try {
         const res = await fetch(`/api/hackathons/${params.slug}/details`);
+        const contentType = res.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new Error("Invalid API response from server");
+        }
         const data = await res.json();
         if (data.success) {
           setHackathon(data.data);
@@ -92,12 +96,35 @@ export default function HackathonDetailsPage() {
       primaryCtaLabel = "View Results";
       primaryCtaAction = () => router.push(`/hackathon/${params.slug}/results`);
       primaryColor = "from-purple-500 to-pink-500";
-    } else if (regData.status === "disqualified") {
+    } else if (regData.status === "disqualified" || regData.status === "FAILED") {
       primaryState = "DISQUALIFIED";
-      primaryCtaTitle = "❌ Disqualified";
+      primaryCtaTitle = regData.status === "FAILED" ? "❌ Failed to Qualify" : "❌ Disqualified";
       primaryCtaLabel = "View Results";
       primaryCtaAction = () => router.push(`/hackathon/${params.slug}/results`);
       primaryColor = "from-red-500 to-orange-500";
+    } else if (regData.status === "qualified" || regData.status === "ROUND_2_ACTIVE" || regData.status === "ROUND_3_QUALIFIED" || regData.status === "PASSED") {
+      const eligibleRound = regData.currentRound || 2;
+      const nextRoundConfig = hackathon.rounds.find(r => r.roundNumber === eligibleRound);
+      
+      if (nextRoundConfig && (nextRoundConfig.status === "active" || DEVELOPMENT_MODE)) {
+        primaryState = `ROUND_${eligibleRound}_AVAILABLE`;
+        primaryCtaTitle = `✅ Congratulations! You qualified for Round ${eligibleRound}`;
+        primaryCtaLabel = `Start Round ${eligibleRound}`;
+        primaryCtaAction = () => router.push(`/hackathon/${params.slug}/round/${eligibleRound}`);
+        primaryColor = "from-green-500 to-emerald-500";
+      } else if (nextRoundConfig) {
+        primaryState = "REGISTERED_WAITING";
+        primaryCtaTitle = "✅ Qualified Successfully";
+        primaryCtaLabel = `Waiting for Round ${eligibleRound} to start`;
+        primaryCtaAction = null;
+        primaryColor = "from-gray-600 to-gray-500";
+      } else {
+        primaryState = "COMPLETED_ALL_ROUNDS";
+        primaryCtaTitle = "⏳ All Rounds Completed";
+        primaryCtaLabel = "Waiting for Final Results";
+        primaryCtaAction = () => router.push(`/hackathon/${params.slug}/results`);
+        primaryColor = "from-blue-500 to-indigo-500";
+      }
     } else {
       // Determine based on active rounds and submissions
       const eligibleRound = regData.currentRound || 1;
@@ -200,11 +227,12 @@ export default function HackathonDetailsPage() {
               {hackathon.rounds.map((round, idx) => {
                 const isEligible = regData.currentRound >= round.roundNumber;
                 const submission = submissions.find(s => s.roundNumber === round.roundNumber);
-                const isDone = submission?.status === 'qualified' || submission?.status === 'submitted';
-                const isFail = submission?.status === 'disqualified';
+                const isDone = submission && ['qualified', 'QUALIFIED', 'submitted', 'evaluated', 'COMPLETED', 'AUTO_SUBMITTED'].includes(submission.status);
+                const isFail = submission && ['disqualified', 'DISQUALIFIED', 'FAILED'].includes(submission.status);
 
                 // Determine line color from previous node
-                const prevDone = idx === 0 ? true : submissions.find(s => s.roundNumber === round.roundNumber - 1)?.status === 'qualified';
+                const prevSubmission = idx === 0 ? null : submissions.find(s => s.roundNumber === round.roundNumber - 1);
+                const prevDone = idx === 0 ? true : (prevSubmission && ['qualified', 'QUALIFIED', 'submitted', 'evaluated', 'COMPLETED', 'AUTO_SUBMITTED'].includes(prevSubmission.status));
                 const lineClass = prevDone ? "bg-emerald-500" : "bg-[var(--border)]";
 
                 // Determine node color
@@ -305,9 +333,9 @@ export default function HackathonDetailsPage() {
 
                     const isEligible = isRegistered && regData.currentRound >= round.roundNumber;
                     const isLocked = !isEligible && round.roundNumber > 1;
-                    const isDone = submission?.status === 'qualified' || submission?.status === 'submitted' || submission?.status === 'disqualified' || submission?.status === 'QUALIFIED' || submission?.status === 'DISQUALIFIED';
+                    const isDone = submission && ['qualified', 'QUALIFIED', 'submitted', 'evaluated', 'COMPLETED', 'AUTO_SUBMITTED', 'disqualified', 'DISQUALIFIED', 'FAILED'].includes(submission.status);
                     // Round 1: always accessible after registration (no timing checks)
-                    const canAccess = isEligible && !isDone && (round.roundNumber === 1 || (isRoundActive && isActive));
+                    const canAccess = isEligible && !isDone && (round.roundNumber === 1 || (isRoundActive && isActive) || DEVELOPMENT_MODE);
 
                     let badgeColor = "bg-gray-500/20 text-gray-400";
                     let badgeLabel = "Locked";

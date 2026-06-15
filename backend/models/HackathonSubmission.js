@@ -62,10 +62,33 @@ const HackathonSubmissionSchema = new mongoose.Schema({
     unanswered: { type: Number, default: 0 }
   },
 
-  // ── Project Submission (Round 3) ──
-  projectUrl: { type: String, default: '' },
-  projectDescription: { type: String, default: '' },
-  projectTechStack: [{ type: String }],
+  // ── Workspace Code Submission (Round 2 & 3) ──
+  projectFiles: [{
+    path: { type: String, required: true },
+    content: { type: String, default: '' }
+  }],
+  lastSavedAt: { type: Date },
+  
+  // ── Automated Evaluation Report ──
+  evalReport: { type: String, default: '' },
+  evalScoreBreakdown: {
+    authentication: { type: Number, default: 0 },
+    attendance: { type: Number, default: 0 },
+    leaveSystem: { type: Number, default: 0 },
+    reports: { type: Number, default: 0 },
+    codeQuality: { type: Number, default: 0 },
+    uiUx: { type: Number, default: 0 }
+  },
+
+  // ── Automated Evaluation Scores (Round 2) ──
+  evalScores: {
+    functionality: { type: Number, default: 0 },
+    codeQuality: { type: Number, default: 0 },
+    uiUx: { type: Number, default: 0 },
+    databaseDesign: { type: Number, default: 0 },
+    scalability: { type: Number, default: 0 },
+    innovation: { type: Number, default: 0 }
+  },
 
   // ── Judge Evaluation (Round 3) ──
   judgeScores: [{
@@ -78,7 +101,7 @@ const HackathonSubmissionSchema = new mongoose.Schema({
   // ── Status ──
   status: {
     type: String,
-    enum: ['NOT_STARTED', 'IN_PROGRESS', 'AUTO_SUBMITTED', 'COMPLETED', 'QUALIFIED', 'DISQUALIFIED', 'evaluated'],
+    enum: ['NOT_STARTED', 'IN_PROGRESS', 'AUTO_SUBMITTED', 'COMPLETED', 'QUALIFIED', 'DISQUALIFIED', 'evaluated', 'submitted'],
     default: 'NOT_STARTED',
     index: true
   }

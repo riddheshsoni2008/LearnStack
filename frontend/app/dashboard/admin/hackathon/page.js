@@ -1,9 +1,10 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useAuth } from "@/context/AuthContext";
 import AuthNavbar from "@/components/AuthNavbar";
+import Editor from "@monaco-editor/react";
 
 // ═══════════════════════════════════════════════════════════════
 // Hackathon Admin Panel — /dashboard/admin/hackathon
@@ -523,6 +524,7 @@ function ParticipantsTab() {
   const [selected, setSelected] = useState("");
   const [participants, setParticipants] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [subTab, setSubTab] = useState("list"); // "list" or "review"
 
   useEffect(() => {
     const fetch_ = async () => {
@@ -580,6 +582,23 @@ function ParticipantsTab() {
         </select>
 
         {selected && (
+          <div className="flex items-center gap-2 bg-[var(--surface-light)] p-1 rounded-xl border border-[var(--border)]">
+            <button
+              onClick={() => setSubTab("list")}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${subTab === "list" ? "bg-[var(--primary)] text-white" : "text-[var(--text-muted)]"}`}
+            >
+              👥 Registered Participants
+            </button>
+            <button
+              onClick={() => setSubTab("review")}
+              className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${subTab === "review" ? "bg-[var(--primary)] text-white" : "text-[var(--text-muted)]"}`}
+            >
+              💻 Code Submissions Review
+            </button>
+          </div>
+        )}
+
+        {selected && subTab === "list" && (
           <div className="flex items-center gap-2 ml-auto">
             <button onClick={() => handleExport("json")} className="btn-secondary !py-2 !px-4 !text-xs">📄 JSON</button>
             <button onClick={() => handleExport("csv")} className="btn-secondary !py-2 !px-4 !text-xs">📊 CSV</button>
@@ -589,7 +608,7 @@ function ParticipantsTab() {
 
       {loading ? (
         <div className="text-center text-[var(--text-muted)] animate-pulse py-10">Loading...</div>
-      ) : selected && participants.length > 0 ? (
+      ) : selected && subTab === "list" && participants.length > 0 ? (
         <div className="glass rounded-xl overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
@@ -639,10 +658,332 @@ function ParticipantsTab() {
             </table>
           </div>
         </div>
+      ) : selected && subTab === "review" ? (
+        <CodeSubmissionsReview hackathonId={selected} />
       ) : selected ? (
         <div className="text-center text-[var(--text-muted)] py-10">No participants yet.</div>
       ) : (
         <div className="text-center text-[var(--text-muted)] py-10">Select a hackathon to view participants.</div>
+      )}
+    </div>
+  );
+}
+
+function CodeSubmissionsReview({ hackathonId }) {
+  const [submissions, setSubmissions] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [selectedRound, setSelectedRound] = useState(2);
+  const [selectedSub, setSelectedSub] = useState(null);
+  const [comparedSubs, setComparedSubs] = useState([]);
+  const [checkedIds, setCheckedIds] = useState([]);
+  const [evaluating, setEvaluating] = useState(false);
+  const [finalizing, setFinalizing] = useState(false);
+
+  const fetchSubmissions = useCallback(async () => {
+    if (!hackathonId) return;
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/rounds/admin/submissions?hackathonId=${hackathonId}&roundNumber=${selectedRound}`, { credentials: "include" });
+      const data = await res.json();
+      if (data.success) {
+        const sorted = (data.data || []).sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+        setSubmissions(sorted);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [hackathonId, selectedRound]);
+
+  useEffect(() => {
+    fetchSubmissions();
+    setCheckedIds([]);
+  }, [fetchSubmissions]);
+
+  const handleToggleCheck = (subId) => {
+    setCheckedIds(prev => {
+      if (prev.includes(subId)) {
+        return prev.filter(id => id !== subId);
+      } else {
+        if (prev.length >= 2) {
+          alert("You can select at most 2 submissions for comparison.");
+          return prev;
+        }
+        return [...prev, subId];
+      }
+    });
+  };
+
+  const handleCompare = () => {
+    if (checkedIds.length !== 2) return;
+    const subsToCompare = submissions.filter(s => checkedIds.includes(s._id));
+    if (subsToCompare.length === 2) {
+      setComparedSubs(subsToCompare);
+    }
+  };
+
+  const handleEvaluate = async () => {
+    if (!confirm("Are you sure you want to run automated evaluation for all Round 2 submissions?")) return;
+    setEvaluating(true);
+    try {
+      const res = await fetch("/api/rounds/evaluate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ hackathonId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("Evaluation complete!");
+        fetchSubmissions();
+      } else {
+        alert(data.message || "Failed to evaluate.");
+      }
+    } catch (err) {
+      alert("Error evaluating.");
+    } finally {
+      setEvaluating(false);
+    }
+  };
+
+  const handleFinalize = async () => {
+    if (!confirm("Are you sure you want to finalize the top 20 and open Round 3?")) return;
+    setFinalizing(true);
+    try {
+      const res = await fetch("/api/rounds/select-top-20", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ hackathonId })
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert(data.message || "Top 20 selected and Round 3 opened!");
+        fetchSubmissions();
+      } else {
+        alert(data.message || "Failed to finalize.");
+      }
+    } catch (err) {
+      alert("Error finalizing.");
+    } finally {
+      setFinalizing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center gap-3 bg-[var(--surface-light)] p-4 rounded-2xl border border-[var(--border)]">
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-[var(--text-muted)] font-bold">Round:</span>
+          <select
+            value={selectedRound}
+            onChange={(e) => setSelectedRound(parseInt(e.target.value))}
+            className="input-field !w-auto !py-1.5 !text-xs font-bold"
+          >
+            <option value={2}>Round 2</option>
+            <option value={3}>Round 3</option>
+          </select>
+        </div>
+
+        <div className="flex items-center gap-3 ml-auto">
+          <button
+            onClick={handleCompare}
+            disabled={checkedIds.length !== 2}
+            className="px-4 py-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed text-xs font-bold text-white transition-all shadow-md"
+          >
+            📊 Compare Selected ({checkedIds.length}/2)
+          </button>
+          
+          {selectedRound === 2 && (
+            <>
+              <button
+                onClick={handleEvaluate}
+                disabled={evaluating}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 hover:opacity-90 disabled:opacity-40 text-xs font-bold text-white transition-all shadow-md"
+              >
+                {evaluating ? "Evaluating..." : "🤖 Run Automated Scoring"}
+              </button>
+              <button
+                onClick={handleFinalize}
+                disabled={finalizing}
+                className="px-4 py-2 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-90 disabled:opacity-40 text-xs font-bold text-white transition-all shadow-md"
+              >
+                {finalizing ? "Finalizing..." : "🏆 Select Top 20 & Open R3"}
+              </button>
+            </>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="text-center text-[var(--text-muted)] animate-pulse py-10">Loading submissions...</div>
+      ) : submissions.length > 0 ? (
+        <div className="glass rounded-xl overflow-hidden border border-[var(--border)]">
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="bg-[var(--surface)] text-[var(--text-muted)] uppercase tracking-wider border-b border-[var(--border)]">
+                  <th className="px-4 py-3 text-left font-bold w-12">Select</th>
+                  <th className="px-4 py-3 text-left font-bold w-12">Rank</th>
+                  <th className="px-4 py-3 text-left font-bold">Participant</th>
+                  <th className="px-4 py-3 text-left font-bold">Language</th>
+                  <th className="px-4 py-3 text-left font-bold">Last Saved</th>
+                  <th className="px-4 py-3 text-right font-bold">Total Score</th>
+                  <th className="px-4 py-3 text-right font-bold">Status</th>
+                  <th className="px-4 py-3 text-center font-bold w-24">Action</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-[var(--border)]">
+                {submissions.map((sub, idx) => {
+                  const isChecked = checkedIds.includes(sub._id);
+                  return (
+                    <tr key={sub._id} className="hover:bg-[var(--surface-light)] transition-colors">
+                      <td className="px-4 py-3 text-center">
+                        <input
+                          type="checkbox"
+                          checked={isChecked}
+                          onChange={() => handleToggleCheck(sub._id)}
+                          className="w-4 h-4 cursor-pointer accent-[var(--primary)]"
+                        />
+                      </td>
+                      <td className="px-4 py-3 text-[var(--text-muted)] font-bold">{idx + 1}</td>
+                      <td className="px-4 py-3">
+                        <div className="font-bold text-[var(--foreground)]">{sub.userId?.name || "Unknown"}</div>
+                        <div className="text-[10px] text-[var(--text-muted)]">{sub.userId?.email}</div>
+                      </td>
+                      <td className="px-4 py-3">
+                        <span className="px-2 py-0.5 rounded-full bg-blue-500/10 text-blue-400 font-bold uppercase text-[9px]">
+                          {sub.language}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-[var(--text-muted)]">
+                        {sub.lastSavedAt ? new Date(sub.lastSavedAt).toLocaleString() : "—"}
+                      </td>
+                      <td className="px-4 py-3 text-right font-black text-sm text-[var(--foreground)]">
+                        {sub.totalScore || 0}
+                      </td>
+                      <td className="px-4 py-3 text-right">
+                        <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-full ${
+                          sub.status === "submitted" || sub.status === "COMPLETED" ? "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20" :
+                          sub.status === "evaluated" ? "bg-purple-500/10 text-purple-400 border border-purple-500/20" :
+                          "bg-gray-500/10 text-gray-400"
+                        }`}>
+                          {sub.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <button
+                          onClick={() => setSelectedSub(sub)}
+                          className="px-3 py-1 rounded-lg bg-[var(--primary)]/10 text-[var(--primary-light)] border border-[var(--primary)]/20 font-bold hover:bg-[var(--primary)]/20 transition-all text-[10px]"
+                        >
+                          👁️ View Code
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="text-center text-[var(--text-muted)] py-12 bg-[var(--surface-light)] border border-[var(--border)] rounded-2xl">
+          <div className="text-3xl mb-2">📂</div>
+          <p>No workspace submissions found for this round.</p>
+        </div>
+      )}
+
+      {selectedSub && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass rounded-3xl p-6 sm:p-8 w-full max-w-4xl border border-gray-800 max-h-[90vh] flex flex-col"
+          >
+            <div className="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
+              <div>
+                <h3 className="text-base font-extrabold text-white">Code Submission by {selectedSub.userId?.name}</h3>
+                <p className="text-xs text-[var(--text-muted)]">{selectedSub.userId?.email} • {selectedSub.language} solution</p>
+              </div>
+              <button
+                onClick={() => setSelectedSub(null)}
+                className="px-3.5 py-1.5 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-bold text-white transition-all"
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            <div className="flex-1 min-h-[400px] border border-gray-800 rounded-2xl overflow-hidden bg-[#1e1e1e]">
+              <Editor
+                height="100%"
+                language={selectedSub.language}
+                value={selectedSub.sourceCode}
+                theme="vs-dark"
+                options={{
+                  readOnly: true,
+                  fontSize: 13,
+                  minimap: { enabled: false },
+                  wordWrap: "on",
+                  automaticLayout: true
+                }}
+              />
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {comparedSubs.length === 2 && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass rounded-3xl p-6 w-full max-w-[95vw] border border-gray-800 h-[90vh] flex flex-col"
+          >
+            <div className="flex items-center justify-between mb-4 border-b border-gray-800 pb-3">
+              <div>
+                <h3 className="text-lg font-extrabold text-white">Side-by-Side Code Comparison</h3>
+                <p className="text-xs text-[var(--text-muted)]">Compare code architecture, database designs, and implementation flows</p>
+              </div>
+              <button
+                onClick={() => setComparedSubs([])}
+                className="px-4 py-2 rounded-xl bg-gray-800 hover:bg-gray-700 text-xs font-bold text-white transition-all"
+              >
+                ✕ Close Comparison
+              </button>
+            </div>
+
+            <div className="flex-1 grid grid-cols-2 gap-6 min-h-0">
+              {comparedSubs.map((sub, idx) => (
+                <div key={sub._id} className="flex flex-col h-full border border-gray-800 rounded-2xl overflow-hidden bg-[#0c0d12]">
+                  <div className="h-10 bg-[#12131a] border-b border-gray-800 flex items-center justify-between px-4">
+                    <span className="text-xs font-black text-gray-300">
+                      {idx + 1}. {sub.userId?.name}
+                    </span>
+                    <span className="text-[10px] text-gray-500">
+                      Score: <strong className="text-yellow-400">{sub.totalScore || 0}</strong> • {sub.language}
+                    </span>
+                  </div>
+                  <div className="flex-1 min-h-0">
+                    <Editor
+                      height="100%"
+                      language={sub.language}
+                      value={sub.sourceCode}
+                      theme="vs-dark"
+                      options={{
+                        readOnly: true,
+                        fontSize: 12,
+                        minimap: { enabled: false },
+                        wordWrap: "on",
+                        automaticLayout: true
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
       )}
     </div>
   );

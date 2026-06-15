@@ -35,7 +35,10 @@ const HackathonRegistrationSchema = new mongoose.Schema({
   // ── Status & Progress ──
   status: {
     type: String,
-    enum: ['registered', 'participating', 'qualified', 'disqualified', 'winner', 'runner_up'],
+    enum: [
+      'registered', 'participating', 'qualified', 'disqualified', 'winner', 'runner_up',
+      'ROUND_2_ACTIVE', 'PASSED', 'FAILED', 'ROUND_3_QUALIFIED'
+    ],
     default: 'registered',
     index: true
   },

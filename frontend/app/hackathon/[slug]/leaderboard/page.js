@@ -17,9 +17,15 @@ export default function HackathonLeaderboardPage() {
     const fetchLeaderboard = async () => {
       try {
         const res = await fetch(`/api/hackathons/${params.slug}/leaderboard`);
-        const data = await res.json();
-        if (data.success) {
-          setLeaderboard(data.data);
+        
+        const contentType = res.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await res.json();
+          if (data.success) {
+            setLeaderboard(data.data);
+          }
+        } else {
+          console.error("Expected JSON, got something else", await res.text());
         }
       } catch (err) {
         console.error("Error:", err);

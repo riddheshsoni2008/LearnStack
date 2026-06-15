@@ -3,10 +3,75 @@ const HackathonRegistration = require('../models/HackathonRegistration');
 const HackathonSubmission = require('../models/HackathonSubmission');
 const HackathonQuestion = require('../models/HackathonQuestion');
 const Certificate = require('../models/Certificate');
+const HackathonChallenge = require('../models/HackathonChallenge');
+
 
 // DEVELOPMENT MODE FLAG
 // Set to true to disable registration and round time restrictions for local testing
 const DEVELOPMENT_MODE = true;
+
+// Helper to automatically create Round 2 and Round 3 if missing
+const ensureRoundsExist = async (hackathon) => {
+  let updated = false;
+  if (!hackathon.rounds) {
+    hackathon.rounds = [];
+  }
+
+  const hasRound1 = hackathon.rounds.some(r => r.roundNumber === 1);
+  if (!hasRound1) {
+    hackathon.rounds.push({
+      roundNumber: 1,
+      title: 'Qualification Round',
+      difficulty: 'easy',
+      startTime: hackathon.startDate || new Date(),
+      endTime: hackathon.endDate || new Date(Date.now() + 3 * 24 * 3600 * 1000),
+      duration: 30,
+      qualifyingScore: 20,
+      type: 'quiz',
+      status: 'active'
+    });
+    updated = true;
+  }
+
+  const hasRound2 = hackathon.rounds.some(r => r.roundNumber === 2);
+  if (!hasRound2) {
+    hackathon.rounds.push({
+      roundNumber: 2,
+      title: 'Coding Challenge Round',
+      description: 'Medium-level full-stack project challenges',
+      difficulty: 'intermediate',
+      startTime: hackathon.startDate || new Date(),
+      endTime: hackathon.endDate || new Date(Date.now() + 3 * 24 * 3600 * 1000),
+      duration: 45,
+      qualifyingScore: 60,
+      type: 'project',
+      status: 'active'
+    });
+    updated = true;
+  }
+
+  const hasRound3 = hackathon.rounds.some(r => r.roundNumber === 3);
+  if (!hasRound3) {
+    hackathon.rounds.push({
+      roundNumber: 3,
+      title: 'Final Showdown',
+      description: 'Advanced-level project challenges',
+      difficulty: 'advanced',
+      startTime: hackathon.startDate || new Date(),
+      endTime: hackathon.endDate || new Date(Date.now() + 3 * 24 * 3600 * 1000),
+      duration: 60,
+      qualifyingScore: 75,
+      type: 'project',
+      status: 'upcoming'
+    });
+    updated = true;
+  }
+
+  if (updated) {
+    await hackathon.save();
+    console.log(`[DEBUG] Auto-created missing rounds for hackathon ${hackathon.title}`);
+  }
+};
 
 // Fisher-Yates shuffle for randomizing MCQ option order
 const shuffleArrayFisherYates = (arr) => {
@@ -21,7 +86,7 @@ const shuffleArrayFisherYates = (arr) => {
 const autoSubmitSubmission = async (submission, roundData, hackathon) => {
   const round = roundData.roundNumber;
   const answers = submission.answers || [];
-  
+
   let totalScore = 0;
   const gradedAnswers = [];
   let answeredCount = 0;
@@ -86,8 +151,8 @@ const autoSubmitSubmission = async (submission, roundData, hackathon) => {
     : roundData.questionIds;
   const unansweredCount = questionIdsToEval.length - answeredCount;
 
-  const maxPossibleScore = submission.maxPossibleScore || 1;
-  const percentage = maxPossibleScore > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
+  let maxPossibleScore = submission.maxPossibleScore || 1;
+  let percentage = maxPossibleScore > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
 
   let qualified = false;
   const qualifyingScore = roundData.qualifyingScore || 50;
@@ -100,8 +165,34 @@ const autoSubmitSubmission = async (submission, roundData, hackathon) => {
   }
 
   let finalStatus = qualified ? 'QUALIFIED' : 'DISQUALIFIED';
-  if (roundData.type === 'project') {
-    finalStatus = 'AUTO_SUBMITTED';
+
+  if (round === 2 || roundData.type === 'project') {
+    const { evaluateSubmission } = require('../services/judge.service');
+    const evalResult = evaluateSubmission(submission.projectFiles || []);
+    
+    totalScore = evalResult.score;
+    maxPossibleScore = 60;
+    percentage = Math.round((totalScore / 60) * 100);
+    qualified = evalResult.unlockRound3;
+    finalStatus = evalResult.status;
+    
+    submission.evalReport = evalResult.summary + '\n\n' + evalResult.failureReasons.join('\n');
+    submission.evalScoreBreakdown = {
+      authentication: evalResult.breakdown.auth,
+      attendance: evalResult.breakdown.attendance,
+      leaveSystem: evalResult.breakdown.leave,
+      reports: evalResult.breakdown.reports,
+      codeQuality: evalResult.breakdown.codeQuality,
+      uiUx: evalResult.breakdown.uiUx
+    };
+    submission.evalScores = {
+      functionality: evalResult.breakdown.attendance + evalResult.breakdown.leave + evalResult.breakdown.reports,
+      codeQuality: evalResult.breakdown.codeQuality,
+      uiUx: evalResult.breakdown.uiUx,
+      databaseDesign: evalResult.breakdown.auth,
+      scalability: 0,
+      innovation: 0
+    };
   }
 
   submission.answers = gradedAnswers;
@@ -164,17 +255,20 @@ const listHackathons = async (req, res) => {
   }
 };
 
-// @desc    Get hackathon details by slug
-// @route   GET /api/hackathons/:slug
-// @access  Public
 const getHackathonBySlug = async (req, res) => {
   try {
-    const hackathon = await Hackathon.findOne({ slug: req.params.slug })
+    let hackathon = await Hackathon.findOne({ slug: req.params.slug })
       .populate('rounds.questionIds', 'questionType category difficulty points');
 
     if (!hackathon) {
       return res.status(404).json({ success: false, message: 'Hackathon not found' });
     }
+
+    await ensureRoundsExist(hackathon);
+
+    // Re-populate rounds in case they were newly added
+    hackathon = await Hackathon.findOne({ slug: req.params.slug })
+      .populate('rounds.questionIds', 'questionType category difficulty points');
 
     res.status(200).json({ success: true, data: hackathon });
   } catch (error) {
@@ -193,8 +287,7 @@ const getLeaderboard = async (req, res) => {
     }
 
     const registrations = await HackathonRegistration.find({
-      hackathonId: hackathon._id,
-      status: { $in: ['participating', 'qualified', 'winner', 'runner_up'] }
+      hackathonId: hackathon._id
     })
       .populate('userId', 'name email')
       .sort({ totalScore: -1, totalTimeTaken: 1 })
@@ -336,15 +429,14 @@ const registerForHackathon = async (req, res) => {
   }
 };
 
-// @desc    Get user's registration status
-// @route   GET /api/hackathons/:slug/my-status
-// @access  Private
 const getMyStatus = async (req, res) => {
   try {
     const hackathon = await Hackathon.findOne({ slug: req.params.slug });
     if (!hackathon) {
       return res.status(404).json({ success: false, message: 'Hackathon not found' });
     }
+
+    await ensureRoundsExist(hackathon);
 
     const registration = await HackathonRegistration.findOne({
       hackathonId: hackathon._id,
@@ -410,6 +502,14 @@ const getRoundQuestions = async (req, res) => {
         success: false,
         message: 'You have been disqualified from this hackathon.',
         redirectUrl: `/hackathon/${slug}/results`
+      });
+    }
+
+    if (registration.currentRound < round) {
+      return res.status(403).json({
+        success: false,
+        message: `You cannot access Round ${round} yet.`,
+        redirectUrl: `/hackathon/${slug}`
       });
     }
 
@@ -487,6 +587,7 @@ const getRoundQuestions = async (req, res) => {
       return res.status(200).json({
         success: true,
         data: {
+          hackathonId: hackathon._id,
           round: {
             roundNumber: roundData.roundNumber,
             title: roundData.title,
@@ -501,28 +602,62 @@ const getRoundQuestions = async (req, res) => {
     }
 
     // Already started, return questions and timer state
-    const questionIdsToFetch = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0
-      ? submission.assignedQuestionIds
-      : roundData.questionIds;
-
-    const questions = await HackathonQuestion.find({
-      _id: { $in: questionIdsToFetch }
-    }).select('-correctAnswer -testCases -explanation');
-
-    // Shuffle MCQ options and strip isCorrect (security: don't leak correct answer to frontend)
-    const shuffledQuestions = questions.map(q => {
-      const qObj = q.toObject();
-      if (qObj.questionType === 'mcq' && qObj.options && qObj.options.length > 1) {
-        qObj.options = shuffleArrayFisherYates([...qObj.options]).map(opt => ({
-          text: opt.text
-        }));
+    let shuffledQuestions = [];
+    if (roundData.type === 'project') {
+      let challenge = await HackathonChallenge.findOne({
+        hackathonId: hackathon._id,
+        assignedTo: req.user._id
+      });
+      if (!challenge) {
+        const { challengePool } = require('./roundAutomation.controller');
+        const availableChallenges = [...challengePool];
+        availableChallenges.sort(() => Math.random() - 0.5);
+        const assignedTitles = await HackathonChallenge.find({ hackathonId: hackathon._id }).distinct('challengeTitle');
+        let challengeTemplate = availableChallenges.find(c => !assignedTitles.includes(c.challengeTitle));
+        if (!challengeTemplate) {
+          challengeTemplate = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
+        }
+        challenge = await HackathonChallenge.create({
+          hackathonId: hackathon._id,
+          assignedTo: req.user._id,
+          ...challengeTemplate
+        });
       }
-      return qObj;
-    });
+
+      const questionText = `TITLE: ${challenge.challengeTitle}\n\nBUSINESS SCENARIO:\n${challenge.businessScenario || ''}\n\nPROBLEM STATEMENT:\n${challenge.problemStatement || ''}\n\nREQUIREMENTS:\n${(challenge.requirements || []).map(r => '- ' + r).join('\n')}\n\nBONUS FEATURES:\n${(challenge.bonusFeatures || []).map(b => '- ' + b).join('\n')}\n\nEVALUATION CRITERIA:\n${(challenge.evaluationCriteria || []).join('\n')}`;
+
+      shuffledQuestions = [{
+        _id: challenge._id,
+        questionType: 'project',
+        difficulty: challenge.difficulty?.toLowerCase() || 'intermediate',
+        points: 100,
+        questionText: questionText
+      }];
+    } else {
+      const questionIdsToFetch = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0
+        ? submission.assignedQuestionIds
+        : roundData.questionIds;
+
+      const questions = await HackathonQuestion.find({
+        _id: { $in: questionIdsToFetch }
+      }).select('-correctAnswer -testCases -explanation');
+
+      // Shuffle MCQ options and strip isCorrect (security: don't leak correct answer to frontend)
+      shuffledQuestions = questions.map(q => {
+        const qObj = q.toObject();
+        if (qObj.questionType === 'mcq' && qObj.options && qObj.options.length > 1) {
+          qObj.options = shuffleArrayFisherYates([...qObj.options]).map(opt => ({
+            text: opt.text
+          }));
+        }
+        return qObj;
+      });
+    }
 
     res.status(200).json({
       success: true,
       data: {
+        hackathonId: hackathon._id,
         round: {
           roundNumber: roundData.roundNumber,
           title: roundData.title,
@@ -534,7 +669,8 @@ const getRoundQuestions = async (req, res) => {
         questions: shuffledQuestions,
         submissionId: submission._id,
         startedAt: submission.startedAt,
-        started: true
+        started: true,
+        projectFiles: submission.projectFiles
       }
     });
   } catch (error) {
@@ -557,6 +693,32 @@ const startRound = async (req, res) => {
 
     const roundData = hackathon.rounds.find(r => r.roundNumber === round);
     if (!roundData) return res.status(404).json({ success: false, message: 'Round not found.' });
+
+    const registration = await HackathonRegistration.findOne({
+      hackathonId: hackathon._id,
+      userId: req.user._id
+    });
+
+    if (!registration) {
+      return res.status(403).json({
+        success: false,
+        message: 'You are not registered for this hackathon.'
+      });
+    }
+
+    if (registration.status === 'disqualified') {
+      return res.status(403).json({
+        success: false,
+        message: 'You have been disqualified from this hackathon.'
+      });
+    }
+
+    if (registration.currentRound < round) {
+      return res.status(403).json({
+        success: false,
+        message: `You cannot start Round ${round} yet.`
+      });
+    }
 
     // Check round timing for all rounds (including Round 1)
     const now = new Date();
@@ -591,7 +753,37 @@ const startRound = async (req, res) => {
     });
 
     let questions = [];
-    if (round === 1) {
+    if (roundData.type === 'project') {
+      let challenge = await HackathonChallenge.findOne({
+        hackathonId: hackathon._id,
+        assignedTo: req.user._id
+      });
+      if (!challenge) {
+        const { challengePool } = require('./roundAutomation.controller');
+        const availableChallenges = [...challengePool];
+        availableChallenges.sort(() => Math.random() - 0.5);
+        const assignedTitles = await HackathonChallenge.find({ hackathonId: hackathon._id }).distinct('challengeTitle');
+        let challengeTemplate = availableChallenges.find(c => !assignedTitles.includes(c.challengeTitle));
+        if (!challengeTemplate) {
+          challengeTemplate = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
+        }
+        challenge = await HackathonChallenge.create({
+          hackathonId: hackathon._id,
+          assignedTo: req.user._id,
+          ...challengeTemplate
+        });
+      }
+
+      const questionText = `TITLE: ${challenge.challengeTitle}\n\nBUSINESS SCENARIO:\n${challenge.businessScenario || ''}\n\nPROBLEM STATEMENT:\n${challenge.problemStatement || ''}\n\nREQUIREMENTS:\n${(challenge.requirements || []).map(r => '- ' + r).join('\n')}\n\nBONUS FEATURES:\n${(challenge.bonusFeatures || []).map(b => '- ' + b).join('\n')}\n\nEVALUATION CRITERIA:\n${(challenge.evaluationCriteria || []).join('\n')}`;
+
+      questions = [{
+        _id: challenge._id,
+        questionType: 'project',
+        difficulty: challenge.difficulty?.toLowerCase() || 'intermediate',
+        points: 100,
+        questionText: questionText
+      }];
+    } else if (round === 1) {
       questions = await HackathonQuestion.aggregate([
         { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
         { $sample: { size: 3 } }
@@ -604,13 +796,13 @@ const startRound = async (req, res) => {
       }
     } else if (round === 2) {
       questions = await HackathonQuestion.aggregate([
-        { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
-        { $sample: { size: 2 } }
+        { $match: { scope: 'global', questionType: 'project', _id: { $nin: seenQuestionIds } } },
+        { $sample: { size: 1 } }
       ]);
-      if (questions.length < 2) {
+      if (questions.length < 1) {
         questions = await HackathonQuestion.aggregate([
-          { $match: { scope: 'global', questionType: 'mcq' } },
-          { $sample: { size: 2 } }
+          { $match: { scope: 'global', questionType: 'project' } },
+          { $sample: { size: 1 } }
         ]);
       }
     } else if (round === 3) {
@@ -645,6 +837,74 @@ const startRound = async (req, res) => {
       return qObj;
     });
 
+const DEFAULT_PROJECT_FILES = [
+  {
+    path: "src/App.jsx",
+    content: `import React from 'react';
+import './styles.css';
+
+export default function App() {
+  return (
+    <div className="app-container">
+      <h1>LearnStack Project Workspace</h1>
+      <p>Start building your full-stack project here.</p>
+    </div>
+  );
+}`
+  },
+  {
+    path: "src/styles.css",
+    content: `body {
+  margin: 0;
+  font-family: sans-serif;
+  background: #0f172a;
+  color: #f8fafc;
+}
+.app-container {
+  padding: 2rem;
+  text-align: center;
+}`
+  },
+  {
+    path: "backend/server.js",
+    content: `const express = require('express');
+const app = express();
+const routes = require('./routes');
+
+app.use(express.json());
+app.use('/api', routes);
+
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => {
+  console.log(\`Server running on port \${PORT}\`);
+});`
+  },
+  {
+    path: "backend/routes.js",
+    content: `const express = require('express');
+const router = express.Router();
+
+router.get('/health', (req, res) => {
+  res.json({ status: 'OK', message: 'Backend is healthy' });
+});
+
+module.exports = router;`
+  },
+  {
+    path: "README.md",
+    content: `# Full-Stack Challenge Project
+
+Welcome to the LearnStack Full-Stack Workspace!
+
+## Project Structure
+- \`src/\`: React frontend components and styles
+- \`backend/\`: Express server logic and route handlers
+- \`README.md\`: Project documentation and guidelines`
+  }
+];
+
+    const isProjectRound = roundData.type === 'project' || round === 2 || round === 3;
+
     submission = await HackathonSubmission.create({
       hackathonId: hackathon._id,
       userId: req.user._id,
@@ -652,16 +912,19 @@ const startRound = async (req, res) => {
       status: 'IN_PROGRESS',
       assignedQuestionIds: questionIds,
       startedAt: new Date(),
-      maxPossibleScore: questions.reduce((acc, q) => acc + (q.points || 10), 0)
+      maxPossibleScore: questions.reduce((acc, q) => acc + (q.points || 10), 0),
+      projectFiles: isProjectRound ? DEFAULT_PROJECT_FILES : []
     });
 
     res.status(200).json({
       success: true,
       data: {
+        hackathonId: hackathon._id,
         questions: shuffledQuestions,
         submissionId: submission._id,
         startedAt: submission.startedAt,
-        started: true
+        started: true,
+        projectFiles: submission.projectFiles
       }
     });
   } catch (error) {
@@ -676,12 +939,14 @@ const submitRound = async (req, res) => {
   try {
     const { slug, roundNumber } = req.params;
     const round = parseInt(roundNumber);
-    const { answers, autoSubmitted, projectUrl, projectDescription, projectTechStack } = req.body;
+    const { answers, autoSubmitted, projectFiles } = req.body;
 
     const hackathon = await Hackathon.findOne({ slug });
     if (!hackathon) {
       return res.status(404).json({ success: false, message: 'Hackathon not found' });
     }
+
+    await ensureRoundsExist(hackathon);
 
     const roundData = hackathon.rounds.find(r => r.roundNumber === round);
     if (!roundData) return res.status(404).json({ success: false, message: 'Round not found.' });
@@ -774,8 +1039,8 @@ const submitRound = async (req, res) => {
       : roundData.questionIds;
     unansweredCount = questionIdsToEval.length - answeredCount;
 
-    const maxPossibleScore = submission.maxPossibleScore || 1;
-    const percentage = maxPossibleScore > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
+    let maxPossibleScore = submission.maxPossibleScore || 1;
+    let percentage = maxPossibleScore > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
 
     // Determine qualification based on strict rules
     let qualified = false;
@@ -788,9 +1053,43 @@ const submitRound = async (req, res) => {
       qualified = totalScore >= qualifyingScore;
     }
 
+    // Monaco Workspace fields
+    if (projectFiles && Array.isArray(projectFiles)) {
+      submission.projectFiles = projectFiles;
+      submission.lastSavedAt = new Date();
+    }
+
     // Status
     let finalStatus = qualified ? 'QUALIFIED' : 'DISQUALIFIED';
-    if (roundData.type === 'project') {
+
+    if (round === 2) {
+      const { evaluateSubmission } = require('../services/judge.service');
+      const evalResult = evaluateSubmission(projectFiles || submission.projectFiles || []);
+      
+      totalScore = evalResult.score;
+      maxPossibleScore = 60;
+      percentage = Math.round((totalScore / 60) * 100);
+      qualified = evalResult.unlockRound3;
+      finalStatus = evalResult.status; // 'QUALIFIED' or 'DISQUALIFIED'
+      
+      submission.evalReport = evalResult.summary + '\n\n' + evalResult.failureReasons.join('\n');
+      submission.evalScoreBreakdown = {
+        authentication: evalResult.breakdown.auth,
+        attendance: evalResult.breakdown.attendance,
+        leaveSystem: evalResult.breakdown.leave,
+        reports: evalResult.breakdown.reports,
+        codeQuality: evalResult.breakdown.codeQuality,
+        uiUx: evalResult.breakdown.uiUx
+      };
+      submission.evalScores = {
+        functionality: evalResult.breakdown.attendance + evalResult.breakdown.leave + evalResult.breakdown.reports,
+        codeQuality: evalResult.breakdown.codeQuality,
+        uiUx: evalResult.breakdown.uiUx,
+        databaseDesign: evalResult.breakdown.auth,
+        scalability: 0,
+        innovation: 0
+      };
+    } else if (roundData.type === 'project') {
       finalStatus = autoSubmitted ? 'AUTO_SUBMITTED' : 'COMPLETED';
     } else if (autoSubmitted) {
       // We can mark it as AUTO_SUBMITTED or just store the boolean
@@ -799,6 +1098,7 @@ const submitRound = async (req, res) => {
     // Update submission
     submission.answers = gradedAnswers;
     submission.totalScore = totalScore;
+    submission.maxPossibleScore = maxPossibleScore;
     submission.percentage = percentage;
     submission.totalTimeTaken = totalTimeTaken;
     submission.submittedAt = new Date();
@@ -810,13 +1110,6 @@ const submitRound = async (req, res) => {
       wrong: wrongCount,
       unanswered: unansweredCount
     };
-
-    // We can attach stats to the submission object dynamically or save them. Since they are derived, we return them in the response.
-
-    // Project fields
-    if (projectUrl) submission.projectUrl = projectUrl;
-    if (projectDescription) submission.projectDescription = projectDescription;
-    if (projectTechStack) submission.projectTechStack = projectTechStack;
 
     await submission.save();
 
@@ -832,7 +1125,37 @@ const submitRound = async (req, res) => {
 
       if (finalStatus === 'QUALIFIED') {
         registration.currentRound = round + 1;
-        registration.status = 'qualified';
+        if (round === 1) {
+          registration.status = 'ROUND_2_ACTIVE';
+
+          // Assign Round 2 challenge automatically
+          try {
+            const { challengePool } = require('./roundAutomation.controller');
+            const availableChallenges = [...challengePool];
+            availableChallenges.sort(() => Math.random() - 0.5);
+            const assignedTitles = await HackathonChallenge.find({ hackathonId: hackathon._id }).distinct('challengeTitle');
+            let challengeTemplate = availableChallenges.find(c => !assignedTitles.includes(c.challengeTitle));
+            if (!challengeTemplate) {
+              challengeTemplate = availableChallenges[Math.floor(Math.random() * availableChallenges.length)];
+            }
+            await HackathonChallenge.findOneAndUpdate(
+              { hackathonId: hackathon._id, assignedTo: req.user._id },
+              {
+                hackathonId: hackathon._id,
+                assignedTo: req.user._id,
+                ...challengeTemplate
+              },
+              { upsert: true, new: true }
+            );
+            console.log(`[DEBUG] Automatically assigned Round 2 challenge to user ${req.user._id}`);
+          } catch (err) {
+            console.error('Error assigning auto challenge in submitRound:', err.message);
+          }
+        } else if (round === 2) {
+          registration.status = 'ROUND_3_QUALIFIED';
+        } else {
+          registration.status = 'qualified';
+        }
       } else if (finalStatus === 'DISQUALIFIED') {
         registration.status = 'disqualified';
       }
