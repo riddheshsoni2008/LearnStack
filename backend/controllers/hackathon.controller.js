@@ -603,7 +603,7 @@ const getRoundQuestions = async (req, res) => {
 
     // Already started, return questions and timer state
     let shuffledQuestions = [];
-    if (roundData.type === 'project') {
+    if (roundData.type === 'project' || roundData.roundNumber === 2 || roundData.roundNumber === 3) {
       let challenge = await HackathonChallenge.findOne({
         hackathonId: hackathon._id,
         assignedTo: req.user._id
@@ -753,7 +753,7 @@ const startRound = async (req, res) => {
     });
 
     let questions = [];
-    if (roundData.type === 'project') {
+    if (roundData.type === 'project' || round === 2 || round === 3) {
       let challenge = await HackathonChallenge.findOne({
         hackathonId: hackathon._id,
         assignedTo: req.user._id
@@ -792,28 +792,6 @@ const startRound = async (req, res) => {
         questions = await HackathonQuestion.aggregate([
           { $match: { scope: 'global', questionType: 'mcq' } },
           { $sample: { size: 3 } }
-        ]);
-      }
-    } else if (round === 2) {
-      questions = await HackathonQuestion.aggregate([
-        { $match: { scope: 'global', questionType: 'project', _id: { $nin: seenQuestionIds } } },
-        { $sample: { size: 1 } }
-      ]);
-      if (questions.length < 1) {
-        questions = await HackathonQuestion.aggregate([
-          { $match: { scope: 'global', questionType: 'project' } },
-          { $sample: { size: 1 } }
-        ]);
-      }
-    } else if (round === 3) {
-      questions = await HackathonQuestion.aggregate([
-        { $match: { scope: 'global', questionType: 'project', _id: { $nin: seenQuestionIds } } },
-        { $sample: { size: 1 } }
-      ]);
-      if (questions.length < 1) {
-        questions = await HackathonQuestion.aggregate([
-          { $match: { scope: 'global', questionType: 'project' } },
-          { $sample: { size: 1 } }
         ]);
       }
     } else {
