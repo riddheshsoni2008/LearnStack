@@ -211,7 +211,7 @@ export default function DashboardPage() {
                 <div key={i} className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24">
                   <div className="h-4 bg-[var(--surface)] w-32 rounded mb-4"></div>
                   <div className="w-full h-2 bg-[var(--surface)] rounded-full mb-2"></div>
-                  <div className="h-3 bg-[var(--surface)] w-20 rounded"></div>
+                  <div className="h-3 bg-[var (--surface)] w-20 rounded"></div>
                 </div>
               ))}
             </div>
@@ -240,11 +240,18 @@ export default function DashboardPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold mb-1">
-            Welcome back, <span className="gradient-text">{user.name?.split(" ")[0]}</span> 👋
-          </h1>
-          <p className="text-[var(--text-muted)] text-sm">Here&apos;s your learning dashboard</p>
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold mb-1">
+              Welcome back, <span className="gradient-text">{user.name?.split(" ")[0]}</span> 👋
+            </h1>
+            <p className="text-[var(--text-muted)] text-sm">Here&apos;s your learning dashboard</p>
+          </div>
+          {user?.role === "admin" && (
+            <Link href="/dashboard/admin/hackathon" className="btn-primary !py-2 !px-6 flex-shrink-0 flex items-center gap-2">
+              <span>⚙️</span> Manage Hackathons
+            </Link>
+          )}
         </div>
 
         {/* ═══ Hackathon Timer ═══ */}

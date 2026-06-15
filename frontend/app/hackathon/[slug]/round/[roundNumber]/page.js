@@ -41,12 +41,17 @@ export default function RoundPage() {
           if (data.data.started) {
             setExamStarted(true);
           }
+          setLoading(false);
         } else {
           setError(data.message || "Failed to load round.");
+          if (data.redirectUrl) {
+            router.push(data.redirectUrl);
+            return; // Keep loading as true to avoid flashing round content
+          }
+          setLoading(false);
         }
       } catch (err) {
         setError("Failed to load round. Please try again.");
-      } finally {
         setLoading(false);
       }
     };

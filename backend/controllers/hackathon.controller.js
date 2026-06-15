@@ -13,6 +13,130 @@ const shuffleArrayFisherYates = (arr) => {
   return arr;
 };
 
+// Helper to grade and automatically submit an expired submission
+const autoSubmitSubmission = async (submission, roundData, hackathon) => {
+  const round = roundData.roundNumber;
+  const answers = submission.answers || [];
+  
+  let totalScore = 0;
+  const gradedAnswers = [];
+  let answeredCount = 0;
+  let correctCount = 0;
+  let wrongCount = 0;
+
+  if (answers && answers.length > 0) {
+    const questionIds = answers.map(a => a.questionId);
+    const questions = await HackathonQuestion.find({ _id: { $in: questionIds } });
+    const questionMap = {};
+    questions.forEach(q => { questionMap[q._id.toString()] = q; });
+
+    for (const ans of answers) {
+      const question = questionMap[ans.questionId.toString()];
+      if (!question) continue;
+
+      let isCorrect = false;
+      let pointsAwarded = 0;
+      let isAnswered = false;
+
+      if (question.questionType === 'mcq') {
+        isAnswered = ans.selectedOptionIndex !== -1 && ans.selectedOptionIndex !== undefined && ans.selectedOptionIndex !== null;
+        if (isAnswered) {
+          const correctOptionText = question.options.find(o => o.isCorrect)?.text;
+          const selectedText = (ans.answer || '').trim();
+          isCorrect = !!correctOptionText && selectedText === correctOptionText.trim();
+          pointsAwarded = isCorrect ? question.points : 0;
+        }
+      } else if (question.questionType === 'coding') {
+        isAnswered = !!ans.answer?.trim();
+        if (isAnswered) {
+          isCorrect = ans.answer?.trim() === question.correctAnswer?.trim();
+          pointsAwarded = isCorrect ? question.points : 0;
+        }
+      } else {
+        isAnswered = !!ans.answer?.trim();
+        pointsAwarded = 0;
+      }
+
+      if (isAnswered) {
+        answeredCount++;
+        if (question.questionType !== 'case_study' && question.questionType !== 'scenario' && question.questionType !== 'project') {
+          if (isCorrect) correctCount++;
+          else wrongCount++;
+        }
+      }
+
+      totalScore += pointsAwarded;
+      gradedAnswers.push({
+        questionId: ans.questionId,
+        answer: ans.answer || '',
+        selectedOptionIndex: ans.selectedOptionIndex ?? -1,
+        isCorrect,
+        pointsAwarded,
+        timeTaken: ans.timeTaken || 0
+      });
+    }
+  }
+
+  const questionIdsToEval = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0
+    ? submission.assignedQuestionIds
+    : roundData.questionIds;
+  const unansweredCount = questionIdsToEval.length - answeredCount;
+
+  const maxPossibleScore = submission.maxPossibleScore || 1;
+  const percentage = maxPossibleScore > 0 ? Math.round((totalScore / maxPossibleScore) * 100) : 0;
+
+  let qualified = false;
+  const qualifyingScore = roundData.qualifyingScore || 50;
+  if (round === 1) {
+    qualified = correctCount >= 2;
+  } else if (round === 2) {
+    qualified = correctCount >= 1;
+  } else {
+    qualified = totalScore >= qualifyingScore;
+  }
+
+  let finalStatus = qualified ? 'QUALIFIED' : 'DISQUALIFIED';
+  if (roundData.type === 'project') {
+    finalStatus = 'AUTO_SUBMITTED';
+  }
+
+  submission.answers = gradedAnswers;
+  submission.totalScore = totalScore;
+  submission.percentage = percentage;
+  submission.totalTimeTaken = roundData.duration * 60;
+  submission.submittedAt = new Date();
+  submission.autoSubmitted = true;
+  submission.status = finalStatus;
+  submission.stats = {
+    answered: answeredCount,
+    correct: correctCount,
+    wrong: wrongCount,
+    unanswered: unansweredCount
+  };
+
+  await submission.save();
+
+  // Update registration
+  const registration = await HackathonRegistration.findOne({
+    hackathonId: hackathon._id,
+    userId: submission.userId
+  });
+
+  if (registration) {
+    registration.totalScore = (registration.totalScore || 0) + totalScore;
+    registration.totalTimeTaken = (registration.totalTimeTaken || 0) + (roundData.duration * 60);
+
+    if (finalStatus === 'QUALIFIED') {
+      registration.currentRound = round + 1;
+      registration.status = 'qualified';
+    } else if (finalStatus === 'DISQUALIFIED') {
+      registration.status = 'disqualified';
+    }
+
+    await registration.save();
+  }
+};
+
 // ═══════════════════════════════════════════════════════════════
 // PUBLIC ENDPOINTS
 // ═══════════════════════════════════════════════════════════════
@@ -268,11 +392,19 @@ const getRoundQuestions = async (req, res) => {
     });
 
     if (!registration) {
-      return res.status(403).json({ success: false, message: 'You are not registered for this hackathon.' });
+      return res.status(403).json({
+        success: false,
+        message: 'You are not registered for this hackathon.',
+        redirectUrl: `/hackathon/${slug}`
+      });
     }
 
     if (registration.status === 'disqualified') {
-      return res.status(403).json({ success: false, message: 'You have been disqualified from this hackathon.' });
+      return res.status(403).json({
+        success: false,
+        message: 'You have been disqualified from this hackathon.',
+        redirectUrl: `/hackathon/${slug}/results`
+      });
     }
 
     // Check if qualified for this round
@@ -283,7 +415,11 @@ const getRoundQuestions = async (req, res) => {
         roundNumber: round - 1
       });
       if (!prevSubmission || prevSubmission.status === 'disqualified') {
-        return res.status(403).json({ success: false, message: `You did not qualify for Round ${round}.` });
+        return res.status(403).json({
+          success: false,
+          message: `You did not qualify for Round ${round}.`,
+          redirectUrl: `/hackathon/${slug}/results`
+        });
       }
     }
 
@@ -293,37 +429,52 @@ const getRoundQuestions = async (req, res) => {
       return res.status(404).json({ success: false, message: 'Round not found.' });
     }
 
-    // Check round timing — Round 1 is always accessible after registration
-    if (round > 1) {
-      const now = new Date();
-      if (now < roundData.startTime) {
-        return res.status(400).json({ success: false, message: 'This round has not started yet.' });
-      }
-      if (now > roundData.endTime) {
-        return res.status(400).json({ success: false, message: 'This round has ended.' });
+    // Check round timing for all rounds (including Round 1)
+    const now = new Date();
+    if (now < roundData.startTime) {
+      return res.status(403).json({
+        success: false,
+        message: 'This round has not started yet.',
+        redirectUrl: `/hackathon/${slug}`
+      });
+    }
+    if (now > roundData.endTime) {
+      return res.status(403).json({
+        success: false,
+        message: 'This round has ended.',
+        redirectUrl: `/hackathon/${slug}/results`
+      });
+    }
+
+    // Retrieve the submission
+    let submission = await HackathonSubmission.findOne({
+      hackathonId: hackathon._id,
+      userId: req.user._id,
+      roundNumber: round
+    });
+
+    // Check if the submission has expired
+    if (submission && submission.status === 'IN_PROGRESS') {
+      const startTime = new Date(submission.startedAt).getTime();
+      const durationMs = roundData.duration * 60 * 1000;
+      const nowTime = Date.now();
+      if (nowTime > startTime + durationMs + 10000) { // 10s grace period
+        await autoSubmitSubmission(submission, roundData, hackathon);
+        // Refresh submission object
+        submission = await HackathonSubmission.findById(submission._id);
       }
     }
 
     // Check if already submitted
-    const existingSubmission = await HackathonSubmission.findOne({
-      hackathonId: hackathon._id,
-      userId: req.user._id,
-      roundNumber: round,
-      status: { $in: ['AUTO_SUBMITTED', 'COMPLETED', 'QUALIFIED', 'DISQUALIFIED', 'evaluated', 'submitted'] }
-    });
-    if (existingSubmission) {
-      return res.status(400).json({ success: false, message: 'You have already submitted this round.' });
+    if (submission && (submission.status === 'submitted' || ['AUTO_SUBMITTED', 'COMPLETED', 'QUALIFIED', 'DISQUALIFIED', 'evaluated'].includes(submission.status))) {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. You have already submitted this round.',
+        redirectUrl: `/hackathon/${slug}/results`
+      });
     }
 
-    // Check if in progress
-    let submission = await HackathonSubmission.findOne({
-      hackathonId: hackathon._id,
-      userId: req.user._id,
-      roundNumber: round,
-      status: 'IN_PROGRESS'
-    });
-
-    if (!submission) {
+    if (!submission || submission.status === 'NOT_STARTED') {
       // Not started yet
       return res.status(200).json({
         success: true,
@@ -399,12 +550,10 @@ const startRound = async (req, res) => {
     const roundData = hackathon.rounds.find(r => r.roundNumber === round);
     if (!roundData) return res.status(404).json({ success: false, message: 'Round not found.' });
 
-    // Check round timing — Round 1 is always accessible after registration
-    if (round > 1) {
-      const now = new Date();
-      if (now < roundData.startTime) return res.status(400).json({ success: false, message: 'This round has not started yet.' });
-      if (now > roundData.endTime) return res.status(400).json({ success: false, message: 'This round has ended.' });
-    }
+    // Check round timing for all rounds (including Round 1)
+    const now = new Date();
+    if (now < roundData.startTime) return res.status(400).json({ success: false, message: 'This round has not started yet.' });
+    if (now > roundData.endTime) return res.status(400).json({ success: false, message: 'This round has ended.' });
 
     // Check if submission exists
     let submission = await HackathonSubmission.findOne({

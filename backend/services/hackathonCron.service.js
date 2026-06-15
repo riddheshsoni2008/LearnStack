@@ -26,7 +26,7 @@ const startCronJob = () => {
 // 1. End active hackathons and process results
 const processCompletedHackathons = async () => {
   const now = new Date();
-  
+
   // Find hackathons that should end
   const completedHackathons = await Hackathon.find({
     status: 'active',
@@ -35,7 +35,7 @@ const processCompletedHackathons = async () => {
 
   for (const hackathon of completedHackathons) {
     console.log(`🏆 Processing results for completed hackathon: ${hackathon.title}`);
-    
+
     // Sort registrations by score (descending) and time (ascending)
     const registrations = await HackathonRegistration.find({
       hackathonId: hackathon._id,
@@ -97,7 +97,7 @@ const processCompletedHackathons = async () => {
 // 2. Transition upcoming hackathons to active
 const transitionUpcomingHackathons = async () => {
   const now = new Date();
-  
+
   // Find hackathons that should start
   const startingHackathons = await Hackathon.find({
     status: 'registration_open',
@@ -125,7 +125,7 @@ const ensureHackathonExists = async () => {
 
 const autoCreateNextHackathon = async () => {
   const now = new Date();
-  
+
   // Find last hackathon to determine number
   const lastHackathon = await Hackathon.findOne().sort({ createdAt: -1 });
   let nextNumber = 1;
@@ -141,7 +141,7 @@ const autoCreateNextHackathon = async () => {
   // Calculate dates
   const startDate = new Date(now.getTime() + HACKATHON_BREAK_MINUTES * 60000);
   const endDate = new Date(startDate.getTime() + HACKATHON_DURATION_HOURS * 60 * 60000);
-  
+
   // Find an admin user to set as creator
   let adminUser = await User.findOne({ role: 'admin' });
   if (!adminUser) {
