@@ -66,9 +66,8 @@ const FolderNode = ({
   return (
     <div className="select-none text-xs">
       <div
-        className={`flex items-center justify-between py-1 px-2 hover:bg-gray-800/40 rounded cursor-pointer group transition-colors ${
-          !isFolder && activeFilePath === node.path ? "bg-indigo-500/20 text-indigo-400 font-bold" : "text-gray-300"
-        }`}
+        className={`flex items-center justify-between py-1 px-2 hover:bg-gray-800/40 rounded cursor-pointer group transition-colors ${!isFolder && activeFilePath === node.path ? "bg-indigo-500/20 text-indigo-400 font-bold" : "text-gray-300"
+          }`}
         style={{ paddingLeft: `${level * 10 + 8}px` }}
         onClick={() => {
           if (isFolder) {
@@ -227,8 +226,15 @@ export default function RoundPage() {
         const data = await res.json();
         if (data.success) {
           setRoundData(data.data);
-          setQuestions(data.data.questions || []);
-          
+
+          if (data.data.questions) {
+            setQuestions(data.data.questions);
+          }
+
+          if (data.data.challenge) {
+            setChallenge(data.data.challenge);
+          }
+
           if (data.data.projectFiles && data.data.projectFiles.length > 0) {
             setFiles(data.data.projectFiles);
             const activePath = data.data.projectFiles[0].path;
@@ -328,23 +334,6 @@ Welcome to the LearnStack Full-Stack Workspace!
     if (user) fetchRound();
   }, [user, authLoading, router, params.slug, params.roundNumber]);
 
-  // Fetch unique challenge details for project rounds
-  useEffect(() => {
-    if (examStarted && isProjectRound) {
-      const fetchChallenge = async () => {
-        try {
-          const res = await fetch("/api/challenges/my-challenge", { credentials: "include" });
-          const data = await res.json();
-          if (data.success && data.data) {
-            setChallenge(data.data);
-          }
-        } catch (err) {
-          console.error("Error fetching challenge details:", err);
-        }
-      };
-      fetchChallenge();
-    }
-  }, [examStarted, roundData]);
 
   // Auto-Save interval every 5 seconds
   useEffect(() => {
@@ -391,7 +380,7 @@ Welcome to the LearnStack Full-Stack Workspace!
       const data = await res.json();
       if (data.success) {
         setQuestions(data.data.questions || []);
-        
+
         if (data.data.projectFiles && data.data.projectFiles.length > 0) {
           setFiles(data.data.projectFiles);
           const activePath = data.data.projectFiles[0].path;
@@ -474,8 +463,12 @@ Welcome to the LearnStack Full-Stack Workspace!
           ...prev,
           startedAt: data.data.startedAt,
           started: true,
-          submissionId: data.data.submissionId
+          submissionId: data.data.submissionId,
+          challenge: data.data.challenge || prev?.challenge
         }));
+        if (data.data.challenge) {
+          setChallenge(data.data.challenge);
+        }
         setExamStarted(true);
       } else {
         setError(data.message || "Failed to start exam.");
@@ -1011,11 +1004,10 @@ Welcome to the LearnStack Full-Stack Workspace!
                     <div
                       key={tabPath}
                       onClick={() => setActiveFilePath(tabPath)}
-                      className={`h-full flex items-center gap-2 px-4 border-r border-gray-800/60 cursor-pointer text-xs font-medium transition-colors ${
-                        isActive
-                          ? "bg-[#0b0f19] text-indigo-400 border-t-2 border-t-indigo-500"
-                          : "bg-[#0f121d] text-gray-400 hover:bg-gray-800/30 hover:text-gray-300"
-                      }`}
+                      className={`h-full flex items-center gap-2 px-4 border-r border-gray-800/60 cursor-pointer text-xs font-medium transition-colors ${isActive
+                        ? "bg-[#0b0f19] text-indigo-400 border-t-2 border-t-indigo-500"
+                        : "bg-[#0f121d] text-gray-400 hover:bg-gray-800/30 hover:text-gray-300"
+                        }`}
                     >
                       <span>📄</span>
                       <span className="truncate max-w-[120px]">{fileName}</span>

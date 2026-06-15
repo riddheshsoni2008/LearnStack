@@ -603,6 +603,7 @@ const getRoundQuestions = async (req, res) => {
 
     // Already started, return questions and timer state
     let shuffledQuestions = [];
+    let challengeData = null;
     if (roundData.type === 'project' || roundData.roundNumber === 2 || roundData.roundNumber === 3) {
       let challenge = await HackathonChallenge.findOne({
         hackathonId: hackathon._id,
@@ -633,6 +634,7 @@ const getRoundQuestions = async (req, res) => {
         points: 100,
         questionText: questionText
       }];
+      challengeData = challenge;
     } else {
       const questionIdsToFetch = submission.assignedQuestionIds && submission.assignedQuestionIds.length > 0
         ? submission.assignedQuestionIds
@@ -670,7 +672,8 @@ const getRoundQuestions = async (req, res) => {
         submissionId: submission._id,
         startedAt: submission.startedAt,
         started: true,
-        projectFiles: submission.projectFiles
+        projectFiles: submission.projectFiles,
+        challenge: challengeData
       }
     });
   } catch (error) {
@@ -753,6 +756,7 @@ const startRound = async (req, res) => {
     });
 
     let questions = [];
+    let challengeData = null;
     if (roundData.type === 'project' || round === 2 || round === 3) {
       let challenge = await HackathonChallenge.findOne({
         hackathonId: hackathon._id,
@@ -783,6 +787,7 @@ const startRound = async (req, res) => {
         points: 100,
         questionText: questionText
       }];
+      challengeData = challenge;
     } else if (round === 1) {
       questions = await HackathonQuestion.aggregate([
         { $match: { scope: 'global', questionType: 'mcq', _id: { $nin: seenQuestionIds } } },
@@ -902,7 +907,8 @@ Welcome to the LearnStack Full-Stack Workspace!
         submissionId: submission._id,
         startedAt: submission.startedAt,
         started: true,
-        projectFiles: submission.projectFiles
+        projectFiles: submission.projectFiles,
+        challenge: challengeData
       }
     });
   } catch (error) {
