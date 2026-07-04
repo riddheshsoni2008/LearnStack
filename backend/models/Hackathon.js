@@ -159,8 +159,9 @@ HackathonSchema.pre('validate', function () {
 });
 
 // ── Indexes ──
-HackathonSchema.index({ slug: 1 });
+// HackathonSchema.index({ slug: 1 }); // Removed: duplicate of unique: true
 HackathonSchema.index({ status: 1, startDate: -1 });
 HackathonSchema.index({ createdAt: -1 });
 
 module.exports = mongoose.model('Hackathon', HackathonSchema);
+ 

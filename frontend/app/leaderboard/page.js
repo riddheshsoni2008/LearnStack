@@ -5,9 +5,24 @@ import { useAuth } from "@/context/AuthContext";
 import AuthNavbar from "@/components/AuthNavbar";
 
 const RANK_STYLES = {
-  1: { bg: "from-yellow-500/20 to-amber-600/20", border: "border-yellow-500/40", medal: "🥇", glow: "shadow-yellow-500/20" },
-  2: { bg: "from-gray-300/20 to-gray-400/20", border: "border-gray-400/40", medal: "🥈", glow: "shadow-gray-400/20" },
-  3: { bg: "from-amber-700/20 to-orange-800/20", border: "border-amber-700/40", medal: "🥉", glow: "shadow-amber-700/20" },
+  1: {
+    bg: "from-yellow-500/20 to-amber-600/20",
+    border: "border-yellow-500/40",
+    medal: "🥇",
+    glow: "shadow-yellow-500/20",
+  },
+  2: {
+    bg: "from-gray-300/20 to-gray-400/20",
+    border: "border-gray-400/40",
+    medal: "🥈",
+    glow: "shadow-gray-400/20",
+  },
+  3: {
+    bg: "from-amber-700/20 to-orange-800/20",
+    border: "border-amber-700/40",
+    medal: "🥉",
+    glow: "shadow-amber-700/20",
+  },
 };
 
 export default function LeaderboardPage() {
@@ -27,7 +42,7 @@ export default function LeaderboardPage() {
       try {
         const res = await fetch("/api/leaderboard", {
           cache: "no-store",
-          credentials: "include"
+          credentials: "include",
         });
         if (!res.ok) return;
         const json = await res.json();
@@ -46,12 +61,12 @@ export default function LeaderboardPage() {
     try {
       await fetch("/api/leaderboard/privacy", {
         method: "PUT",
-        credentials: "include"
+        credentials: "include",
       });
       // Refresh
       const res = await fetch("/api/leaderboard", {
         cache: "no-store",
-        credentials: "include"
+        credentials: "include",
       });
       if (!res.ok) return;
       const json = await res.json();
@@ -63,7 +78,10 @@ export default function LeaderboardPage() {
 
   if (authLoading || loading || !user) {
     return (
-      <div key="loading-leaderboard" className="min-h-screen bg-[var(--background)] pb-20">
+      <div
+        key="loading-leaderboard"
+        className="min-h-screen bg-[var(--background)] pb-20"
+      >
         <AuthNavbar />
         <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8 animate-pulse">
           {/* Header Skeleton */}
@@ -97,7 +115,10 @@ export default function LeaderboardPage() {
           {/* List Skeleton */}
           <div className="space-y-2">
             {[1, 2, 3, 4, 5].map((i) => (
-              <div key={i} className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-light)] h-[74px]">
+              <div
+                key={i}
+                className="flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-light)] h-[74px]"
+              >
                 <div className="w-10 flex-shrink-0 flex justify-center">
                   <div className="h-6 w-6 bg-[var(--surface)] rounded"></div>
                 </div>
@@ -122,7 +143,10 @@ export default function LeaderboardPage() {
   const myRank = data?.myRank;
 
   return (
-    <div key="loaded-leaderboard" className="min-h-screen bg-[var(--background)] pb-20">
+    <div
+      key="loaded-leaderboard"
+      className="min-h-screen bg-[var(--background)] pb-20"
+    >
       <AuthNavbar />
 
       <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
@@ -151,8 +175,12 @@ export default function LeaderboardPage() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="text-2xl font-black gradient-text">#{myRank.rank}</div>
-                <div className="text-xs text-yellow-400 font-bold">⚡ {myRank.totalXpEarned} XP</div>
+                <div className="text-2xl font-black gradient-text">
+                  #{myRank.rank}
+                </div>
+                <div className="text-xs text-yellow-400 font-bold">
+                  ⚡ {myRank.totalXpEarned} XP
+                </div>
               </div>
             </div>
           </div>
@@ -164,7 +192,9 @@ export default function LeaderboardPage() {
             onClick={togglePrivacy}
             className="text-xs px-3 py-1.5 rounded-lg bg-[var(--surface-light)] border border-[var(--border)] text-[var(--text-muted)] hover:text-white transition-colors"
           >
-            {user.hideFromLeaderboard ? "👁️ Show on Leaderboard" : "🙈 Hide from Leaderboard"}
+            {user.hideFromLeaderboard
+              ? " Show on Leaderboard"
+              : " Hide from Leaderboard"}
           </button>
         </div>
 
@@ -178,43 +208,59 @@ export default function LeaderboardPage() {
             return (
               <div
                 key={entry._id}
-                className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border transition-all ${isMe
-                  ? "border-[var(--primary)]/40 bg-[var(--primary)]/5 shadow-lg shadow-[var(--primary)]/10"
-                  : isTop3 && rankStyle
-                    ? `bg-gradient-to-r ${rankStyle.bg} ${rankStyle.border} shadow-lg ${rankStyle.glow}`
-                    : "border-[var(--border)] bg-[var(--surface-light)] hover:border-[var(--primary)]/30"
-                  }`}
+                className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border transition-all ${
+                  isMe
+                    ? "border-[var(--primary)]/40 bg-[var(--primary)]/5 shadow-lg shadow-[var(--primary)]/10"
+                    : isTop3 && rankStyle
+                      ? `bg-gradient-to-r ${rankStyle.bg} ${rankStyle.border} shadow-lg ${rankStyle.glow}`
+                      : "border-[var(--border)] bg-[var(--surface-light)] hover:border-[var(--primary)]/30"
+                }`}
               >
                 {/* Rank */}
                 <div className="w-10 text-center flex-shrink-0">
                   {isTop3 && rankStyle ? (
                     <span className="text-2xl">{rankStyle.medal}</span>
                   ) : (
-                    <span className="text-sm font-bold text-[var(--text-muted)]">#{entry.rank}</span>
+                    <span className="text-sm font-bold text-[var(--text-muted)]">
+                      #{entry.rank}
+                    </span>
                   )}
                 </div>
 
                 {/* Avatar */}
-                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${isMe ? "bg-gradient-to-br from-[var(--primary)] to-[var(--accent)]" : "bg-[var(--surface)] border border-[var(--border)]"
-                  }`}>
+                <div
+                  className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-bold text-white flex-shrink-0 ${
+                    isMe
+                      ? "bg-gradient-to-br from-[var(--primary)] to-[var(--accent)]"
+                      : "bg-[var(--surface)] border border-[var(--border)]"
+                  }`}
+                >
                   {entry.initial}
                 </div>
 
                 {/* Name & Level */}
                 <div className="flex-1 min-w-0">
-                  <div className={`text-sm font-bold truncate ${isMe ? "text-[var(--primary-light)]" : ""}`}>
+                  <div
+                    className={`text-sm font-bold truncate ${isMe ? "text-[var(--primary-light)]" : ""}`}
+                  >
                     {entry.name} {isMe && "(You)"}
                   </div>
                   <div className="text-[10px] text-[var(--text-muted)]">
                     Lvl {entry.level} • {entry.levelTitle}
-                    {entry.streak > 0 && <span className="ml-1">🔥{entry.streak}</span>}
-                    {entry.badgesCount > 0 && <span className="ml-1">🏆{entry.badgesCount}</span>}
+                    {entry.streak > 0 && (
+                      <span className="ml-1">🔥{entry.streak}</span>
+                    )}
+                    {entry.badgesCount > 0 && (
+                      <span className="ml-1">🏆{entry.badgesCount}</span>
+                    )}
                   </div>
                 </div>
 
                 {/* XP */}
                 <div className="text-right flex-shrink-0">
-                  <div className="text-sm font-black text-yellow-400">⚡ {entry.totalXpEarned}</div>
+                  <div className="text-sm font-black text-yellow-400">
+                    ⚡ {entry.totalXpEarned}
+                  </div>
                   <div className="text-[10px] text-[var(--text-muted)]">XP</div>
                 </div>
               </div>
@@ -224,7 +270,9 @@ export default function LeaderboardPage() {
           {leaderboard.length === 0 && (
             <div className="text-center py-12 text-[var(--text-muted)]">
               <div className="text-4xl mb-3">🏅</div>
-              <p className="text-sm">No leaderboard data yet. Start learning to earn XP!</p>
+              <p className="text-sm">
+                No leaderboard data yet. Start learning to earn XP!
+              </p>
             </div>
           )}
         </div>
