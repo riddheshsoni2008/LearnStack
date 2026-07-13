@@ -4,11 +4,12 @@
   "description": "LearnStack - Learn the full stack, step by step | Backend API",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "seed": "node seed.js",
-    "seed:questions": "node scripts/seedHackathonQuestions.js",
-    "migrate-exercise-history": "node scripts/migrate-exercise-history.js"
+    "start": "node dist/server.js",
+    "dev": "ts-node server.ts",
+    "build": "tsc",
+    "seed": "ts-node seed.ts",
+    "seed:questions": "ts-node scripts/seedHackathonQuestions.ts",
+    "migrate-exercise-history": "ts-node scripts/migrate-exercise-history.ts"
   },
   "keywords": [
     "learnstack",
@@ -31,6 +32,15 @@
     "string-similarity": "^4.0.4"
   },
   "devDependencies": {
-    "nodemon": "^3.1.14"
+    "@types/bcryptjs": "^2.4.6",
+    "@types/cookie-parser": "^1.4.10",
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/mongoose": "^5.11.96",
+    "@types/node": "^26.1.1",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "typescript": "^7.0.2"
   }
 }

@@ -1,0 +1,136 @@
+backend/controllers/ai.controller.ts(1,30): error TS1479: The current file is a CommonJS module whose imports will produce 'require' calls; however, the referenced file is an ECMAScript module and cannot be imported with 'require'. Consider writing a dynamic 'import("@google/genai")' call instead.
+  To convert this file to an ECMAScript module, change its file extension to '.mts' or create a local package.json file with `{ "type": "module" }`.
+backend/controllers/arcade.controller.ts(145,24): error TS2339: Property 'completedBossBattles' does not exist on type '{ gameXpEarned: number; totalXpEarned: number; }'.
+backend/controllers/arcade.controller.ts(309,48): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+backend/controllers/auth.controller.ts(151,23): error TS2339: Property 'name' does not exist on type '{}'.
+backend/controllers/auth.controller.ts(152,39): error TS2339: Property 'avatar' does not exist on type '{}'.
+backend/controllers/badge.controller.ts(39,30): error TS2362: The left-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+backend/controllers/badge.controller.ts(39,54): error TS2363: The right-hand side of an arithmetic operation must be of type 'any', 'number', 'bigint' or an enum type.
+backend/controllers/hackathon.controller.ts(170,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/controllers/hackathon.controller.ts(170,41): error TS2307: Cannot find module '../services/judge.service' or its corresponding type declarations.
+backend/controllers/hackathon.controller.ts(248,45): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type '{ status: { $ne: string; }; }' is missing the following properties from type 'Query<any, any, {}, unknown, "find", Record<string, never>>': _mongooseOptions, [Symbol.asyncIterator], exec, $where, and 94 more.
+backend/controllers/hackathon.controller.ts(298,25): error TS2339: Property 'name' does not exist on type 'ObjectId'.
+backend/controllers/hackathon.controller.ts(417,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type 'string' is not assignable to type '"completed" | "failed" | "not_required" | "pending" | "refunded" | RegExp'.
+backend/controllers/hackathon.controller.ts(519,9): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'hackathonId' does not exist in type 'Query<any, any, {}, unknown, "find", Record<string, never>>'.
+backend/controllers/hackathon.controller.ts(523,30): error TS2367: This comparison appears to be unintentional because the types '"AUTO_SUBMITTED" | "COMPLETED" | "DISQUALIFIED" | "IN_PROGRESS" | "NOT_STARTED" | "QUALIFIED" | "evaluated" | "submitted"' and '"disqualified"' have no overlap.
+backend/controllers/hackathon.controller.ts(559,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'hackathonId' does not exist in type 'Query<any, any, {}, unknown, "find", Record<string, never>>'.
+backend/controllers/hackathon.controller.ts(613,9): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/controllers/hackathon.controller.ts(613,40): error TS2307: Cannot find module './roundAutomation.controller' or its corresponding type declarations.
+backend/controllers/hackathon.controller.ts(735,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'hackathonId' does not exist in type 'Query<any, any, {}, unknown, "find", Record<string, never>>'.
+backend/controllers/hackathon.controller.ts(766,9): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/controllers/hackathon.controller.ts(766,40): error TS2307: Cannot find module './roundAutomation.controller' or its corresponding type declarations.
+backend/controllers/hackathon.controller.ts(894,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type 'number' is not assignable to type '1 | 2 | 3'.
+backend/controllers/hackathon.controller.ts(940,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'hackathonId' does not exist in type 'Query<any, any, {}, unknown, "find", Record<string, never>>'.
+backend/controllers/hackathon.controller.ts(1050,7): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/controllers/hackathon.controller.ts(1050,43): error TS2307: Cannot find module '../services/judge.service' or its corresponding type declarations.
+backend/controllers/hackathon.controller.ts(1090,5): error TS2322: Type 'string' is not assignable to type '"AUTO_SUBMITTED" | "COMPLETED" | "DISQUALIFIED" | "IN_PROGRESS" | "NOT_STARTED" | "QUALIFIED" | "evaluated" | "submitted"'.
+backend/controllers/hackathon.controller.ts(1117,13): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/controllers/hackathon.controller.ts(1117,44): error TS2307: Cannot find module './roundAutomation.controller' or its corresponding type declarations.
+backend/controllers/hackathon.controller.ts(1303,23): error TS2339: Property 'name' does not exist on type 'ObjectId'.
+backend/controllers/hackathon.controller.ts(1304,24): error TS2339: Property 'email' does not exist on type 'ObjectId'.
+backend/controllers/hackathon.controller.ts(1432,25): error TS2339: Property 'name' does not exist on type 'ObjectId'.
+backend/controllers/hackathon.controller.ts(1433,26): error TS2339: Property 'email' does not exist on type 'ObjectId'.
+backend/controllers/hackathon.controller.ts(1561,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/controllers/hackathon.controller.ts(1561,48): error TS2307: Cannot find module '../services/aiQuestionGenerator.service' or its corresponding type declarations.
+backend/controllers/hackathonQuestion.controller.ts(16,26): error TS2339: Property 'category' does not exist on type '{}'.
+backend/controllers/hackathonQuestion.controller.ts(17,28): error TS2339: Property 'difficulty' does not exist on type '{}'.
+backend/controllers/hackathonQuestion.controller.ts(18,30): error TS2339: Property 'questionType' does not exist on type '{}'.
+backend/controllers/hackathonQuestion.controller.ts(19,23): error TS2339: Property 'scope' does not exist on type '{}'.
+backend/controllers/hackathonQuestion.controller.ts(20,29): error TS2339: Property 'hackathonId' does not exist on type '{}'.
+backend/controllers/quiz.controller.ts(135,22): error TS2339: Property 'streakBonus' does not exist on type '{}'.
+backend/controllers/quiz.controller.ts(136,37): error TS2339: Property 'streakBonus' does not exist on type '{}'.
+backend/controllers/quiz.controller.ts(137,52): error TS2339: Property 'streakBonusMilestone' does not exist on type '{}'.
+backend/controllers/quiz.controller.ts(137,107): error TS2339: Property 'streakBonus' does not exist on type '{}'.
+backend/controllers/quiz.controller.ts(194,35): error TS2339: Property 'streakBonus' does not exist on type '{}'.
+backend/controllers/roundAutomation.controller.ts(166,29): error TS2339: Property 'hackathonId' does not exist on type '{ assignedTo: any; }'.
+backend/controllers/roundAutomation.controller.ts(189,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'hackathonId' does not exist in type 'Query<any, any, {}, unknown, "find", Record<string, never>>'.
+backend/controllers/roundAutomation.controller.ts(210,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/controllers/roundAutomation.controller.ts(210,41): error TS2307: Cannot find module '../services/judge.service' or its corresponding type declarations.
+backend/controllers/roundAutomation.controller.ts(269,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'hackathonId' does not exist in type 'Query<any, any, {}, unknown, "find", Record<string, never>>'.
+backend/controllers/roundAutomation.controller.ts(307,7): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'hackathonId' does not exist in type 'Query<any, any, {}, unknown, "find", Record<string, never>>'.
+backend/controllers/roundAutomation.controller.ts(331,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/controllers/roundAutomation.controller.ts(331,41): error TS2307: Cannot find module '../services/judge.service' or its corresponding type declarations.
+backend/controllers/roundAutomation.controller.ts(395,24): error TS2339: Property 'name' does not exist on type 'ObjectId'.
+backend/routes/ai.routes.ts(2,10): error TS2305: Module '"../controllers/ai.controller"' has no exported member 'askTeacher'.
+backend/routes/roundAutomation.routes.ts(3,10): error TS2305: Module '"../controllers/roundAutomation.controller"' has no exported member 'startRound2'.
+backend/routes/roundAutomation.routes.ts(4,3): error TS2305: Module '"../controllers/roundAutomation.controller"' has no exported member 'getMyChallenge'.
+backend/routes/roundAutomation.routes.ts(5,3): error TS2305: Module '"../controllers/roundAutomation.controller"' has no exported member 'submitRound'.
+backend/routes/roundAutomation.routes.ts(6,3): error TS2305: Module '"../controllers/roundAutomation.controller"' has no exported member 'evaluateRound2'.
+backend/routes/roundAutomation.routes.ts(7,3): error TS2305: Module '"../controllers/roundAutomation.controller"' has no exported member 'getLeaderboard'.
+backend/routes/roundAutomation.routes.ts(8,3): error TS2305: Module '"../controllers/roundAutomation.controller"' has no exported member 'selectTop20'.
+backend/routes/roundAutomation.routes.ts(9,3): error TS2305: Module '"../controllers/roundAutomation.controller"' has no exported member 'autoSaveRound'.
+backend/routes/roundAutomation.routes.ts(10,3): error TS2305: Module '"../controllers/roundAutomation.controller"' has no exported member 'getRoundSubmissions'.
+backend/scripts/checkUserCerts.ts(21,53): error TS2339: Property 'title' does not exist on type 'ObjectId'.
+backend/scripts/checkXP.ts(19,43): error TS2339: Property 'email' does not exist on type 'ObjectId'.
+backend/scripts/fixXpHistory.ts(5,23): error TS2307: Cannot find module '../models/XpHistory' or its corresponding type declarations.
+backend/scripts/generateQuizzes.ts(50,82): error TS2339: Property 'topic' does not exist on type 'Document<unknown, {}, ILesson, {}, DefaultSchemaOptions> & ILesson & Required<{ _id: ObjectId; }> & { __v: number; } & { ...; }'.
+backend/scripts/inspectProductionDb.ts(18,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/inspectProductionDb.ts(18,27): error TS2307: Cannot find module '../models/Hackathon' or its corresponding type declarations.
+backend/scripts/inspectProductionDb.ts(19,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/inspectProductionDb.ts(19,39): error TS2307: Cannot find module '../models/HackathonRegistration' or its corresponding type declarations.
+backend/scripts/inspectProductionDb.ts(20,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/inspectProductionDb.ts(20,37): error TS2307: Cannot find module '../models/HackathonSubmission' or its corresponding type declarations.
+backend/scripts/inspectProductionDb.ts(21,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/inspectProductionDb.ts(21,36): error TS2307: Cannot find module '../models/HackathonChallenge' or its corresponding type declarations.
+backend/scripts/inspectProductionDb.ts(22,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/migrate-xphistory.ts(2,23): error TS2307: Cannot find module '../models/XpHistory' or its corresponding type declarations.
+backend/scripts/resetUserPassword.ts(13,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/resetUserPassword.ts(13,22): error TS2307: Cannot find module '../models/User' or its corresponding type declarations.
+backend/scripts/seedHackathonQuestions.ts(136,38): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ questionText: string; questionType: string; category: string; difficulty: string; options: { text: string; isCorrect: boolean; }[]; scope: "global"; points: number; createdBy: ObjectId; } | { ...; }' is not assignable to parameter of type '{ _id?: ObjectIdQueryTypeCasting; $assertPopulated?: <Paths = {}>(path: string | string[], values?: Partial<Paths>) => PopulateDocumentResult<IHackathonQuestion & Required<...>, Paths, (Omit<...> & PopulatePathToRawDocType<...>)[] | ..., any>; ... 72 more ...; createdBy?: ObjectIdQueryTypeCasting; }'.
+      Type '{ questionText: string; questionType: string; category: string; difficulty: string; options: { text: string; isCorrect: boolean; }[]; scope: "global"; points: number; createdBy: mongoose.Types.ObjectId; }' is not assignable to type '{ _id?: ObjectIdQueryTypeCasting; $assertPopulated?: <Paths = {}>(path: string | string[], values?: Partial<Paths>) => PopulateDocumentResult<IHackathonQuestion & Required<...>, Paths, (Omit<...> & PopulatePathToRawDocType<...>)[] | ..., any>; ... 72 more ...; createdBy?: ObjectIdQueryTypeCasting; }'.
+        Types of property 'questionType' are incompatible.
+          Type 'string' is not assignable to type '"case_study" | "coding" | "mcq" | "project" | "scenario" | RegExp'.
+backend/scripts/seedMysteryBadges.ts(35,28): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ name: string; icon: string; description: string; rarity: string; condition: string; xpBonus: number; }' is not assignable to parameter of type '{ _id?: ObjectIdQueryTypeCasting; $assertPopulated?: <Paths = {}>(path: string | string[], values?: Partial<Paths>) => PopulateDocumentResult<IBadge & Required<{ _id: ObjectId; }>, Paths, (Omit<...> & PopulatePathToRawDocType<...>)[] | ..., any>; ... 63 more ...; xpBonus?: number; }'.
+      Types of property 'rarity' are incompatible.
+        Type 'string' is not assignable to type '"common" | "epic" | "legendary" | "rare" | RegExp'.
+backend/scripts/testLocalEndpoint.ts(13,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/testLocalEndpoint.ts(13,40): error TS2307: Cannot find module '../controllers/hackathon.controller' or its corresponding type declarations.
+backend/scripts/testLocalEndpoint.ts(14,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/testLocalEndpoint.ts(14,22): error TS2307: Cannot find module '../models/User' or its corresponding type declarations.
+backend/scripts/testLocalEndpoint.ts(15,5): error TS1232: An import declaration can only be used at the top level of a namespace or module.
+backend/scripts/validateQuizzes.ts(3,30): error TS1479: The current file is a CommonJS module whose imports will produce 'require' calls; however, the referenced file is an ECMAScript module and cannot be imported with 'require'. Consider writing a dynamic 'import("@google/genai")' call instead.
+  To convert this file to an ECMAScript module, change its file extension to '.mts' or create a local package.json file with `{ "type": "module" }`.
+backend/scripts/validateQuizzes.ts(70,68): error TS2339: Property 'title' does not exist on type 'ObjectId'.
+backend/scripts/validateQuizzes.ts(79,29): error TS2339: Property 'title' does not exist on type 'ObjectId'.
+backend/scripts/validateQuizzes.ts(80,35): error TS2339: Property 'description' does not exist on type 'ObjectId'.
+backend/scripts/validateQuizzes.ts(81,29): error TS2339: Property 'topic' does not exist on type 'ObjectId'.
+backend/seed.ts(58,26): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Argument of type '{ name: string; icon: string; description: string; rarity: string; condition: string; conditionValue: string; xpBonus: number; }' is not assignable to parameter of type '{ _id?: ObjectIdQueryTypeCasting; $assertPopulated?: <Paths = {}>(path: string | string[], values?: Partial<Paths>) => PopulateDocumentResult<IBadge & Required<{ _id: ObjectId; }>, Paths, (Omit<...> & PopulatePathToRawDocType<...>)[] | ..., any>; ... 63 more ...; xpBonus?: number; }'.
+      Types of property 'rarity' are incompatible.
+        Type 'string' is not assignable to type '"common" | "epic" | "legendary" | "rare" | RegExp'.
+backend/seed.ts(72,9): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Type 'string' is not assignable to type '"advanced" | "beginner" | "intermediate" | RegExp'.
+backend/seed.ts(93,20): error TS18047: 'track' is possibly 'null'.
+backend/services/certificateService.ts(65,32): error TS2339: Property 'createdAt' does not exist on type 'Document<unknown, {}, ICertificate, {}, DefaultSchemaOptions> & ICertificate & Required<{ _id: ObjectId; }> & { ...; } & { ...; }'.
+backend/services/certificateService.ts(65,64): error TS2339: Property 'updatedAt' does not exist on type 'Document<unknown, {}, ICertificate, {}, DefaultSchemaOptions> & ICertificate & Required<{ _id: ObjectId; }> & { ...; } & { ...; }'.
+backend/services/certificateService.ts(101,34): error TS2339: Property 'createdAt' does not exist on type 'Document<unknown, {}, ICertificate, {}, DefaultSchemaOptions> & ICertificate & Required<{ _id: ObjectId; }> & { ...; } & { ...; }'.
+backend/services/certificateService.ts(101,67): error TS2339: Property 'updatedAt' does not exist on type 'Document<unknown, {}, ICertificate, {}, DefaultSchemaOptions> & ICertificate & Required<{ _id: ObjectId; }> & { ...; } & { ...; }'.
+backend/services/hackathonCron.service.ts(74,11): error TS2769: No overload matches this call.
+  The last overload gave the following error.
+    Object literal may only specify known properties, and 'userId' does not exist in type 'Query<any, any, {}, unknown, "find", Record<string, never>>'.
