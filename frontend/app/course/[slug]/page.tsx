@@ -11,7 +11,7 @@ import { SidebarSkeleton } from "@/components/loaders/Skeletons";
 
 export default function CourseDetailPage() {
   const router = useRouter();
-  const params = useParams();
+  const params: any = useParams();
   const { slug } = params;
   const { user, loading: authLoading } = useAuth();
   

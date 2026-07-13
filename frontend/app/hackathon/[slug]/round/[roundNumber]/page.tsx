@@ -20,12 +20,12 @@ const FolderNode = ({
   activeFilePath,
   collapsedFolders,
   toggleFolder
-}) => {
+}: any) => {
   const isFolder = node.type === "folder";
   const isCollapsed = collapsedFolders[node.path];
 
   // Render children sorted: folders first, then files, alphabetically
-  const sortedChildren = Object.values(node.children || {}).sort((a, b) => {
+  const sortedChildren: any[] = Object.values(node.children || {}).sort((a: any, b: any) => {
     if (a.type !== b.type) {
       return a.type === "folder" ? -1 : 1;
     }
@@ -180,7 +180,7 @@ const LANGUAGE_LABELS = {
 };
 
 export default function RoundPage() {
-  const params = useParams();
+  const params: any = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [roundData, setRoundData] = useState(null);

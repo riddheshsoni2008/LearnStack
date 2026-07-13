@@ -3,14 +3,14 @@
 import { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 
-const AuthContext = createContext();
+const AuthContext = createContext<any>(null);
 
-export const AuthProvider = ({ children }) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  const handleSetUser = useCallback((userData) => {
+  const handleSetUser = useCallback((userData: any) => {
     setUser(userData);
     if (userData) {
       localStorage.setItem("user", JSON.stringify(userData));
@@ -60,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     fetchUser();
   }, []);
 
-  const login = async (email, password) => {
+  const login = async (email: any, password: any) => {
     try {
       const res = await fetch("/api/auth/login", {
         method: "POST",
@@ -88,7 +88,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const register = async (name, email, password) => {
+  const register = async (name: any, email: any, password: any) => {
     try {
       const res = await fetch("/api/auth/register", {
         method: "POST",

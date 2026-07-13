@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 
 export default function WorldLevels() {
   const router = useRouter();
-  const params = useParams();
+  const params: any = useParams();
   const worldIdDecoded = decodeURIComponent(params.worldId);
   const { user, loading: authLoading } = useAuth();
   

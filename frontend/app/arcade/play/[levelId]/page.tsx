@@ -9,7 +9,7 @@ import { motion } from "framer-motion";
 import confetti from "canvas-confetti";
 
 export default function ArcadeGame() {
-  const params = useParams();
+  const params: any = useParams();
   const router = useRouter();
   const { user, loading: authLoading, fetchUser } = useAuth();
   const { addToast } = useCelebration();

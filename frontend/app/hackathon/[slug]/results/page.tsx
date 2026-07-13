@@ -8,7 +8,7 @@ import AuthNavbar from "@/components/AuthNavbar";
 import QualificationBadge from "@/components/hackathon/QualificationBadge";
 
 export default function ResultsPage() {
-  const params = useParams();
+  const params: any = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
   const [results, setResults] = useState(null);

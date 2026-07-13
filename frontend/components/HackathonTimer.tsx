@@ -9,11 +9,17 @@ import Link from "next/link";
  *   <HackathonTimer />                         — auto-fetches current hackathon from API
  *   <HackathonTimer hackathon={hackathonObj} /> — uses the provided hackathon object directly
  */
+interface HackathonTimerProps {
+  hackathon?: any;
+  title?: string;
+  subtitle?: string;
+}
+
 export default function HackathonTimer({
-  hackathon: hackathonProp,
+  hackathon: hackathonProp = null,
   title: titleOverride,
   subtitle: subtitleOverride,
-}) {
+}: HackathonTimerProps = {}) {
   const [hackathon, setHackathon] = useState(hackathonProp || null);
   const [loading, setLoading] = useState(!hackathonProp);
   const [timeLeft, setTimeLeft] = useState({
@@ -139,7 +145,13 @@ export default function HackathonTimer({
   );
 }
 
-function TimeUnit({ value, label, animate = false }) {
+interface TimeUnitProps {
+  value: any;
+  label: string;
+  animate?: boolean;
+}
+
+function TimeUnit({ value, label, animate = false }: TimeUnitProps) {
   return (
     <div className="flex flex-col items-center">
       <div

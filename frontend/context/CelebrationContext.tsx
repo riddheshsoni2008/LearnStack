@@ -2,14 +2,14 @@
 
 import { createContext, useContext, useState, useCallback } from "react";
 
-const CelebrationContext = createContext();
+const CelebrationContext = createContext<any>(null);
 
-export const CelebrationProvider = ({ children }) => {
+export const CelebrationProvider = ({ children }: { children: React.ReactNode }) => {
   const [toasts, setToasts] = useState([]);
   const [levelUpData, setLevelUpData] = useState(null);
 
   // Add a toast notification
-  const addToast = useCallback((toast) => {
+  const addToast = useCallback((toast: any) => {
     const id = Date.now() + Math.random();
     setToasts((prev) => [...prev, { ...toast, id }]);
     // Auto-dismiss after 5 seconds
@@ -19,7 +19,7 @@ export const CelebrationProvider = ({ children }) => {
   }, []);
 
   // Show level-up modal
-  const showLevelUp = useCallback((data) => {
+  const showLevelUp = useCallback((data: any) => {
     setLevelUpData(data);
   }, []);
 
@@ -28,7 +28,7 @@ export const CelebrationProvider = ({ children }) => {
   }, []);
 
   // Process gamification response from API
-  const processGamification = useCallback((gamification, xpBreakdown = []) => {
+  const processGamification = useCallback((gamification: any, xpBreakdown: any = []) => {
     if (!gamification) return;
 
     // Show XP breakdown toasts

@@ -8,7 +8,7 @@ import LeaderboardTable from "@/components/hackathon/LeaderboardTable";
 import { useAuth } from "@/context/AuthContext";
 
 export default function HackathonLeaderboardPage() {
-  const params = useParams();
+  const params: any = useParams();
   const { user } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);

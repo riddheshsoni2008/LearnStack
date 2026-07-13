@@ -136,7 +136,7 @@ export default function AITeacher() {
                           <ReactMarkdown 
                             remarkPlugins={[remarkGfm]}
                             components={{
-                              code({node, inline, className, children, ...props}) {
+                              code({node, inline, className, children, ...props}: any) {
                                 const match = /language-(\w+)/.exec(className || '')
                                 return !inline && match ? (
                                   <div className="rounded-xl overflow-hidden my-6 border border-gray-800 bg-[#0d0d0d] shadow-lg">

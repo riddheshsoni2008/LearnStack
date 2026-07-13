@@ -14,7 +14,7 @@ import QualificationBadge from "@/components/hackathon/QualificationBadge";
 const DEVELOPMENT_MODE = true;
 
 export default function HackathonDetailsPage() {
-  const params = useParams();
+  const params: any = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 

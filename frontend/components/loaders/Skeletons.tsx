@@ -53,14 +53,9 @@ export function CategoriesSkeleton() {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// 2. Dashboard Skeletons
-// ═══════════════════════════════════════════════════════════════
-
 export function StatsCardsSkeleton() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      {/* XP Ring Card */}
       <div className="glass rounded-2xl p-6 flex flex-col items-center justify-center h-[218px] animate-pulse">
         <div className="w-[110px] h-[110px] rounded-full border-8 border-[var(--surface-light)] flex items-center justify-center">
           <PulseBar className="w-10 h-6 bg-[var(--surface-light)]" />
@@ -119,10 +114,6 @@ export function RecentActivitySkeleton() {
     </div>
   );
 }
-
-// ═══════════════════════════════════════════════════════════════
-// 3. Profile Skeletons
-// ═══════════════════════════════════════════════════════════════
 
 export function AvatarSkeleton() {
   return (

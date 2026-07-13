@@ -6,7 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import AuthNavbar from "@/components/AuthNavbar";
 
 export default function HackathonRegistrationPage() {
-  const params = useParams();
+  const params: any = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
@@ -26,7 +26,7 @@ export default function HackathonRegistrationPage() {
   });
 
   // Validation state
-  const [touched, setTouched] = useState({});
+  const [touched, setTouched] = useState<any>({});
 
   useEffect(() => {
     if (!authLoading && !user) {
@@ -72,7 +72,7 @@ export default function HackathonRegistrationPage() {
   };
 
   const validate = () => {
-    const errors = {};
+    const errors: any = {};
     if (!form.collegeName.trim()) errors.collegeName = "College / University is required";
     if (!form.studentId.trim()) errors.studentId = "Student ID is required";
     if (!form.state.trim()) errors.state = "State is required";

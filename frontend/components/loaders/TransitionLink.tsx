@@ -4,7 +4,15 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useLoading } from "@/context/LoadingContext";
 
-export default function TransitionLink({ href, children, className = "", onClick, ...props }) {
+interface TransitionLinkProps {
+  href: string;
+  children: React.ReactNode;
+  className?: string;
+  onClick?: (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => void;
+  [key: string]: any;
+}
+
+export default function TransitionLink({ href, children, className = "", onClick, ...props }: TransitionLinkProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { startLoading } = useLoading();

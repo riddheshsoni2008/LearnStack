@@ -2,9 +2,9 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { usePathname, useRouter } from "next/navigation";
 
-const LoadingContext = createContext();
+const LoadingContext = createContext<any>(null);
 
-export function LoadingProvider({ children }) {
+export function LoadingProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(false);
   const [transitioning, setTransitioning] = useState(false);
   const pathname = usePathname();
@@ -52,12 +52,12 @@ export function useTransitionRouter() {
   const router = useRouter();
   const { startLoading } = useLoading();
 
-  const push = useCallback((href, options) => {
+  const push = useCallback((href: any, options?: any) => {
     startLoading();
     router.push(href, options);
   }, [router, startLoading]);
 
-  const replace = useCallback((href, options) => {
+  const replace = useCallback((href: any, options?: any) => {
     startLoading();
     router.replace(href, options);
   }, [router, startLoading]);
