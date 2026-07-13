@@ -13,7 +13,7 @@ export default function LessonPage({ params }) {
 
   const { user, setUser, loading: authLoading, fetchUser } = useAuth();
   const { processGamification } = useCelebration();
-  const [lesson, setLesson] = useState(null);
+  const [lesson, setLesson] = useState<any>(null);
   const [quiz, setQuiz] = useState(null);
   const [nextLesson, setNextLesson] = useState(null);
   const [prevLesson, setPrevLesson] = useState(null);
@@ -93,7 +93,7 @@ export default function LessonPage({ params }) {
 
 
 
-  const handleOptionSelect = (questionId, optionIndex) => {
+  const handleOptionSelect = (questionId: string, optionIndex: number) => {
     if (quizResult) return; // Disable changes after submission
     setSelectedAnswers({
       ...selectedAnswers,
@@ -325,7 +325,7 @@ export default function LessonPage({ params }) {
                           {qIdx + 1}. {q.question}
                         </p>
                         <div className="space-y-1.5">
-                          {q.options.map((opt, oIdx) => {
+                          {q.options.map((opt: string, oIdx: number) => {
                             const isSelected = selectedAnswers[q._id] === oIdx;
                             return (
                               <button

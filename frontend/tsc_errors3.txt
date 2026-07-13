@@ -1,0 +1,1 @@
+app/hackathon/[slug]/round/[roundNumber]/page.tsx(579,34): error TS1110: Type expected.

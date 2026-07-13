@@ -37,7 +37,7 @@ export default function AITeacher() {
     );
   }
 
-  const handleSend = async (e) => {
+  const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim() || isTyping) return;
 

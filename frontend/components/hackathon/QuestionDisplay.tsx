@@ -1,10 +1,18 @@
 "use client";
 import { useState } from "react";
 
-export default function QuestionDisplay({ question, index, total, answer, onAnswer }) {
+interface QuestionDisplayProps {
+  question: any;
+  index: number;
+  total: number;
+  answer: any;
+  onAnswer: (ans: any) => void;
+}
+
+export default function QuestionDisplay({ question, index, total, answer, onAnswer }: QuestionDisplayProps) {
   const [codeValue, setCodeValue] = useState(answer?.answer || question.codeTemplate || "");
 
-  const handleMCQSelect = (optionIndex) => {
+  const handleMCQSelect = (optionIndex: number) => {
     onAnswer({
       questionId: question._id,
       selectedOptionIndex: optionIndex,
@@ -12,7 +20,7 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
     });
   };
 
-  const handleTextAnswer = (value) => {
+  const handleTextAnswer = (value: string) => {
     setCodeValue(value);
     onAnswer({
       questionId: question._id,
@@ -29,7 +37,7 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
     project: { label: "Project", bg: "bg-pink-500/20", text: "text-pink-400", icon: "🚀" },
   };
 
-  const typeConfig = TYPE_CONFIG[question.questionType] || TYPE_CONFIG.mcq;
+  const typeConfig = (TYPE_CONFIG as any)[question.questionType] || TYPE_CONFIG.mcq;
 
   const DIFF_COLORS = {
     easy: "text-green-400 bg-green-500/10 border-green-500/30",
@@ -50,7 +58,7 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
               {typeConfig.icon} {typeConfig.label}
             </span>
             {question.difficulty && (
-              <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${DIFF_COLORS[question.difficulty] || DIFF_COLORS.easy}`}>
+              <span className={`text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full border ${DIFF_COLORS[question.difficulty as keyof typeof DIFF_COLORS] || DIFF_COLORS.easy}`}>
                 {question.difficulty}
               </span>
             )}
@@ -74,7 +82,7 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
       {/* ═══ MCQ ═══ */}
       {question.questionType === "mcq" && (
         <div className="space-y-3">
-          {question.options?.map((option, idx) => {
+          {question.options?.map((option: any, idx: number) => {
             const isSelected = answer?.selectedOptionIndex === idx;
             const letters = ["A", "B", "C", "D", "E", "F"];
             return (
@@ -112,11 +120,11 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
       {question.questionType === "coding" && (
         <div className="space-y-4">
           {/* Sample test cases (if visible) */}
-          {question.testCases && question.testCases.filter(t => !t.isHidden).length > 0 && (
+          {question.testCases && question.testCases.filter((t: any) => !t.isHidden).length > 0 && (
             <div className="glass rounded-xl p-4 border border-[var(--border)]">
               <h4 className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-3">Sample Test Cases</h4>
               <div className="space-y-3">
-                {question.testCases.filter(t => !t.isHidden).map((tc, idx) => (
+                {question.testCases.filter((t: any) => !t.isHidden).map((tc: any, idx: number) => (
                   <div key={idx} className="grid grid-cols-2 gap-3">
                     <div>
                       <span className="text-[10px] text-[var(--text-muted)] uppercase font-bold block mb-1">Input</span>
@@ -139,7 +147,7 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
             </label>
             <textarea
               value={codeValue}
-              onChange={(e) => handleTextAnswer(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleTextAnswer(e.target.value)}
               className="w-full h-64 sm:h-80 p-4 rounded-xl bg-[#1a1a2e] border border-[var(--border)] text-emerald-400 font-mono text-sm resize-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]/30 outline-none transition-all leading-relaxed"
               placeholder="// Write your solution here..."
               spellCheck="false"
@@ -156,7 +164,7 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
           </label>
           <textarea
             value={codeValue}
-            onChange={(e) => handleTextAnswer(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleTextAnswer(e.target.value)}
             className="w-full h-48 sm:h-64 p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] text-sm resize-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]/30 outline-none transition-all leading-relaxed"
             placeholder="Analyze the case study and write your detailed response here..."
             spellCheck="true"
@@ -175,7 +183,7 @@ export default function QuestionDisplay({ question, index, total, answer, onAnsw
           </label>
           <textarea
             value={codeValue}
-            onChange={(e) => handleTextAnswer(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleTextAnswer(e.target.value)}
             className="w-full h-48 sm:h-64 p-4 rounded-xl bg-[var(--surface)] border border-[var(--border)] text-[var(--foreground)] text-sm resize-none focus:border-[var(--primary)] focus:ring-1 focus:ring-[var(--primary)]/30 outline-none transition-all leading-relaxed"
             placeholder="Describe your approach to this scenario in detail..."
             spellCheck="true"

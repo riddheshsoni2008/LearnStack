@@ -10,10 +10,31 @@ const STATUS_STYLES = {
   archived: { bg: "bg-gray-500/20", text: "text-gray-500", label: "Archived" },
 };
 
-export default function HackathonCard({ hackathon, index = 0 }) {
-  const status = STATUS_STYLES[hackathon.status] || STATUS_STYLES.draft;
+interface HackathonCardProps {
+  hackathon: {
+    status: keyof typeof STATUS_STYLES;
+    slug: string;
+    registrationType?: string;
+    entryFee?: number;
+    title: string;
+    shortDescription?: string;
+    description?: string;
+    startDate: string;
+    currentParticipants?: number;
+    participantLimitMode?: string;
+    maxParticipants?: number;
+    prizePool?: {
+      totalValue?: string;
+    };
+    tags?: string[];
+  };
+  index?: index;
+}
 
-  const formatDate = (dateStr) => {
+export default function HackathonCard({ hackathon, index = 0 }: any) {
+  const status = STATUS_STYLES[hackathon.status as keyof typeof STATUS_STYLES] || STATUS_STYLES.draft;
+
+  const formatDate = (dateStr: string) => {
     if (!dateStr) return "TBD";
     return new Date(dateStr).toLocaleDateString("en-IN", {
       day: "numeric",
@@ -81,7 +102,7 @@ export default function HackathonCard({ hackathon, index = 0 }) {
             {/* Tags */}
             {hackathon.tags?.length > 0 && (
               <div className="flex flex-wrap gap-1.5 mt-3">
-                {hackathon.tags.slice(0, 3).map((tag, i) => (
+                {hackathon.tags.slice(0, 3).map((tag: any, i: number) => (
                   <span key={i} className="text-[10px] px-2 py-0.5 rounded-full bg-[var(--surface)] text-[var(--text-muted)] border border-[var(--border)]">
                     {tag}
                   </span>

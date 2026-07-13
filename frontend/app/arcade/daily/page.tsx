@@ -12,9 +12,9 @@ export default function DailyMission() {
   const router = useRouter();
   const { user, loading: authLoading, fetchUser } = useAuth();
   const { addToast } = useCelebration();
-  const [dailyData, setDailyData] = useState(null);
+  const [dailyData, setDailyData] = useState<any>(null);
   const [code, setCode] = useState("");
-  const [output, setOutput] = useState([]);
+  const [output, setOutput] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [cleared, setCleared] = useState(false);
@@ -72,7 +72,7 @@ export default function DailyMission() {
       const newOutput = [];
       // If there are standard logs, show them first
       if (data.logs && data.logs.length > 0) {
-        data.logs.slice(0, -1).forEach(l => newOutput.push({ type: "log", text: l }));
+        data.logs.slice(0, -1).forEach((l: any) => newOutput.push({ type: "log", text: l }));
       }
 
       if (data.passed) {

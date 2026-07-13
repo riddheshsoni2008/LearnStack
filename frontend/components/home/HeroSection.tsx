@@ -3,7 +3,18 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import StatCard from "@/components/StatCard";
 
-export default function HeroSection({ stats }) {
+interface HeroSectionProps {
+  stats: {
+    tracks: number;
+    lessons: number;
+    questions: number;
+    users: number;
+    certificates: number;
+    maxStreak: number;
+  };
+}
+
+export default function HeroSection({ stats }: HeroSectionProps) {
   const statItems = [
     { value: `${stats.tracks}+`, label: "Learning Tracks", type: "tracks" },
     { value: `${stats.lessons}+`, label: "Lessons", type: "lessons" },
@@ -82,7 +93,7 @@ export default function HeroSection({ stats }) {
               <StatCard
                 value={stat.value}
                 label={stat.label}
-                type={stat.type}
+                type={stat.type as any}
                 glow={stat.glow}
               />
             </motion.div>

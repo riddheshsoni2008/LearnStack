@@ -57,8 +57,8 @@ export default function CelebrationToast() {
   return (
     <div className="fixed top-24 right-4 z-[9999] flex flex-col gap-4 max-w-sm w-full pointer-events-none">
       <AnimatePresence>
-        {toasts.map((toast) => {
-          const style = TOAST_STYLES[toast.type] || TOAST_STYLES.info;
+        {toasts.map((toast: any) => {
+          const style = (TOAST_STYLES as any)[toast.type] || TOAST_STYLES.info;
           return (
             <motion.div
               key={toast.id}
@@ -88,7 +88,7 @@ export default function CelebrationToast() {
                   {style.icon}
                 </motion.div>
                 <div className="flex-1 min-w-0 pt-0.5">
-                  <div className={`font-bold text-[15px] ${toast.rarity ? RARITY_COLORS[toast.rarity] : "text-white"}`}>
+                  <div className={`font-bold text-[15px] ${toast.rarity ? (RARITY_COLORS as any)[toast.rarity] : "text-white"}`}>
                     {toast.title}
                   </div>
                   {toast.description && (

@@ -52,7 +52,7 @@ export default function WorldLevels() {
 
   // To check if a level is unlocked, we look at user.arcadeProgress.
   // Level 1 is always unlocked. Level N is unlocked if Level N-1 is in arcadeProgress.
-  const completedLevelIds = user?.arcadeProgress?.map(p => p.levelId.toString()) || [];
+  const completedLevelIds = user?.arcadeProgress?.map((p: any) => p.levelId.toString()) || [];
 
   return (
     <div className="min-h-screen bg-[#0A051A] text-white overflow-hidden relative pb-20">

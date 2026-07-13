@@ -17,7 +17,7 @@ export default function TransitionLink({ href, children, className = "", onClick
   const pathname = usePathname();
   const { startLoading } = useLoading();
 
-  const handleClick = (e) => {
+  const handleClick = (e: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
     if (onClick) onClick(e);
 
     // Skip custom transition if standard target modifiers are pressed

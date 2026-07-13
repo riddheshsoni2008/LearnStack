@@ -1,7 +1,13 @@
 "use client";
 import { motion } from "framer-motion";
 
-export default function PrizeCard({ rank, prize, delay = 0 }) {
+interface PrizeCardProps {
+  rank: 1 | 2 | 3;
+  prize: string | number;
+  delay?: number;
+}
+
+export default function PrizeCard({ rank, prize, delay = 0 }: PrizeCardProps) {
   const RANK_STYLES = {
     1: {
       gradient: "from-yellow-500/30 via-amber-500/20 to-yellow-600/30",
@@ -29,7 +35,7 @@ export default function PrizeCard({ rank, prize, delay = 0 }) {
     },
   };
 
-  const style = RANK_STYLES[rank] || RANK_STYLES[3];
+  const style = (RANK_STYLES as any)[rank] || RANK_STYLES[3];
 
   return (
     <motion.div

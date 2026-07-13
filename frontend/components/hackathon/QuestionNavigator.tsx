@@ -1,6 +1,13 @@
 "use client";
 
-export default function QuestionNavigator({ questions, answers, currentIndex, onNavigate }) {
+interface QuestionNavigatorProps {
+  questions: any[];
+  answers: { [key: string]: any };
+  currentIndex: number;
+  onNavigate: (index: number) => void;
+}
+
+export default function QuestionNavigator({ questions, answers, currentIndex, onNavigate }: QuestionNavigatorProps) {
   const answeredCount = Object.keys(answers).length;
   const totalCount = questions.length;
 
@@ -38,7 +45,7 @@ export default function QuestionNavigator({ questions, answers, currentIndex, on
 
       {/* Question grid */}
       <div className="grid grid-cols-5 gap-2">
-        {questions.map((q, idx) => {
+        {questions.map((q: any, idx: number) => {
           const isAnswered = !!answers[q._id];
           const isCurrent = idx === currentIndex;
 

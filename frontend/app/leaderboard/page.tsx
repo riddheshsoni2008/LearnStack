@@ -28,7 +28,7 @@ const RANK_STYLES = {
 export default function LeaderboardPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -200,9 +200,9 @@ export default function LeaderboardPage() {
 
         {/* Leaderboard List */}
         <div className="space-y-2">
-          {leaderboard.map((entry) => {
+          {leaderboard.map((entry: any) => {
             const isMe = entry._id === user._id;
-            const rankStyle = RANK_STYLES[entry.rank];
+            const rankStyle = RANK_STYLES[entry.rank as keyof typeof RANK_STYLES];
             const isTop3 = entry.rank <= 3;
 
             return (

@@ -15,9 +15,9 @@ export default function CourseDetailPage() {
   const { slug } = params;
   const { user, loading: authLoading } = useAuth();
   
-  const [track, setTrack] = useState(null);
-  const [lessons, setLessons] = useState([]);
-  const [progress, setProgress] = useState([]);
+  const [track, setTrack] = useState<any>(null);
+  const [lessons, setLessons] = useState<any[]>([]);
+  const [progress, setProgress] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -108,8 +108,8 @@ export default function CourseDetailPage() {
   );
 
   // Group lessons by week number
-  const lessonsByWeek = {};
-  lessons.forEach((lesson) => {
+  const lessonsByWeek: { [key: number]: any[] } = {};
+  lessons.forEach((lesson: any) => {
     const w = lesson.weekNumber || 1;
     if (!lessonsByWeek[w]) {
       lessonsByWeek[w] = [];

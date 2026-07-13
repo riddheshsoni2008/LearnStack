@@ -70,7 +70,7 @@ export default function HackathonTimer({
   const calculateTimeLeft = useCallback(() => {
     if (!targetDate) return { days: 0, hours: 0, minutes: 0, seconds: 0 };
 
-    const difference = new Date(targetDate) - new Date();
+    const difference = new Date(targetDate).getTime() - new Date().getTime();
     if (difference > 0) {
       return {
         days: Math.floor(difference / (1000 * 60 * 60 * 24)),
@@ -98,10 +98,10 @@ export default function HackathonTimer({
 
   // If both endDate and startDate are in the past, hide the banner
   const endDiff = hackathon.endDate
-    ? new Date(hackathon.endDate) - new Date()
+    ? new Date(hackathon.endDate).getTime() - new Date().getTime()
     : -1;
   const startDiff = hackathon.startDate
-    ? new Date(hackathon.startDate) - new Date()
+    ? new Date(hackathon.startDate).getTime() - new Date().getTime()
     : -1;
   if (endDiff <= 0 && startDiff <= 0) return null;
 

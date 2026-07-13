@@ -1,6 +1,12 @@
 import Link from "next/link";
 
-export default function CourseCard({ track }) {
+import { Track } from "@/types";
+
+interface CourseCardProps {
+  track: Track;
+}
+
+export default function CourseCard({ track }: CourseCardProps) {
   return (
     <div className="glass rounded-2xl p-8 border border-[var(--border)] card-hover flex flex-col justify-between">
       <div>
@@ -10,7 +16,7 @@ export default function CourseCard({ track }) {
             ⚡ {track.level}
           </span>
           <div className="flex gap-2">
-            {track.tags?.slice(0, 3).map((tag) => (
+            {track.tags?.slice(0, 3).map((tag: any) => (
               <span key={tag} className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-[var(--surface-light)] text-[var(--text-muted)]">
                 {tag}
               </span>

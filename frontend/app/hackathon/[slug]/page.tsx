@@ -18,8 +18,8 @@ export default function HackathonDetailsPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
-  const [hackathon, setHackathon] = useState(null);
-  const [myStatus, setMyStatus] = useState(null);
+  const [hackathon, setHackathon] = useState<any>(null);
+  const [myStatus, setMyStatus] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -71,8 +71,9 @@ export default function HackathonDetailsPage() {
   if (!hackathon) return null;
 
   const isRegistered = myStatus?.registered;
-  const regData = myStatus?.registration || {};
-  const submissions = myStatus?.submissions || [];
+  const regData = myStatus?.registration || {} as any;
+  const submissions = (myStatus?.submissions || []) as any[];
+  
 
   const now = new Date();
   const isActive = hackathon.status === "active";
@@ -125,7 +126,7 @@ export default function HackathonDetailsPage() {
     ) {
       const eligibleRound = regData.currentRound || 2;
       const nextRoundConfig = hackathon.rounds.find(
-        (r) => r.roundNumber === eligibleRound,
+        (r: any) => r.roundNumber === eligibleRound,
       );
 
       if (
@@ -156,10 +157,10 @@ export default function HackathonDetailsPage() {
       // Determine based on active rounds and submissions
       const eligibleRound = regData.currentRound || 1;
       const roundConfig = hackathon.rounds.find(
-        (r) => r.roundNumber === eligibleRound,
+        (r: any) => r.roundNumber === eligibleRound,
       );
       const submission = submissions.find(
-        (s) => s.roundNumber === eligibleRound,
+        (s: any) => s.roundNumber === eligibleRound,
       );
 
       if (
@@ -186,8 +187,8 @@ export default function HackathonDetailsPage() {
         } else {
           const isRoundActive =
             DEVELOPMENT_MODE ||
-            (now >= new Date(roundConfig.startTime) &&
-              now <= new Date(roundConfig.endTime));
+            (now.getTime() >= new Date(roundConfig.startTime).getTime() &&
+              now.getTime() <= new Date(roundConfig.endTime).getTime());
           if (isRoundActive && (isActive || DEVELOPMENT_MODE)) {
             primaryState = `ROUND_${eligibleRound}_AVAILABLE`;
             primaryCtaTitle =
@@ -287,10 +288,10 @@ export default function HackathonDetailsPage() {
                 </div>
                 <span className="text-xs font-bold mt-2">Registered</span>
               </div>
-              {hackathon.rounds.map((round, idx) => {
+              {hackathon.rounds.map((round: any, idx: number) => {
                 const isEligible = regData.currentRound >= round.roundNumber;
                 const submission = submissions.find(
-                  (s) => s.roundNumber === round.roundNumber,
+                  (s: any) => s.roundNumber === round.roundNumber,
                 );
                 const isDone =
                   submission &&
@@ -313,7 +314,7 @@ export default function HackathonDetailsPage() {
                   idx === 0
                     ? null
                     : submissions.find(
-                        (s) => s.roundNumber === round.roundNumber - 1,
+                        (s: any) => s.roundNumber === round.roundNumber - 1,
                       );
                 const prevDone =
                   idx === 0
@@ -443,12 +444,12 @@ export default function HackathonDetailsPage() {
                   Rounds
                 </h2>
                 <div className="grid gap-4">
-                  {hackathon.rounds.map((round) => {
+                  {hackathon.rounds.map((round: any) => {
                     const isRoundActive =
-                      now >= new Date(round.startTime) &&
-                      now <= new Date(round.endTime);
+                      now.getTime() >= new Date(round.startTime).getTime() &&
+                      now.getTime() <= new Date(round.endTime).getTime();
                     const submission = submissions.find(
-                      (s) => s.roundNumber === round.roundNumber,
+                      (s: any) => s.roundNumber === round.roundNumber,
                     );
 
                     const isEligible =
@@ -610,7 +611,7 @@ export default function HackathonDetailsPage() {
                   <span className="text-[var(--primary)]">📋</span> Rules
                 </h2>
                 <div className="glass rounded-2xl p-6 space-y-3 border border-[var(--border)]">
-                  {hackathon.rules.map((rule, idx) => (
+                  {hackathon.rules.map((rule: string, idx: number) => (
                     <div key={idx} className="flex items-start gap-3 text-sm">
                       <span className="text-[var(--primary-light)] font-bold flex-shrink-0 bg-[var(--primary)]/10 w-6 h-6 rounded-full flex items-center justify-center">
                         {idx + 1}
@@ -631,7 +632,7 @@ export default function HackathonDetailsPage() {
                   <span className="text-[var(--primary)]">❓</span> FAQ
                 </h2>
                 <div className="space-y-4">
-                  {hackathon.faqs.map((faq, idx) => (
+                  {hackathon.faqs.map((faq: any, idx: number) => (
                     <div
                       key={idx}
                       className="glass rounded-2xl p-6 border border-[var(--border)]"

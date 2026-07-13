@@ -1,4 +1,11 @@
-export default function ProgressBar({ progressPercent, completedCount, totalCount, label = "TRACK PROGRESS" }) {
+interface ProgressBarProps {
+  progressPercent: number;
+  completedCount: number;
+  totalCount: number;
+  label?: string;
+}
+
+export default function ProgressBar({ progressPercent, completedCount, totalCount, label = "TRACK PROGRESS" }: ProgressBarProps) {
   return (
     <div className="glass rounded-2xl p-6 border border-[var(--border)] mb-12">
       <div className="flex justify-between items-center mb-3">

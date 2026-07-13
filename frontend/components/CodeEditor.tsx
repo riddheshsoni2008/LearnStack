@@ -1,7 +1,12 @@
 "use client";
 import { useState } from "react";
 
-export default function CodeEditor({ challenge, language }) {
+interface CodeEditorProps {
+  challenge: any;
+  language: string;
+}
+
+export default function CodeEditor({ challenge, language }: CodeEditorProps) {
   const [code, setCode] = useState(challenge?.starterCode || "");
   const [output, setOutput] = useState("");
   const [showHint, setShowHint] = useState(false);
@@ -11,21 +16,21 @@ export default function CodeEditor({ challenge, language }) {
   const isRunnable = language === "js" || language === "javascript";
 
   // Strip non-structural punctuation but keep HTML/code structure chars like < > / = { }
-  const normalize = (str) =>
+  const normalize = (str: string) =>
     str
       .replace(/[!?,;:'"()]/g, "")
       .replace(/\s+/g, "")
       .toLowerCase();
 
-  const checkKeywords = (userCode, expected) => {
+  const checkKeywords = (userCode: string, expected: string) => {
     if (!expected) return true;
     const keywords = expected
       .split("\n")
-      .map((line) => normalize(line))
-      .filter((l) => l.length > 2);
+      .map((line: string) => normalize(line))
+      .filter((l: string) => l.length > 2);
     if (keywords.length === 0) return true;
     const cleaned = normalize(userCode);
-    const matched = keywords.filter((kw) => cleaned.includes(kw)).length;
+    const matched = keywords.filter((kw: string) => cleaned.includes(kw)).length;
     return matched === keywords.length;
   };
 
@@ -33,13 +38,13 @@ export default function CodeEditor({ challenge, language }) {
     if (isRunnable) {
       // Pure JS — safe to execute with sandboxed console
       try {
-        let logs = [];
+        let logs: string[] = [];
         const fakeConsole = {
-          log: (...args) =>
+          log: (...args: any[]) =>
             logs.push(
               args.map((a) => (typeof a === "object" ? JSON.stringify(a) : String(a))).join(" ")
             ),
-          error: (...args) => logs.push("Error: " + args.join(" ")),
+          error: (...args: any[]) => logs.push("Error: " + args.join(" ")),
         };
         const fn = new Function("console", code);
         fn(fakeConsole);
@@ -52,7 +57,7 @@ export default function CodeEditor({ challenge, language }) {
           setStatus(null);
         }
       } catch (err) {
-        setOutput("❌ " + err.message);
+        setOutput("❌ " + (err as Error).message);
         setStatus("error");
       }
     } else {
@@ -109,18 +114,18 @@ export default function CodeEditor({ challenge, language }) {
       <div className="relative">
         <textarea
           value={code}
-          onChange={(e) => { setCode(e.target.value); if (status !== "success") setStatus(null); }}
+          onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => { setCode(e.target.value); if (status !== "success") setStatus(null); }}
           className="w-full min-h-[180px] sm:min-h-[200px] p-4 sm:p-6 bg-[#0a0a12] text-[var(--accent-light)] font-mono text-sm leading-relaxed resize-y border-none outline-none placeholder:text-[var(--text-muted)]/40"
           spellCheck="false"
           placeholder="Write your code here..."
           style={{ tabSize: 2 }}
-          onKeyDown={(e) => {
+          onKeyDown={(e: React.KeyboardEvent<HTMLTextAreaElement>) => {
             if (e.key === "Tab") {
               e.preventDefault();
-              const start = e.target.selectionStart;
-              const end = e.target.selectionEnd;
+              const start = (e.target as HTMLTextAreaElement).selectionStart;
+              const end = (e.target as HTMLTextAreaElement).selectionEnd;
               setCode(code.substring(0, start) + "  " + code.substring(end));
-              setTimeout(() => { e.target.selectionStart = e.target.selectionEnd = start + 2; }, 0);
+              setTimeout(() => { (e.target as HTMLTextAreaElement).selectionStart = (e.target as HTMLTextAreaElement).selectionEnd = start + 2; }, 0);
             }
           }}
         />

@@ -41,12 +41,12 @@ export default function ProfilePage() {
   const router = useRouter();
   const { user, loading: authLoading, fetchUser } = useAuth();
 
-  const [progress, setProgress] = useState([]);
-  const [tracks, setTracks] = useState([]);
+  const [progress, setProgress] = useState<any[]>([]);
+  const [tracks, setTracks] = useState<any[]>([]);
   const [allBadges, setAllBadges] = useState([]);
   const [myBadges, setMyBadges] = useState([]);
   const [xpHistory, setXpHistory] = useState([]);
-  const [certificates, setCertificates] = useState([]);
+  const [certificates, setCertificates] = useState<any[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
 
   // Auto-refresh Last Active every 60 seconds
@@ -79,7 +79,7 @@ export default function ProfilePage() {
           fetch("/api/certificates/me", { cache: "no-store", credentials: "include" }),
         ]);
 
-        const parseIfOk = async (res) => {
+        const parseIfOk = async (res: Response) => {
           if (!res.ok) return null;
           return res.json();
         };
@@ -134,10 +134,10 @@ export default function ProfilePage() {
   const earnedBadgeIds = myBadges.map(b => b._id);
 
   // Track progress map
-  const trackProgressMap = {};
-  progress.forEach((p) => {
+  const trackProgressMap: { [key: string]: number } = {};
+  progress.forEach((p: any) => {
     if (p.trackId?._id) {
-      trackProgressMap[p.trackId._id] = (trackProgressMap[p.trackId._id] || 0) + 1;
+      trackProgressMap[p.trackId._id as string] = (trackProgressMap[p.trackId._id as string] || 0) + 1;
     }
   });
 
@@ -409,8 +409,8 @@ export default function ProfilePage() {
         <div className="glass border border-[var(--border)] rounded-2xl p-6 mb-8">
           <h3 className="text-lg font-bold mb-4">📚 Track Progress</h3>
           <div className="space-y-3">
-            {tracks.map((track) => {
-              const completed = trackProgressMap[track._id] || 0;
+            {tracks.map((track: any) => {
+              const completed = trackProgressMap[track._id as string] || 0;
               const total = track.totalLessons || 1;
               const pct = Math.round((completed / total) * 100);
               return (

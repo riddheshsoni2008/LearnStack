@@ -102,7 +102,7 @@ export default function ArcadeHub() {
               <span className="text-3xl">🗺️</span> Explore Worlds
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {data.worlds.map((world, idx) => {
+              {data.worlds.map((world: any, idx: number) => {
                 const isUnlocked = idx === 0 || data.stats.completedLevels >= (idx * 6);
                 return (
                   <motion.div
@@ -174,7 +174,7 @@ export default function ArcadeHub() {
               </div>
               <div className="bg-indigo-950/30 border border-indigo-500/20 rounded-2xl p-6 flex flex-col justify-center">
                 <div className="space-y-4">
-                  {data.topPlayers?.length > 0 ? data.topPlayers.map((player, idx) => (
+                  {data.topPlayers?.length > 0 ? data.topPlayers.map((player: any, idx: number) => (
                     <div key={player._id} className="flex items-center justify-between">
                       <div className="flex items-center gap-3">
                         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center font-bold text-white text-xs">

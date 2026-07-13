@@ -1,6 +1,11 @@
 import Link from "next/link";
 
-export default function LessonList({ lessonsByWeek, completedLessonIds }) {
+interface LessonListProps {
+  lessonsByWeek: { [key: number]: any[] };
+  completedLessonIds: Set<string>;
+}
+
+export default function LessonList({ lessonsByWeek, completedLessonIds }: LessonListProps) {
   return (
     <div className="space-y-12 mb-20">
       {Object.keys(lessonsByWeek).map((weekString) => {
@@ -8,7 +13,7 @@ export default function LessonList({ lessonsByWeek, completedLessonIds }) {
         const weekLessons = lessonsByWeek[weekString];
 
         // check if entire week is completed
-        const isWeekCompleted = weekLessons.every(l => completedLessonIds.has(l._id));
+        const isWeekCompleted = weekLessons.every((l: any) => completedLessonIds.has(l._id));
 
         return (
           <div key={`week-${weekNum}`} className="relative">
@@ -25,7 +30,7 @@ export default function LessonList({ lessonsByWeek, completedLessonIds }) {
             </div>
 
             <div className="grid gap-3 pl-5 md:pl-14 border-l-2 border-[var(--border)] ml-5 md:ml-0 relative">
-              {weekLessons.map((lesson) => {
+              {weekLessons.map((lesson: any) => {
                 const isDone = completedLessonIds.has(lesson._id);
                 return (
                   <Link 

@@ -11,7 +11,7 @@ export default function ResultsPage() {
   const params: any = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [results, setResults] = useState(null);
+  const [results, setResults] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function ResultsPage() {
                 { label: "Total Score", value: registration.totalScore, icon: "⭐" },
                 { label: "Time Taken", value: `${Math.round(registration.totalTimeTaken / 60)}m`, icon: "⏱️" },
                 { label: "Rounds", value: `${submissions.length}`, icon: "📊" },
-              ].map((stat) => (
+              ].map((stat: any) => (
                 <div key={stat.label} className="bg-[var(--surface-light)] rounded-xl p-4 border border-[var(--border)] text-center">
                   <div className="text-xl mb-1">{stat.icon}</div>
                   <div className="text-xl font-black text-white">{stat.value}</div>
@@ -111,7 +111,7 @@ export default function ResultsPage() {
         {/* ═══ Round-by-Round Results ═══ */}
         <h2 className="text-xl font-bold mb-4 flex items-center gap-2">📋 Round Breakdown</h2>
         <div className="space-y-4">
-          {submissions.map((sub, idx) => (
+          {submissions.map((sub: any, idx: number) => (
             <motion.div
               key={sub._id || idx}
               initial={{ opacity: 0, y: 20 }}

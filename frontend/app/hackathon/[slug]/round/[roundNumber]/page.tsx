@@ -37,7 +37,7 @@ const FolderNode = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(node.name);
 
-  const handleCreateItem = (e) => {
+  const handleCreateItem = (e: any) => {
     e.preventDefault();
     if (!newItemName.trim()) {
       setIsNewItemInput(null);
@@ -53,7 +53,7 @@ const FolderNode = ({
     setNewItemName("");
   };
 
-  const handleRename = (e) => {
+  const handleRename = (e: any) => {
     e.preventDefault();
     if (!editName.trim() || editName.trim() === node.name) {
       setIsEditing(false);
@@ -183,10 +183,10 @@ export default function RoundPage() {
   const params: any = useParams();
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
-  const [roundData, setRoundData] = useState(null);
-  const [questions, setQuestions] = useState([]);
+  const [roundData, setRoundData] = useState<any>(null);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState({});
+  const [answers, setAnswers] = useState<any>({});
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
@@ -196,7 +196,7 @@ export default function RoundPage() {
   const isProjectRound = roundData?.round?.type === "project" || params.roundNumber === "2" || params.roundNumber === "3";
 
   // Monaco Workspace State
-  const [files, setFiles] = useState([]);
+  const [files, setFiles] = useState<any[]>([]);
   const [activeFilePath, setActiveFilePath] = useState("");
   const [openTabs, setOpenTabs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -208,7 +208,7 @@ export default function RoundPage() {
   const [terminalOpen, setTerminalOpen] = useState(false);
   const [terminalOutput, setTerminalOutput] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
-  const [challenge, setChallenge] = useState(null);
+  const [challenge, setChallenge] = useState<any>(null);
 
   const prevCodeRef = useRef("");
 
@@ -459,7 +459,7 @@ Welcome to the LearnStack Full-Stack Workspace!
           prevCodeRef.current = JSON.stringify(defaultFiles);
         }
 
-        setRoundData(prev => ({
+        setRoundData((prev: any)  => ({
           ...prev,
           startedAt: data.data.startedAt,
           started: true,
@@ -480,8 +480,8 @@ Welcome to the LearnStack Full-Stack Workspace!
     }
   };
 
-  const handleAnswer = useCallback((answerData) => {
-    setAnswers((prev) => ({
+  const handleAnswer = useCallback((answerData: any) => {
+    setAnswers((prev: any) => ({
       ...prev,
       [answerData.questionId]: answerData,
     }));
@@ -501,7 +501,7 @@ Welcome to the LearnStack Full-Stack Workspace!
           autoSubmitted: auto
         };
       } else {
-        const answerArray = Object.values(answers).map((a) => ({
+        const answerArray = Object.values(answers).map((a: any) => ({
           questionId: a.questionId,
           answer: a.answer || "",
           selectedOptionIndex: a.selectedOptionIndex ?? -1,
@@ -550,11 +550,11 @@ Welcome to the LearnStack Full-Stack Workspace!
     setTerminalOutput(["> Compiling solution code...", "> Setting up mock environment execution..."]);
 
     setTimeout(() => {
-      setTerminalOutput(prev => [...prev, `> Executing simulation tests for [${challenge?.challengeTitle || "Project Challenge"}]`]);
+      setTerminalOutput((prev: any) => [...prev, `> Executing simulation tests for [${challenge?.challengeTitle || "Project Challenge"}]`]);
     }, 800);
 
     setTimeout(() => {
-      setTerminalOutput(prev => [
+      setTerminalOutput((prev: any) => [
         ...prev,
         "✔ Test Case 1: Initial workspace compilation -> SUCCESS",
         "✔ Test Case 2: Verification of core business requirements -> SUCCESS",
@@ -562,7 +562,7 @@ Welcome to the LearnStack Full-Stack Workspace!
     }, 1600);
 
     setTimeout(() => {
-      setTerminalOutput(prev => [
+      setTerminalOutput((prev: any) => [
         ...prev,
         "✔ Test Case 3: Performance, logic loop, and database validations -> SUCCESS",
         "",
@@ -576,8 +576,8 @@ Welcome to the LearnStack Full-Stack Workspace!
   };
 
   // File management operations
-  const handleCreateFile = (path) => {
-    if (files.some(f => f.path === path)) {
+  const handleCreateFile = (path: string) => {
+    if (files.some((f: any) => f.path === path)) {
       alert("File already exists!");
       return;
     }
@@ -589,14 +589,14 @@ Welcome to the LearnStack Full-Stack Workspace!
     }
   };
 
-  const handleCreateFolder = (path) => {
+  const handleCreateFolder = (path: string) => {
     const dummyFilePath = `${path}/.gitkeep`;
-    if (files.some(f => f.path === dummyFilePath)) return;
+    if (files.some((f: any) => f.path === dummyFilePath)) return;
     const newFiles = [...files, { path: dummyFilePath, content: "" }];
     setFiles(newFiles);
   };
 
-  const handleRename = (oldPath, newName) => {
+  const handleRename = (oldPath: string, newName: string) => {
     const pathParts = oldPath.split("/");
     pathParts[pathParts.length - 1] = newName;
     const newPath = pathParts.join("/");
@@ -631,7 +631,7 @@ Welcome to the LearnStack Full-Stack Workspace!
     }));
   };
 
-  const handleDelete = (path, isFolder) => {
+  const handleDelete = (path:string, isFolder:boolean) => {
     if (!confirm(`Are you sure you want to delete this ${isFolder ? 'folder' : 'file'}?`)) return;
 
     const newFiles = files.filter(file => {
@@ -656,7 +656,7 @@ Welcome to the LearnStack Full-Stack Workspace!
     }
   };
 
-  const getLanguageFromPath = (path) => {
+  const getLanguageFromPath = (path: string) => {
     if (!path) return "javascript";
     const ext = path.split(".").pop().toLowerCase();
     switch (ext) {
@@ -692,7 +692,7 @@ Welcome to the LearnStack Full-Stack Workspace!
     }
   };
 
-  const buildFileTree = (files, searchQuery = "") => {
+  const buildFileTree = (file, searchQuery = "") => {
     const root = { name: "root", type: "folder", children: {}, path: "" };
 
     files.forEach((file) => {

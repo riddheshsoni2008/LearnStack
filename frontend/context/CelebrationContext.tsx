@@ -5,8 +5,8 @@ import { createContext, useContext, useState, useCallback } from "react";
 const CelebrationContext = createContext<any>(null);
 
 export const CelebrationProvider = ({ children }: { children: React.ReactNode }) => {
-  const [toasts, setToasts] = useState([]);
-  const [levelUpData, setLevelUpData] = useState(null);
+  const [toasts, setToasts] = useState<any[]>([]);
+  const [levelUpData, setLevelUpData] = useState<any>(null);
 
   // Add a toast notification
   const addToast = useCallback((toast: any) => {
@@ -33,12 +33,12 @@ export const CelebrationProvider = ({ children }: { children: React.ReactNode })
 
     // Show XP breakdown toasts
     if (xpBreakdown && xpBreakdown.length > 0) {
-      const totalXP = xpBreakdown.reduce((sum, item) => sum + item.amount, 0);
+      const totalXP = xpBreakdown.reduce((sum: number, item: any) => sum + item.amount, 0);
       if (totalXP > 0) {
         addToast({
           type: "xp",
           title: `+${totalXP} XP Earned!`,
-          description: xpBreakdown.map((x) => `${x.label}: +${x.amount}`).join(" • "),
+          description: xpBreakdown.map((x: any) => `${x.label}: +${x.amount}`).join(" • "),
         });
       }
     }
@@ -67,7 +67,7 @@ export const CelebrationProvider = ({ children }: { children: React.ReactNode })
           type: "badge",
           title: `🏆 ${gamification.newBadges.length} Badges Unlocked!`,
           description: gamification.newBadges
-            .map((b) => `${b.icon} ${b.name}`)
+            .map((b: any) => `${b.icon} ${b.name}`)
             .join(" • "),
           rarity: "epic",
         });

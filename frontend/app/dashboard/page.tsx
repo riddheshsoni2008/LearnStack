@@ -10,7 +10,13 @@ import { HackathonBannerSkeleton, StatsCardsSkeleton } from "@/components/loader
 // ═══════════════════════════════════════════════════════════════
 // XP Progress Ring Component
 // ═══════════════════════════════════════════════════════════════
-function XPRing({ level, levelTitle, progress, xp }) {
+interface XPRingProps {
+  level: number;
+  levelTitle: string;
+  progress: number;
+  xp: number;
+}
+function XPRing({ level, levelTitle, progress, xp }: XPRingProps) {
   const radius = 54;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (progress / 100) * circumference;
@@ -46,7 +52,11 @@ function XPRing({ level, levelTitle, progress, xp }) {
   );
 }
 
-function StreakCalendar({ streak, longestStreak }) {
+interface StreakCalendarProps {
+  streak: number;
+  longestStreak: number;
+}
+function StreakCalendar({ streak, longestStreak }: StreakCalendarProps) {
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const today = new Date();
   const last7Days = [...Array(7)].map((_, i) => {
@@ -98,7 +108,11 @@ const RARITY_STYLES = {
   legendary: { border: "border-yellow-500/30", bg: "bg-yellow-500/10", text: "text-yellow-400", label: "Legendary" },
 };
 
-function BadgeCard({ badge, earned = false }) {
+interface BadgeCardProps {
+  badge: any;
+  earned?: boolean;
+}
+function BadgeCard({ badge, earned = false }: BadgeCardProps) {
   const style = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
   return (
     <div
@@ -150,7 +164,7 @@ export default function DashboardPage() {
           fetch("/api/progress/me", { cache: "no-store", credentials: "include" }),
         ]);
 
-        const parseIfOk = async (res) => {
+        const parseIfOk = async (res: Response) => {
           if (!res.ok) return null;
           return res.json();
         };
@@ -208,9 +222,9 @@ export default function DashboardPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24">
-                  <div className="h-4 bg-[var(--surface)] w-32 rounded mb-4"></div>
-                  <div className="w-full h-2 bg-[var(--surface)] rounded-full mb-2"></div>
+                <div key={i} className="className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24"">
+                  <div className="className="h-4 bg-[var(--surface)] w-32 rounded mb-4""></div>
+                  <div className="className="w-full h-2 bg-[var(--surface)] rounded-full mb-2""></div>
                   <div className="h-3 bg-[var (--surface)] w-20 rounded"></div>
                 </div>
               ))}
@@ -221,16 +235,16 @@ export default function DashboardPage() {
     );
   }
 
-  const earnedBadgeIds = myBadges.map((b) => b._id);
-  const completedLessons = progress.filter((p) => p.completed).length;
-  const totalLessons = tracks.reduce((acc, t) => acc + (t.totalLessons || 0), 0);
+  const earnedBadgeIds = myBadges.map((b: any) => b._id);
+  const completedLessons = progress.filter((p: any) => p.completed).length;
+  const totalLessons = tracks.reduce((acc: number, t: any) => acc + (t.totalLessons || 0), 0);
   const overallPercent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   // Track progress map
-  const trackProgressMap = {};
-  progress.forEach((p) => {
+  const trackProgressMap: { [key: string]: number } = {};
+  progress.forEach((p: any) => {
     if (p.trackId?._id) {
-      trackProgressMap[p.trackId._id] = (trackProgressMap[p.trackId._id] || 0) + 1;
+      trackProgressMap[p.trackId._id as string] = (trackProgressMap[p.trackId._id as string] || 0) + 1;
     }
   });
 
@@ -309,7 +323,7 @@ export default function DashboardPage() {
             </div>
           ) : (
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-9 gap-2">
-              {allBadges.slice(0, 9).map((badge) => (
+              {allBadges.slice(0, 9).map((badge: any) => (
                 <BadgeCard
                   key={badge._id}
                   badge={badge}
@@ -331,17 +345,17 @@ export default function DashboardPage() {
           {dataLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24">
-                  <div className="h-4 bg-[var(--surface)] w-32 rounded mb-4"></div>
-                  <div className="w-full h-2 bg-[var(--surface)] rounded-full mb-2"></div>
-                  <div className="h-3 bg-[var(--surface)] w-20 rounded"></div>
+                <div key={i} className="animate-pulse className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24"">
+                  <div className="className="h-4 bg-[var(--surface)] w-32 rounded mb-4""></div>
+                  <div className="className="w-full h-2 bg-[var(--surface)] rounded-full mb-2""></div>
+                  <div className="className="h-3 bg-[var(--surface)] w-20 rounded""></div>
                 </div>
               ))}
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {tracks.map((track) => {
-                const completed = trackProgressMap[track._id] || 0;
+              {tracks.map((track: any) => {
+                const completed = trackProgressMap[track._id as string] || 0;
                 const total = track.totalLessons || 1;
                 const pct = Math.round((completed / total) * 100);
                 return (

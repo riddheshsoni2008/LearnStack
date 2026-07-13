@@ -1,7 +1,26 @@
 "use client";
 import { motion } from "framer-motion";
 
-export default function ProgressTracker({ rounds, currentRound, submissions }) {
+interface RoundType {
+  roundNumber: number;
+  title?: string;
+  description?: string;
+  difficulty: "easy" | "intermediate" | "advanced";
+  duration: number;
+  qualifyingScore: number;
+}
+interface SubmissionType {
+  roundNumber: number;
+  status: string;
+  percentage?: number;
+}
+interface ProgressTrackerProps {
+  rounds: RoundType[];
+  currentRound: number;
+  submissions?: SubmissionType[];
+}
+
+export default function ProgressTracker({ rounds, currentRound, submissions }: ProgressTrackerProps) {
   return (
     <div className="glass rounded-2xl p-6">
       <h3 className="text-sm font-bold text-[var(--foreground)] mb-6 flex items-center gap-2">
@@ -13,8 +32,8 @@ export default function ProgressTracker({ rounds, currentRound, submissions }) {
         <div className="absolute left-5 top-0 bottom-0 w-0.5 bg-[var(--border)]" />
 
         <div className="space-y-6">
-          {rounds.map((round, idx) => {
-            const submission = submissions?.find(s => s.roundNumber === round.roundNumber);
+          {rounds.map((round: any, idx: number) => {
+            const submission = submissions?.find((s: any) => s.roundNumber === round.roundNumber);
             const isCompleted = submission && ['submitted', 'evaluated', 'qualified', 'disqualified'].includes(submission.status);
             const isActive = round.roundNumber === currentRound;
             const isLocked = round.roundNumber > currentRound;

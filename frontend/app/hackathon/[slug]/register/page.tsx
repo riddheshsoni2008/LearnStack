@@ -10,7 +10,7 @@ export default function HackathonRegistrationPage() {
   const router = useRouter();
   const { user, loading: authLoading } = useAuth();
 
-  const [hackathon, setHackathon] = useState(null);
+  const [hackathon, setHackathon] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [registering, setRegistering] = useState(false);
   const [error, setError] = useState("");
@@ -61,7 +61,7 @@ export default function HackathonRegistrationPage() {
     }
   }, [params.slug, user, authLoading, router]);
 
-  const handleChange = (e) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
@@ -84,7 +84,7 @@ export default function HackathonRegistrationPage() {
   const errors = validate();
   const isValid = Object.keys(errors).length === 0;
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setTouched({
       collegeName: true, studentId: true, state: true, githubUrl: true, linkedinUrl: true

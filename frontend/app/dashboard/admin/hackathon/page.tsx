@@ -73,11 +73,12 @@ export default function HackathonAdminPage() {
 // Hackathons Tab
 // ═══════════════════════════════════════════════════════════════
 function HackathonsTab() {
-  const [hackathons, setHackathons] = useState([]);
+  const [hackathons, setHackathons] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [form, setForm] = useState(getDefaultHackathonForm());
+  const [editing, setEditing] = useState<any>(null);
+  const [form, setForm] = useState<any>(getDefaultHackathonForm());
+  
 
   const fetchHackathons = useCallback(async () => {
     try {
@@ -93,7 +94,7 @@ function HackathonsTab() {
 
   useEffect(() => { fetchHackathons(); }, [fetchHackathons]);
 
-  const handleSave = async (e) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const url = editing ? `/api/hackathons/${editing}` : "/api/hackathons";
@@ -126,7 +127,7 @@ function HackathonsTab() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: any) => {
     if (!confirm("Are you sure you want to delete this hackathon?")) return;
     try {
       await fetch(`/api/hackathons/${id}`, { method: "DELETE", credentials: "include" });
@@ -136,7 +137,7 @@ function HackathonsTab() {
     }
   };
 
-  const handleEdit = (h) => {
+  const handleEdit = (h: any) => {
     setEditing(h._id);
     setForm({
       title: h.title || "",
@@ -178,7 +179,7 @@ function HackathonsTab() {
 
       {/* Hackathon List */}
       <div className="space-y-3">
-        {hackathons.map((h) => (
+        {hackathons.map((h: any) => (
           <div key={h._id} className="glass rounded-xl p-4">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
               <div>
@@ -206,7 +207,7 @@ function HackathonsTab() {
             {/* Round Question Summary */}
             {h.rounds?.length > 0 && (
               <div className="mt-3 pt-3 border-t border-[var(--border)] flex flex-wrap items-center gap-2">
-                {h.rounds.map(r => (
+                {h.rounds.map((r: any) => (
                   <span key={r.roundNumber} className={`text-[10px] font-bold px-2.5 py-1 rounded-full ${
                     (r.questionIds?.length || 0) > 0
                       ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
@@ -299,12 +300,13 @@ function HackathonsTab() {
 // Questions Tab
 // ═══════════════════════════════════════════════════════════════
 function QuestionsTab() {
-  const [questions, setQuestions] = useState([]);
+  const [questions, setQuestions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editing, setEditing] = useState(null);
-  const [filters, setFilters] = useState({ category: "", difficulty: "", questionType: "", scope: "" });
-  const [form, setForm] = useState(getDefaultQuestionForm());
+  const [editing, setEditing] = useState<any>(null);
+  const [filters, setFilters] = useState({ category: '', difficulty: '', questionType: '', scope: '' });
+  const [form, setForm] = useState<any>(getDefaultQuestionForm());
+  
 
   const fetchQuestions = useCallback(async () => {
     try {
@@ -322,7 +324,7 @@ function QuestionsTab() {
 
   useEffect(() => { fetchQuestions(); }, [fetchQuestions]);
 
-  const handleSave = async (e) => {
+  const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       const url = editing ? `/api/hackathon-questions/${editing}` : "/api/hackathon-questions";
@@ -353,13 +355,13 @@ function QuestionsTab() {
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: any) => {
     if (!confirm("Delete this question?")) return;
     await fetch(`/api/hackathon-questions/${id}`, { method: "DELETE", credentials: "include" });
     fetchQuestions();
   };
 
-  const handleEdit = (q) => {
+  const handleEdit = (q: any) => {
     setEditing(q._id);
     setForm({
       questionText: q.questionText || "",
@@ -384,7 +386,7 @@ function QuestionsTab() {
       <div className="flex flex-wrap items-center gap-3 mb-6">
         <select className="input-field !w-auto !py-2 !text-xs" value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })}>
           <option value="">All Categories</option>
-          {CATEGORIES.map(c => <option key={c} value={c}>{c.replace("_", " ")}</option>)}
+          {CATEGORIES.map((c: string) => <option key={c} value={c}>{c.replace("_", " ")}</option>)}
         </select>
         <select className="input-field !w-auto !py-2 !text-xs" value={filters.difficulty} onChange={(e) => setFilters({ ...filters, difficulty: e.target.value })}>
           <option value="">All Difficulties</option>
@@ -394,7 +396,7 @@ function QuestionsTab() {
         </select>
         <select className="input-field !w-auto !py-2 !text-xs" value={filters.questionType} onChange={(e) => setFilters({ ...filters, questionType: e.target.value })}>
           <option value="">All Types</option>
-          {TYPES.map(t => <option key={t} value={t}>{t.replace("_", " ")}</option>)}
+          {TYPES.map((t: string) => <option key={t} value={t}>{t.replace("_", " ")}</option>)}
         </select>
         <select className="input-field !w-auto !py-2 !text-xs" value={filters.scope} onChange={(e) => setFilters({ ...filters, scope: e.target.value })}>
           <option value="">All Scopes</option>
@@ -414,7 +416,7 @@ function QuestionsTab() {
         <div className="text-center text-[var(--text-muted)] animate-pulse py-10">Loading...</div>
       ) : (
         <div className="space-y-2">
-          {questions.map((q) => (
+          {questions.map((q: any) => (
             <div key={q._id} className="glass rounded-xl p-4 flex items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="text-sm font-medium text-[var(--foreground)] mb-1 line-clamp-2">{q.questionText}</div>
@@ -468,7 +470,7 @@ function QuestionsTab() {
               {form.questionType === "mcq" && (
                 <div>
                   <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-2 block">MCQ Options</label>
-                  {form.options.map((opt, idx) => (
+                  {form.options.map((opt: any, idx: number) => (
                     <div key={idx} className="flex items-center gap-2 mb-2">
                       <input
                         type="text"
@@ -487,7 +489,7 @@ function QuestionsTab() {
                           name="correctOption"
                           checked={opt.isCorrect}
                           onChange={() => {
-                            const newOpts = form.options.map((o, i) => ({ ...o, isCorrect: i === idx }));
+                            const newOpts = form.options.map((o: any, i: number) => ({ ...o, isCorrect: i === idx }));
                             setForm({ ...form, options: newOpts });
                           }}
                         />
@@ -520,11 +522,12 @@ function QuestionsTab() {
 // Participants Tab
 // ═══════════════════════════════════════════════════════════════
 function ParticipantsTab() {
-  const [hackathons, setHackathons] = useState([]);
-  const [selected, setSelected] = useState("");
-  const [participants, setParticipants] = useState([]);
+  const [hackathons, setHackathons] = useState<any[]>([]);
+  const [selected, setSelected] = useState('');
+  const [participants, setParticipants] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
-  const [subTab, setSubTab] = useState("list"); // "list" or "review"
+  const [subTab, setSubTab] = useState('list');
+   // "list" or "review"
 
   useEffect(() => {
     const fetch_ = async () => {
@@ -547,7 +550,7 @@ function ParticipantsTab() {
     fetch_();
   }, [selected]);
 
-  const handleExport = async (format) => {
+  const handleExport = async (format: string) => {
     if (!selected) return;
     try {
       const res = await fetch(`/api/hackathons/${selected}/export`, { credentials: "include" });
@@ -578,7 +581,7 @@ function ParticipantsTab() {
           onChange={(e) => setSelected(e.target.value)}
         >
           <option value="">Select Hackathon</option>
-          {hackathons.map(h => <option key={h._id} value={h._id}>{h.title}</option>)}
+          {hackathons.map((h: any) => <option key={h._id} value={h._id}>{h.title}</option>)}
         </select>
 
         {selected && (
@@ -627,7 +630,7 @@ function ParticipantsTab() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
-                {participants.map((p, idx) => (
+                {participants.map((p: any, idx: number) => (
                   <tr key={p._id} className="hover:bg-[var(--surface-light)] transition-colors">
                     <td className="px-4 py-3 text-[var(--text-muted)]">{idx + 1}</td>
                     <td className="px-4 py-3 font-medium">{p.name}</td>
@@ -669,15 +672,20 @@ function ParticipantsTab() {
   );
 }
 
-function CodeSubmissionsReview({ hackathonId }) {
-  const [submissions, setSubmissions] = useState([]);
+interface CodeSubmissionsReviewProps {
+  hackathonId: string;
+}
+
+function CodeSubmissionsReview({ hackathonId }: CodeSubmissionsReviewProps) {
+  const [submissions, setSubmissions] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [selectedRound, setSelectedRound] = useState(2);
-  const [selectedSub, setSelectedSub] = useState(null);
-  const [comparedSubs, setComparedSubs] = useState([]);
-  const [checkedIds, setCheckedIds] = useState([]);
+  const [selectedSub, setSelectedSub] = useState<any>(null);
+  const [comparedSubs, setComparedSubs] = useState<any[]>([]);
+  const [checkedIds, setCheckedIds] = useState<any[]>([]);
   const [evaluating, setEvaluating] = useState(false);
   const [finalizing, setFinalizing] = useState(false);
+  
 
   const fetchSubmissions = useCallback(async () => {
     if (!hackathonId) return;
@@ -701,10 +709,10 @@ function CodeSubmissionsReview({ hackathonId }) {
     setCheckedIds([]);
   }, [fetchSubmissions]);
 
-  const handleToggleCheck = (subId) => {
+  const handleToggleCheck = (subId: any) => {
     setCheckedIds(prev => {
       if (prev.includes(subId)) {
-        return prev.filter(id => id !== subId);
+        return prev.filter((id: any) => id !== subId);
       } else {
         if (prev.length >= 2) {
           alert("You can select at most 2 submissions for comparison.");
@@ -717,7 +725,7 @@ function CodeSubmissionsReview({ hackathonId }) {
 
   const handleCompare = () => {
     if (checkedIds.length !== 2) return;
-    const subsToCompare = submissions.filter(s => checkedIds.includes(s._id));
+    const subsToCompare = submissions.filter((s: any) => checkedIds.includes(s._id));
     if (subsToCompare.length === 2) {
       setComparedSubs(subsToCompare);
     }
@@ -835,7 +843,7 @@ function CodeSubmissionsReview({ hackathonId }) {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border)]">
-                {submissions.map((sub, idx) => {
+                {submissions.map((sub: any, idx: number) => {
                   const isChecked = checkedIds.includes(sub._id);
                   return (
                     <tr key={sub._id} className="hover:bg-[var(--surface-light)] transition-colors">
@@ -954,7 +962,7 @@ function CodeSubmissionsReview({ hackathonId }) {
             </div>
 
             <div className="flex-1 grid grid-cols-2 gap-6 min-h-0">
-              {comparedSubs.map((sub, idx) => (
+              {comparedSubs.map((sub: any, idx: number) => (
                 <div key={sub._id} className="flex flex-col h-full border border-gray-800 rounded-2xl overflow-hidden bg-[#0c0d12]">
                   <div className="h-10 bg-[#12131a] border-b border-gray-800 flex items-center justify-between px-4">
                     <span className="text-xs font-black text-gray-300">
@@ -993,7 +1001,16 @@ function CodeSubmissionsReview({ hackathonId }) {
 // Helper Components & Functions
 // ═══════════════════════════════════════════════════════════════
 
-function Field({ label, value, onChange, type = "text", textarea = false, required = false }) {
+interface FieldProps {
+  label: string;
+  value: any;
+  onChange: (value: any) => void;
+  type?: string;
+  textarea?: boolean;
+  required?: boolean;
+}
+
+function Field({ label, value, onChange, type = "text", textarea = false, required = false }: FieldProps) {
   const Tag = textarea ? "textarea" : "input";
   return (
     <div>
@@ -1009,7 +1026,14 @@ function Field({ label, value, onChange, type = "text", textarea = false, requir
   );
 }
 
-function SelectField({ label, value, onChange, options }) {
+interface SelectFieldProps {
+  label: string;
+  value: any;
+  onChange: (value: any) => void;
+  options: string[];
+}
+
+function SelectField({ label, value, onChange, options }: SelectFieldProps) {
   return (
     <div>
       <label className="text-xs font-bold text-[var(--text-muted)] uppercase tracking-wider mb-1 block">{label}</label>
@@ -1040,7 +1064,7 @@ function getDefaultQuestionForm() {
   };
 }
 
-function downloadBlob(blob, filename) {
+function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
@@ -1049,7 +1073,7 @@ function downloadBlob(blob, filename) {
   URL.revokeObjectURL(url);
 }
 
-function convertToCSV(data) {
+function convertToCSV(data: any[]) {
   if (!data || data.length === 0) return "";
   const headers = ["rank", "name", "email", "college", "studentId", "state", "githubUrl", "linkedinUrl", "status", "totalScore", "totalTimeTaken", "currentRound"];
   const rows = data.map(d => headers.map(h => `"${(d[h] || "").toString().replace(/"/g, '""')}"`).join(","));
@@ -1059,17 +1083,24 @@ function convertToCSV(data) {
 // ═══════════════════════════════════════════════════════════════
 // Round Question Manager (Assign/Remove questions to rounds)
 // ═══════════════════════════════════════════════════════════════
-function RoundQuestionManager({ hackathonId, rounds, onUpdated }) {
+interface RoundQuestionManagerProps {
+  hackathonId: string;
+  rounds: any[];
+  onUpdated?: () => void;
+}
+
+function RoundQuestionManager({ hackathonId, rounds, onUpdated }: RoundQuestionManagerProps) {
   const [open, setOpen] = useState(false);
-  const [selectedRound, setSelectedRound] = useState(null);
-  const [allQuestions, setAllQuestions] = useState([]);
-  const [selectedIds, setSelectedIds] = useState([]);
+  const [selectedRound, setSelectedRound] = useState<any>(null);
+  const [allQuestions, setAllQuestions] = useState<any[]>([]);
+  const [selectedIds, setSelectedIds] = useState<any[]>([]);
   const [saving, setSaving] = useState(false);
   const [loadingQs, setLoadingQs] = useState(false);
+  
 
-  const openForRound = async (round) => {
+  const openForRound = async (round: any) => {
     setSelectedRound(round);
-    setSelectedIds(round.questionIds?.map(id => typeof id === 'object' ? id._id || id : id.toString()) || []);
+    setSelectedIds(round.questionIds?.map((id: any) => typeof id === 'object' ? (id._id || id) : id.toString()) || []);
     setOpen(true);
     setLoadingQs(true);
 
@@ -1084,9 +1115,9 @@ function RoundQuestionManager({ hackathonId, rounds, onUpdated }) {
     }
   };
 
-  const toggleQuestion = (qId) => {
+  const toggleQuestion = (qId: any) => {
     setSelectedIds(prev =>
-      prev.includes(qId) ? prev.filter(id => id !== qId) : [...prev, qId]
+      prev.includes(qId) ? prev.filter((id: any) => id !== qId) : [...prev, qId]
     );
   };
 
@@ -1146,7 +1177,7 @@ function RoundQuestionManager({ hackathonId, rounds, onUpdated }) {
 
             {/* Round Tabs */}
             <div className="flex items-center gap-2 mb-6">
-              {rounds.map(r => (
+              {rounds.map((r: any) => (
                 <button
                   key={r.roundNumber}
                   onClick={() => openForRound(r)}
@@ -1170,7 +1201,7 @@ function RoundQuestionManager({ hackathonId, rounds, onUpdated }) {
                 </div>
 
                 <div className="space-y-2 max-h-[400px] overflow-y-auto pr-2">
-                  {allQuestions.map(q => {
+                  {allQuestions.map((q: any) => {
                     const isSelected = selectedIds.includes(q._id);
                     return (
                       <button
@@ -1192,7 +1223,7 @@ function RoundQuestionManager({ hackathonId, rounds, onUpdated }) {
                             <div className="line-clamp-2 text-[var(--foreground)] font-medium mb-1">{q.questionText}</div>
                             <div className="flex flex-wrap gap-1">
                               <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-blue-500/20 text-blue-400">{q.questionType?.replace("_"," ")}</span>
-                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${DIFF_COLORS[q.difficulty] || DIFF_COLORS.easy}`}>{q.difficulty}</span>
+                              <span className={`px-1.5 py-0.5 rounded text-[9px] font-bold uppercase ${DIFF_COLORS[q.difficulty as keyof typeof DIFF_COLORS] || DIFF_COLORS.easy}`}>{q.difficulty}</span>
                               <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase bg-purple-500/20 text-purple-400">{q.category?.replace("_"," ")}</span>
                               <span className="text-[9px] font-bold text-yellow-400">+{q.points}pts</span>
                             </div>
@@ -1224,11 +1255,17 @@ function RoundQuestionManager({ hackathonId, rounds, onUpdated }) {
 // ═══════════════════════════════════════════════════════════════
 // AI Generate Button (Generate / Regenerate Questions)
 // ═══════════════════════════════════════════════════════════════
-function AIGenerateButton({ hackathonId, onDone }) {
-  const [generating, setGenerating] = useState(false);
-  const [result, setResult] = useState(null);
+interface AIGenerateButtonProps {
+  hackathonId: string;
+  onDone?: () => void;
+}
 
-  const handleGenerate = async (forceRegenerate = false) => {
+function AIGenerateButton({ hackathonId, onDone }: AIGenerateButtonProps) {
+  const [generating, setGenerating] = useState(false);
+  const [result, setResult] = useState<any>(null);
+  
+
+  const handleGenerate = async (forceRegenerate: boolean = false) => {
     if (generating) return;
     setGenerating(true);
     setResult(null);

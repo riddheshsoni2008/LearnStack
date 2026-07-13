@@ -1,7 +1,14 @@
 "use client";
 import { useState, useEffect, useCallback } from "react";
 
-export default function RoundTimer({ endTime, duration, onTimeUp, compact = false }) {
+interface RoundTimerProps {
+  endTime: string | Date;
+  duration?: number;
+  onTimeUp?: () => void;
+  compact?: boolean;
+}
+
+export default function RoundTimer({ endTime, duration, onTimeUp, compact = false }: RoundTimerProps) {
   const [timeLeft, setTimeLeft] = useState(0);
   const [mounted, setMounted] = useState(false);
 
@@ -70,7 +77,15 @@ export default function RoundTimer({ endTime, duration, onTimeUp, compact = fals
   );
 }
 
-function TimerBlock({ value, label, urgent, critical, animate }) {
+interface TimerBlockProps {
+  value: number;
+  label: string;
+  urgent: boolean;
+  critical: boolean;
+  animate?: boolean;
+}
+
+function TimerBlock({ value, label, urgent, critical, animate = false }: TimerBlockProps) {
   return (
     <div className="flex flex-col items-center">
       <div

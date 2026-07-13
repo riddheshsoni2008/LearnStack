@@ -76,7 +76,14 @@ const iconMap = {
   streak: <StreakIcon />
 };
 
-export default function StatCard({ value, label, type, glow = false }) {
+interface StatCardProps {
+  value: string | number;
+  label: string;
+  type: "tracks" | "lessons" | "questions" | "learners" | "certificates" | "streak";
+  glow?: boolean;
+}
+
+export default function StatCard({ value, label, type, glow = false }: StatCardProps) {
   const cardRef = useRef(null);
 
   // Motion values for spring 3D tilt
@@ -86,7 +93,7 @@ export default function StatCard({ value, label, type, glow = false }) {
   const rotateX = useSpring(useTransform(y, [-0.5, 0.5], [12, -12]), { stiffness: 200, damping: 20 });
   const rotateY = useSpring(useTransform(x, [-0.5, 0.5], [-12, 12]), { stiffness: 200, damping: 20 });
 
-  const handleMouseMove = (e) => {
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     const card = cardRef.current;
     if (!card) return;
 
@@ -138,7 +145,7 @@ export default function StatCard({ value, label, type, glow = false }) {
         <div style={{ transform: "translateZ(50px)" }} className="relative z-10 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-3">
           {/* Animated Icon */}
           <div className="w-10 h-10 sm:w-12 sm:h-12 shrink-0 rounded-xl bg-[var(--surface)] border border-white/5 flex items-center justify-center shadow-inner group">
-            {iconMap[type]}
+            {(iconMap as any)[type]}
           </div>
 
           {/* Metric Details */}

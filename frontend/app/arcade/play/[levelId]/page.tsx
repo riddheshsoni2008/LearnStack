@@ -15,7 +15,7 @@ export default function ArcadeGame() {
   const { addToast } = useCelebration();
   const [level, setLevel] = useState(null);
   const [code, setCode] = useState("");
-  const [output, setOutput] = useState([]);
+  const [output, setOutput] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [cleared, setCleared] = useState(false);
@@ -70,7 +70,7 @@ export default function ArcadeGame() {
 
       const newOutput = [];
       if (data.logs && data.logs.length > 0) {
-        data.logs.slice(0, -1).forEach(l => newOutput.push({ type: "log", text: l }));
+        data.logs.slice(0, -1).forEach((l: any) => newOutput.push({ type: "log", text: l }));
       }
 
       if (data.passed) {

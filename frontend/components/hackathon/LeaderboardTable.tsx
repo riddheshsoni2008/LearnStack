@@ -1,6 +1,11 @@
 "use client";
 
-export default function LeaderboardTable({ leaderboard, currentUserId }) {
+interface LeaderboardTableProps {
+  leaderboard: any[];
+  currentUserId?: string;
+}
+
+export default function LeaderboardTable({ leaderboard, currentUserId }: LeaderboardTableProps) {
   if (!leaderboard || leaderboard.length === 0) {
     return (
       <div className="glass rounded-2xl p-8 text-center">
@@ -47,8 +52,8 @@ export default function LeaderboardTable({ leaderboard, currentUserId }) {
 
       {/* Table Body */}
       <div className="divide-y divide-[var(--border)]">
-        {leaderboard.map((entry) => {
-          const rankStyle = RANK_STYLES[entry.rank];
+        {leaderboard.map((entry: any) => {
+          const rankStyle = RANK_STYLES[entry.rank as keyof typeof RANK_STYLES];
           const isCurrentUser = currentUserId && entry.userId === currentUserId;
 
           return (
@@ -101,7 +106,7 @@ export default function LeaderboardTable({ leaderboard, currentUserId }) {
 
               {/* Status */}
               <div className="col-span-2 text-right">
-                <span className={`text-[10px] font-bold uppercase ${STATUS_COLORS[entry.status?.toLowerCase()] || "text-[var(--text-muted)]"}`}>
+                <span className={`text-[10px] font-bold uppercase ${STATUS_COLORS[entry.status?.toLowerCase() as keyof typeof STATUS_COLORS] || "text-[var(--text-muted)]"}`}>
                   {entry.status?.replace(/_/g, " ")}
                 </span>
               </div>

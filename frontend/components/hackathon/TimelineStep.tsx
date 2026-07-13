@@ -1,8 +1,19 @@
 "use client";
 import { motion } from "framer-motion";
 
-export default function TimelineStep({ step, index, isLast }) {
-  const formatDate = (dateStr) => {
+interface TimelineStepProps {
+  step: {
+    status: "completed" | "active" | "upcoming";
+    title: string;
+    date: string;
+    description?: string;
+  };
+  index: number;
+  isLast: boolean;
+}
+
+export default function TimelineStep({ step, index, isLast }: TimelineStepProps) {
+  const formatDate = (dateStr: string) => {
     if (!dateStr) return "TBD";
     return new Date(dateStr).toLocaleDateString("en-IN", {
       day: "numeric",
@@ -35,7 +46,7 @@ export default function TimelineStep({ step, index, isLast }) {
             : "bg-[var(--surface-light)] border-[var(--border)] text-[var(--text-muted)]"
           }`}>
           <span className="text-sm">
-            {STATUS_ICONS[step.status] || STATUS_ICONS.upcoming}
+            {(STATUS_ICONS as any)[step.status] || STATUS_ICONS.upcoming}
           </span>
         </div>
         {!isLast && (

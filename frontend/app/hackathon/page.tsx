@@ -10,7 +10,7 @@ import TransitionLink from "@/components/loaders/TransitionLink";
 import { HackathonBannerSkeleton } from "@/components/loaders/Skeletons";
 
 export default function HackathonLandingPage() {
-  const [hackathons, setHackathons] = useState([]);
+  const [hackathons, setHackathons] = useState<any[]>([]);
   const [featured, setFeatured] = useState(null);
   const [loading, setLoading] = useState(true);
 
