@@ -136,7 +136,6 @@ function BadgeCard({ badge, earned = false }: BadgeCardProps) {
   );
 }
 
-
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
