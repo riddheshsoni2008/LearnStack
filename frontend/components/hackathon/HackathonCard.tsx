@@ -28,7 +28,7 @@ interface HackathonCardProps {
     };
     tags?: string[];
   };
-  index?: index;
+  index?: number;
 }
 
 export default function HackathonCard({ hackathon, index = 0 }: any) {

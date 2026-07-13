@@ -6,7 +6,7 @@ import { LoadingProvider } from "@/context/LoadingContext";
 import CelebrationToast from "@/components/CelebrationToast";
 import LevelUpModal from "@/components/LevelUpModal";
 
-export function Providers({ children }) {
+export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <LoadingProvider>
       <AuthProvider>

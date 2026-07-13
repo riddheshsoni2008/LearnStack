@@ -200,7 +200,7 @@ export default function RoundPage() {
   const [activeFilePath, setActiveFilePath] = useState("");
   const [openTabs, setOpenTabs] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [collapsedFolders, setCollapsedFolders] = useState({});
+  const [collapsedFolders, setCollapsedFolders] = useState<any>({});
   const [newItemType, setNewItemType] = useState(null); // 'file' | 'folder' | null
   const [newItemName, setNewItemName] = useState("");
   const [saveStatus, setSaveStatus] = useState("Saved"); // "Saved", "Saving...", "Error"
@@ -692,16 +692,16 @@ Welcome to the LearnStack Full-Stack Workspace!
     }
   };
 
-  const buildFileTree = (file, searchQuery = "") => {
-    const root = { name: "root", type: "folder", children: {}, path: "" };
+  const buildFileTree = (file: any, searchQuery = "") => {
+    const root: any = { name: "root", type: "folder", children: {}, path: "" };
 
-    files.forEach((file) => {
+    files.forEach((file: any) => {
       if (file.path.endsWith("/.gitkeep")) {
         // Just extract folder name
         const folderPath = file.path.substring(0, file.path.lastIndexOf("/"));
         const parts = folderPath.split("/");
-        let current = root;
-        parts.forEach((part, index) => {
+        let current: any = root;
+        parts.forEach((part: any, index: number) => {
           const partPath = parts.slice(0, index + 1).join("/");
           if (!current.children[part]) {
             current.children[part] = {
@@ -721,9 +721,9 @@ Welcome to the LearnStack Full-Stack Workspace!
       }
 
       const parts = file.path.split("/");
-      let current = root;
+      let current: any = root;
 
-      parts.forEach((part, index) => {
+      parts.forEach((part: any, index: number) => {
         const isLast = index === parts.length - 1;
         const partPath = parts.slice(0, index + 1).join("/");
 
@@ -866,8 +866,8 @@ Welcome to the LearnStack Full-Stack Workspace!
   if (isProjectRound) {
     const rootTree = buildFileTree(files, searchQuery);
 
-    const toggleFolder = (folderPath) => {
-      setCollapsedFolders(prev => ({
+    const toggleFolder = (folderPath: any) => {
+      setCollapsedFolders((prev: any) => ({
         ...prev,
         [folderPath]: !prev[folderPath]
       }));
@@ -961,18 +961,18 @@ Welcome to the LearnStack Full-Stack Workspace!
 
               {/* File Tree List */}
               <div className="flex-1 overflow-y-auto p-2 space-y-0.5 scrollbar-thin">
-                {Object.values(rootTree.children).length === 0 ? (
+                {(Object.values(rootTree.children) as any[]).length === 0 ? (
                   <div className="text-center text-xs text-gray-500 mt-4">Empty Workspace</div>
                 ) : (
-                  Object.values(rootTree.children).sort((a, b) => {
+                  (Object.values(rootTree.children) as any[]).sort((a: any, b: any) => {
                     if (a.type !== b.type) return a.type === "folder" ? -1 : 1;
                     return a.name.localeCompare(b.name);
-                  }).map((node) => (
+                  }).map((node: any) => (
                     <FolderNode
                       key={node.path}
                       node={node}
                       level={0}
-                      onSelectFile={(path) => {
+                      onSelectFile={(path: any) => {
                         setActiveFilePath(path);
                         if (!openTabs.includes(path)) {
                           setOpenTabs([...openTabs, path]);
@@ -1154,7 +1154,7 @@ Welcome to the LearnStack Full-Stack Workspace!
                   <div className="space-y-2">
                     <h3 className="text-xs font-bold text-gray-300 border-b border-gray-800 pb-1.5">Requirements</h3>
                     <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-gray-400">
-                      {(challenge.requirements || []).map((req, idx) => (
+                      {(challenge.requirements || []).map((req: any, idx: number) => (
                         <li key={idx}>{req}</li>
                       ))}
                     </ul>
@@ -1164,7 +1164,7 @@ Welcome to the LearnStack Full-Stack Workspace!
                     <div className="space-y-2">
                       <h3 className="text-xs font-bold text-yellow-400/90 border-b border-gray-800 pb-1.5">Bonus Features</h3>
                       <ul className="list-disc pl-4 space-y-1.5 text-[11px] text-gray-400">
-                        {challenge.bonusFeatures.map((bonus, idx) => (
+                        {challenge.bonusFeatures.map((bonus: any, idx: number) => (
                           <li key={idx} className="border-l-2 border-yellow-500/20 pl-2 ml-[-12px] list-none">
                             ✨ {bonus}
                           </li>
@@ -1176,7 +1176,7 @@ Welcome to the LearnStack Full-Stack Workspace!
                   <div className="space-y-2">
                     <h3 className="text-xs font-bold text-gray-300 border-b border-gray-800 pb-1.5">Evaluation Criteria</h3>
                     <div className="grid grid-cols-2 gap-2 text-[10px]">
-                      {(challenge.evaluationCriteria || []).map((crit, idx) => (
+                      {(challenge.evaluationCriteria || []).map((crit: any, idx: number) => (
                         <div key={idx} className="bg-gray-800/30 border border-gray-800 rounded-lg p-2 text-gray-300">
                           {crit}
                         </div>

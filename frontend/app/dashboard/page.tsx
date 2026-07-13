@@ -113,7 +113,7 @@ interface BadgeCardProps {
   earned?: boolean;
 }
 function BadgeCard({ badge, earned = false }: BadgeCardProps) {
-  const style = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
+  const style = RARITY_STYLES[badge.rarity as keyof typeof RARITY_STYLES] || RARITY_STYLES.common;
   return (
     <div
       className={`relative rounded-xl p-3 border transition-all ${earned
@@ -136,9 +136,7 @@ function BadgeCard({ badge, earned = false }: BadgeCardProps) {
   );
 }
 
-// ═══════════════════════════════════════════════════════════════
-// Dashboard Page
-// ═══════════════════════════════════════════════════════════════
+
 export default function DashboardPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
@@ -222,10 +220,10 @@ export default function DashboardPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24"">
-                  <div className="className="h-4 bg-[var(--surface)] w-32 rounded mb-4""></div>
-                  <div className="className="w-full h-2 bg-[var(--surface)] rounded-full mb-2""></div>
-                  <div className="h-3 bg-[var (--surface)] w-20 rounded"></div>
+                <div key={i} className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24">
+                  <div className="h-4 bg-[var(--surface)] w-32 rounded mb-4"></div>
+                  <div className="w-full h-2 bg-[var(--surface)] rounded-full mb-2"></div>
+                  <div className="h-3 bg-[var(--surface)] w-20 rounded"></div>
                 </div>
               ))}
             </div>
@@ -345,10 +343,10 @@ export default function DashboardPage() {
           {dataLoading ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse className="bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24"">
-                  <div className="className="h-4 bg-[var(--surface)] w-32 rounded mb-4""></div>
-                  <div className="className="w-full h-2 bg-[var(--surface)] rounded-full mb-2""></div>
-                  <div className="className="h-3 bg-[var(--surface)] w-20 rounded""></div>
+                <div key={i} className="animate-pulse bg-[var(--surface-light)] border border-[var(--border)] rounded-xl p-4 h-24">
+                  <div className="h-4 bg-[var(--surface)] w-32 rounded mb-4"></div>
+                  <div className="w-full h-2 bg-[var(--surface)] rounded-full mb-2"></div>
+                  <div className="h-3 bg-[var(--surface)] w-20 rounded"></div>
                 </div>
               ))}
             </div>

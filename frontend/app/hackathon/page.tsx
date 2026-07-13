@@ -11,7 +11,7 @@ import { HackathonBannerSkeleton } from "@/components/loaders/Skeletons";
 
 export default function HackathonLandingPage() {
   const [hackathons, setHackathons] = useState<any[]>([]);
-  const [featured, setFeatured] = useState(null);
+  const [featured, setFeatured] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export default function HackathonLandingPage() {
         if (data.success) {
           setHackathons(data.data);
           // Feature the first active or registration_open hackathon
-          const feat = data.data.find(h => h.status === "active" || h.status === "registration_open");
+          const feat = data.data.find((h: any) => h.status === "active" || h.status === "registration_open");
           setFeatured(feat || data.data[0] || null);
         }
       } catch (err) {
@@ -194,7 +194,7 @@ export default function HackathonLandingPage() {
                 isLast={false}
               />
               {/* Round steps */}
-              {featured.rounds.map((round, idx) => (
+              {featured.rounds.map((round: any, idx: number) => (
                 <TimelineStep
                   key={round.roundNumber}
                   step={{
@@ -227,7 +227,7 @@ export default function HackathonLandingPage() {
             </motion.div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {featured.rules.map((rule, idx) => (
+              {featured.rules.map((rule: any, idx: number) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
@@ -262,7 +262,7 @@ export default function HackathonLandingPage() {
             </motion.div>
 
             <div className="space-y-4">
-              {featured.faqs.map((faq, idx) => (
+              {featured.faqs.map((faq: any, idx: number) => (
                 <FAQItem key={idx} question={faq.question} answer={faq.answer} index={idx} />
               ))}
             </div>
@@ -286,7 +286,7 @@ export default function HackathonLandingPage() {
             </motion.div>
 
             <div className="flex flex-wrap items-center justify-center gap-8">
-              {featured.sponsors.map((sponsor, idx) => (
+              {featured.sponsors.map((sponsor: any, idx: number) => (
                 <motion.a
                   key={idx}
                   href={sponsor.url || "#"}
@@ -325,7 +325,7 @@ export default function HackathonLandingPage() {
             </motion.div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {featured.previousWinners.map((winner, idx) => (
+              {featured.previousWinners.map((winner: any, idx: number) => (
                 <motion.div
                   key={idx}
                   initial={{ opacity: 0, y: 20 }}
@@ -426,7 +426,7 @@ export default function HackathonLandingPage() {
 }
 
 // ═══ FAQ Accordion Item ═══
-function FAQItem({ question, answer, index }) {
+function FAQItem({ question, answer, index }: { question: string; answer: string; index: number }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (

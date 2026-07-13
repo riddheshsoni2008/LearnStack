@@ -66,9 +66,9 @@ export default function HackathonRegistrationPage() {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleBlur = (e) => {
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name } = e.target;
-    setTouched(prev => ({ ...prev, [name]: true }));
+    setTouched((prev: any) => ({ ...prev, [name]: true }));
   };
 
   const validate = () => {

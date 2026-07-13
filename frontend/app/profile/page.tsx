@@ -329,7 +329,7 @@ export default function ProfilePage() {
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
             {achievementBadges.map((badge) => {
               const earned = earnedBadgeIds.includes(badge._id);
-              const style = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
+              const style = RARITY_STYLES[badge.rarity as keyof typeof RARITY_STYLES] || RARITY_STYLES.common;
               return (
                 <div
                   key={badge._id}
@@ -370,7 +370,7 @@ export default function ProfilePage() {
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
               {exclusiveBadges.map((badge) => {
                 const earned = earnedBadgeIds.includes(badge._id);
-                const style = RARITY_STYLES[badge.rarity] || RARITY_STYLES.common;
+                const style = RARITY_STYLES[badge.rarity as keyof typeof RARITY_STYLES] || RARITY_STYLES.common;
                 return (
                   <div
                     key={badge._id}

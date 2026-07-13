@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 interface LessonListProps {
-  lessonsByWeek: { [key: number]: any[] };
+  lessonsByWeek: { [key: string | number]: any[] };
   completedLessonIds: Set<string>;
 }
 

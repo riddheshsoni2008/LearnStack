@@ -7,19 +7,19 @@ import { useCelebration } from "@/context/CelebrationContext";
 import AuthNavbar from "@/components/AuthNavbar";
 import CodeEditor from "@/components/CodeEditor";
 
-export default function LessonPage({ params }) {
+export default function LessonPage({ params }: { params: any }) {
   const router = useRouter();
-  const { id: lessonId } = use(params);
+  const { id: lessonId } = use(params) as any;
 
   const { user, setUser, loading: authLoading, fetchUser } = useAuth();
   const { processGamification } = useCelebration();
   const [lesson, setLesson] = useState<any>(null);
-  const [quiz, setQuiz] = useState(null);
-  const [nextLesson, setNextLesson] = useState(null);
-  const [prevLesson, setPrevLesson] = useState(null);
+  const [quiz, setQuiz] = useState<any>(null);
+  const [nextLesson, setNextLesson] = useState<any>(null);
+  const [prevLesson, setPrevLesson] = useState<any>(null);
 
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [quizResult, setQuizResult] = useState(null);
+  const [selectedAnswers, setSelectedAnswers] = useState<any>({});
+  const [quizResult, setQuizResult] = useState<any>(null);
   const [submitting, setSubmitting] = useState(false);
   const [isCompleted, setIsCompleted] = useState(false);
 
@@ -72,7 +72,7 @@ export default function LessonPage({ params }) {
           const progressData = await progressRes.json();
           if (progressData.success) {
             const completed = progressData.data.some(
-              (p) =>
+              (p: any) =>
                 p.lessonId?._id?.toString() === lessonId ||
                 p.lessonId?.toString() === lessonId
             );
@@ -101,12 +101,12 @@ export default function LessonPage({ params }) {
     });
   };
 
-  const handleQuizSubmit = async (e) => {
+  const handleQuizSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (quizResult || submitting) return;
 
     // Check that all questions have answers
-    const unansweredCount = quiz.questions.filter(q => selectedAnswers[q._id] === undefined).length;
+    const unansweredCount = quiz.questions.filter((q: any) => selectedAnswers[q._id] === undefined).length;
     if (unansweredCount > 0) {
       alert("Please answer all questions before submitting.");
       return;
@@ -286,7 +286,7 @@ export default function LessonPage({ params }) {
                     </div>
 
                     <div className="space-y-4">
-                      {quizResult.results.map((qResult, idx) => (
+                      {quizResult.results.map((qResult: any, idx: number) => (
                         <div key={qResult.questionId} className="border-t border-[var(--border)] pt-4">
                           <p className="text-xs font-semibold mb-2">{idx + 1}. {qResult.question}</p>
                           <div className="flex flex-col gap-1 text-xs mb-2">
@@ -295,7 +295,7 @@ export default function LessonPage({ params }) {
                             </span>
                             {!qResult.isCorrect && (
                               <span className="text-emerald-400 font-medium">
-                                Correct Answer: {quiz.questions.find(q => q._id === qResult.questionId)?.options[qResult.correctAnswer]}
+                                Correct Answer: {quiz.questions.find((q: any) => q._id === qResult.questionId)?.options[qResult.correctAnswer]}
                               </span>
                             )}
                           </div>
@@ -319,7 +319,7 @@ export default function LessonPage({ params }) {
                 ) : (
                   // Quiz Form screen
                   <form onSubmit={handleQuizSubmit} className="space-y-6">
-                    {quiz.questions.map((q, qIdx) => (
+                    {quiz.questions.map((q: any, qIdx: number) => (
                       <div key={q._id} className="space-y-2">
                         <p className="text-xs font-bold text-[var(--foreground)]">
                           {qIdx + 1}. {q.question}

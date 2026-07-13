@@ -102,7 +102,7 @@ function HackathonsTab() {
 
       const body = {
         ...form,
-        rules: form.rules.split("\n").filter(r => r.trim()),
+        rules: form.rules.split("\n").filter((r: any) => r.trim()),
         faqs: form.faqs,
         rounds: form.rounds,
       };
@@ -332,7 +332,7 @@ function QuestionsTab() {
 
       const body = {
         ...form,
-        options: form.options.filter(o => o.text.trim()),
+        options: form.options.filter((o: any) => o.text.trim()),
       };
 
       const res = await fetch(url, {
@@ -694,7 +694,7 @@ function CodeSubmissionsReview({ hackathonId }: CodeSubmissionsReviewProps) {
       const res = await fetch(`/api/rounds/admin/submissions?hackathonId=${hackathonId}&roundNumber=${selectedRound}`, { credentials: "include" });
       const data = await res.json();
       if (data.success) {
-        const sorted = (data.data || []).sort((a, b) => (b.totalScore || 0) - (a.totalScore || 0));
+        const sorted = (data.data || []).sort((a: any, b: any) => (b.totalScore || 0) - (a.totalScore || 0));
         setSubmissions(sorted);
       }
     } catch (err) {
@@ -1044,7 +1044,7 @@ function SelectField({ label, value, onChange, options }: SelectFieldProps) {
   );
 }
 
-function getDefaultHackathonForm() {
+function getDefaultHackathonForm(): any {
   return {
     title: "", description: "", shortDescription: "", status: "draft",
     startDate: "", endDate: "",
