@@ -256,9 +256,6 @@ export const submitRound = async (req, res) => {
   }
 };
 
-// @desc    Auto-save code progress
-// @route   POST /api/rounds/auto-save
-// @access  Private
 export const autoSaveRound = async (req, res) => {
   try {
     const { hackathonId, roundNumber, projectFiles } = req.body;
