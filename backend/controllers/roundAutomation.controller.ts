@@ -141,7 +141,6 @@ export const startRound2 = async (req, res) => {
       );
       assignments.push(newChallenge);
 
-
       reg.status = 'participating';
       reg.currentRound = 2;
       await reg.save();
@@ -152,6 +151,7 @@ export const startRound2 = async (req, res) => {
       message: 'Round 2 started successfully. Challenges assigned.',
       assignedCount: assignments.length
     });
+    
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

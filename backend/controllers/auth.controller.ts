@@ -143,7 +143,6 @@ const logout = async (req, res) => {
   });
 };
 
-
 const updateProfile = async (req, res) => {
   try {
     const { name, avatar } = req.body;

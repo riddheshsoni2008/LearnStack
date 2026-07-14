@@ -59,10 +59,12 @@ export default function AITeacher() {
       
       if (!res.ok) {
         let errorMsg = "Network error. I couldn't reach the server.";
+
         try {
           const errorData = await res.json();
           errorMsg = errorData.message || errorMsg;
-        } catch (e) {}
+        }
+        catch (e) {}
         setMessages([...newMessages, { role: "assistant", content: "❌ " + errorMsg }]);
         setIsTyping(false);
         return;

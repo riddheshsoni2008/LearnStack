@@ -19,3 +19,6 @@ frontend/out/
 # Build
 dist/
 build/
+
+# Local Database Data
+mongodb_data/
