@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node dist/server.js",
     "dev": "ts-node server.ts",
-    "build": "echo 'Skipping build because dist is pre-compiled'",
+    "build": "tsc",
     "seed": "ts-node seed.ts",
     "seed:questions": "ts-node scripts/seedHackathonQuestions.ts",
     "migrate-exercise-history": "ts-node scripts/migrate-exercise-history.ts"
