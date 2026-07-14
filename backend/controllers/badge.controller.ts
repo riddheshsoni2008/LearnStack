@@ -36,7 +36,11 @@ const getXpHistory = async (req, res) => {
       }
     });
 
-    xpHistory.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    xpHistory.sort((a: any, b: any) => {
+      const timeA = new Date(a.createdAt).getTime();
+      const timeB = new Date(b.createdAt).getTime();
+      return timeB - timeA;
+    });
     xpHistory = xpHistory.slice(0, 50);
 
     res.status(200).json({ success: true, data: xpHistory });

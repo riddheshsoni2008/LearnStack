@@ -28,6 +28,8 @@ export interface ICertificate extends Document {
   isValid: boolean;
   isRevoked: boolean;
   revokedAt: Date | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 const CertificateSchema = new Schema<ICertificate>({

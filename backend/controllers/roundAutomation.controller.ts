@@ -3,6 +3,7 @@ import Hackathon from '../models/Hackathon';
 import HackathonRegistration from '../models/HackathonRegistration';
 import HackathonSubmission from '../models/HackathonSubmission';
 import HackathonChallenge from '../models/HackathonChallenge';
+import { evaluateSubmission } from '../services/judge.service';
 
 // Predefined pool of unique full-stack project challenges
 const challengePool = [
@@ -207,13 +208,12 @@ export const submitRound = async (req, res) => {
     submission.submittedAt = new Date();
 
     // Run Automated Evaluation
-    const { evaluateSubmission   } = require('../services/judge.service');
     const evalResult = evaluateSubmission(projectFiles || submission.projectFiles || []);
 
     submission.totalScore = evalResult.score;
     submission.maxPossibleScore = 60;
     submission.percentage = Math.round((evalResult.score / 60) * 100);
-    submission.status = evalResult.status; // 'QUALIFIED' or 'DISQUALIFIED'
+    submission.status = evalResult.status as any; // 'QUALIFIED' or 'DISQUALIFIED'
     submission.evalReport = evalResult.summary + '\n\n' + evalResult.failureReasons.join('\n');
     submission.evalScoreBreakdown = {
       authentication: evalResult.breakdown.auth,
@@ -327,16 +327,13 @@ export const evaluateRound2 = async (req, res) => {
       hackathonId,
       roundNumber: 2
     } as any);
-
-    const { evaluateSubmission   } = require('../services/judge.service');
-
     for (let sub of submissions) {
       const evalResult = evaluateSubmission(sub.projectFiles || []);
       
       sub.totalScore = evalResult.score;
       sub.maxPossibleScore = 60;
       sub.percentage = Math.round((evalResult.score / 60) * 100);
-      sub.status = evalResult.status; // 'QUALIFIED' or 'DISQUALIFIED'
+      sub.status = evalResult.status as any; // 'QUALIFIED' or 'DISQUALIFIED'
       sub.evalReport = evalResult.summary + '\n\n' + evalResult.failureReasons.join('\n');
       sub.evalScoreBreakdown = {
         authentication: evalResult.breakdown.auth,

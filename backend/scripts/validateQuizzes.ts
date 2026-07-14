@@ -40,7 +40,7 @@ Output ONLY a single JSON object:
 
 async function main() {
   try {
-    const { GoogleGenAI } = await import('@google/genai');
+    const { GoogleGenAI } = await (eval("import('@google/genai')") as Promise<any>);
     ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     await mongoose.connect(process.env.MONGO_URI);
     console.log('✅ Connected to MongoDB');

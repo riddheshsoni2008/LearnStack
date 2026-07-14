@@ -139,11 +139,12 @@ const submitChallenge = async (req, res) => {
       // Atomic update to prevent duplicate completions
       const updateDoc: any = {
         $push: { arcadeProgress: { levelId, score: level.xpReward } },
-        $inc: { gameXpEarned: level.xpReward, totalXpEarned: level.xpReward }
+        $inc: { 
+          gameXpEarned: level.xpReward, 
+          totalXpEarned: level.xpReward,
+          ...(level.isBossLevel ? { completedBossBattles: 1 } : {})
+        }
       };
-      if (level.isBossLevel) {
-        updateDoc.$inc.completedBossBattles = 1;
-      }
 
       const updatedUser = await User.findOneAndUpdate(
         { _id: req.user._id, 'arcadeProgress.levelId': { $ne: levelId } },
@@ -306,7 +307,8 @@ const getDailyMission = async (req, res) => {
     const isCompletedToday = lastCompleted === today;
 
     // Pick a level based on the current day of the year (so it's the same for everyone that day)
-    const dayOfYear = Math.floor((Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000);
+    const startOfYear = new Date(new Date().getFullYear(), 0, 0).getTime();
+    const dayOfYear = Math.floor((Date.now() - startOfYear) / 86400000);
     const allLevels = await GameLevel.find({ isBossLevel: false });
     
     if (allLevels.length === 0) {

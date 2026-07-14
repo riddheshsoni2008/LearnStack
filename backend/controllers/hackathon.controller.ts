@@ -4,6 +4,10 @@ import HackathonSubmission from '../models/HackathonSubmission';
 import HackathonQuestion from '../models/HackathonQuestion';
 import Certificate from '../models/Certificate';
 import HackathonChallenge from '../models/HackathonChallenge';
+import User from '../models/User';
+import { evaluateSubmission } from '../services/judge.service';
+import { challengePool } from './roundAutomation.controller';
+import { generateAllRoundQuestions } from '../services/aiQuestionGenerator.service';
 
 
 // DEVELOPMENT MODE FLAG
@@ -167,7 +171,6 @@ const autoSubmitSubmission = async (submission, roundData, hackathon) => {
   let finalStatus = qualified ? 'QUALIFIED' : 'DISQUALIFIED';
 
   if (round === 2 || roundData.type === 'project') {
-    const { evaluateSubmission   } = require('../services/judge.service');
     const evalResult = evaluateSubmission(submission.projectFiles || []);
     
     totalScore = evalResult.score;
@@ -610,7 +613,6 @@ const getRoundQuestions = async (req, res) => {
         assignedTo: req.user._id
       } as any);
       if (!challenge) {
-        const { challengePool   } = require('./roundAutomation.controller');
         const availableChallenges = [...challengePool];
         availableChallenges.sort(() => Math.random() - 0.5);
         const assignedTitles = await HackathonChallenge.find({ hackathonId: hackathon._id }).distinct('challengeTitle');
@@ -763,7 +765,6 @@ const startRound = async (req, res) => {
         assignedTo: req.user._id
       } as any);
       if (!challenge) {
-        const { challengePool   } = require('./roundAutomation.controller');
         const availableChallenges = [...challengePool];
         availableChallenges.sort(() => Math.random() - 0.5);
         const assignedTitles = await HackathonChallenge.find({ hackathonId: hackathon._id }).distinct('challengeTitle');
@@ -1047,7 +1048,6 @@ const submitRound = async (req, res) => {
     let finalStatus = qualified ? 'QUALIFIED' : 'DISQUALIFIED';
 
     if (round === 2) {
-      const { evaluateSubmission   } = require('../services/judge.service');
       const evalResult = evaluateSubmission(projectFiles || submission.projectFiles || []);
       
       totalScore = evalResult.score;
@@ -1114,7 +1114,6 @@ const submitRound = async (req, res) => {
 
           // Assign Round 2 challenge automatically
           try {
-            const { challengePool   } = require('./roundAutomation.controller');
             const availableChallenges = [...challengePool];
             availableChallenges.sort(() => Math.random() - 0.5);
             const assignedTitles = await HackathonChallenge.find({ hackathonId: hackathon._id }).distinct('challengeTitle');
@@ -1343,7 +1342,7 @@ const declareWinners = async (req, res) => {
 
       // Generate winner certificate
       const certType = w.rank === 1 ? 'HACKATHON_WINNER' : 'HACKATHON_QUALIFIED';
-      const user = await require('../models/User').findById(w.userId);
+      const user = await User.findById(w.userId);
       if (user) {
         await Certificate.findOneAndUpdate(
           { userId: w.userId, certificateType: certType, hackathonId: hackathon._id },
@@ -1372,7 +1371,7 @@ const declareWinners = async (req, res) => {
     });
 
     for (const reg of allRegistrations) {
-      const user = await require('../models/User').findById(reg.userId);
+      const user = await User.findById(reg.userId);
       if (user) {
         await Certificate.findOneAndUpdate(
           { userId: reg.userId, certificateType: 'HACKATHON_PARTICIPATION', hackathonId: hackathon._id },
@@ -1558,7 +1557,6 @@ const removeQuestionFromRound = async (req, res) => {
 // @access  Admin
 const generateAIQuestions = async (req, res) => {
   try {
-    const { generateAllRoundQuestions   } = require('../services/aiQuestionGenerator.service');
     const hackathon = await Hackathon.findById(req.params.id);
     if (!hackathon) {
       return res.status(404).json({ success: false, message: 'Hackathon not found' });

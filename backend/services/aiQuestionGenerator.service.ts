@@ -16,7 +16,7 @@ let ai: any;
 (async () => {
   if (process.env.GEMINI_API_KEY) {
     try {
-      const { GoogleGenAI } = await import('@google/genai');
+      const { GoogleGenAI } = await (eval("import('@google/genai')") as Promise<any>);
       ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
     } catch (err) {
       console.error('Failed to load @google/genai:', err);
