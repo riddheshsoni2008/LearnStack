@@ -141,7 +141,7 @@ export const startRound2 = async (req, res) => {
       );
       assignments.push(newChallenge);
 
-      // Update registration status -> participating (Active for Round 2)
+
       reg.status = 'participating';
       reg.currentRound = 2;
       await reg.save();
@@ -157,9 +157,6 @@ export const startRound2 = async (req, res) => {
   }
 };
 
-// @desc    Get user's unique challenge
-// @route   GET /api/challenges/my-challenge
-// @access  Private
 export const getMyChallenge = async (req, res) => {
   try {
     const { hackathonId } = req.query; // optional if global, but good for filtering
@@ -245,7 +242,7 @@ export const submitRound = async (req, res) => {
         registration.status = 'ROUND_3_QUALIFIED';
         registration.currentRound = 3;
       } else {
-        registration.status = 'disqualified';
+        registration.status = 'disqualified'; 
       }
       await registration.save();
     }
