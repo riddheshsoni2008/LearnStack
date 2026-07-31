@@ -623,7 +623,7 @@ const getRoundQuestions = async (req, res) => {
         challenge = await HackathonChallenge.create({
           hackathonId: hackathon._id,
           assignedTo: req.user._id,
-          ...challengeTemplate
+          ...(challengeTemplate as any)
         });
       }
 
@@ -775,7 +775,7 @@ const startRound = async (req, res) => {
         challenge = await HackathonChallenge.create({
           hackathonId: hackathon._id,
           assignedTo: req.user._id,
-          ...challengeTemplate
+          ...(challengeTemplate as any)
         });
       }
 
@@ -1126,7 +1126,7 @@ const submitRound = async (req, res) => {
               {
                 hackathonId: hackathon._id,
                 assignedTo: req.user._id,
-                ...challengeTemplate
+                ...(challengeTemplate as any)
               },
               { upsert: true, new: true }
             );

@@ -16,6 +16,9 @@ const FORCE_REGENERATE = args.includes('--force');
 
 async function main() {
   try {
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI is not defined in environment variables');
+    }
     await mongoose.connect(process.env.MONGO_URI);
 
     const allLessons = await Lesson.find().sort({ trackId: 1, order: 1 });

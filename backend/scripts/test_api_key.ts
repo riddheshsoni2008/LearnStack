@@ -12,9 +12,9 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
     const { GoogleGenAI } = await (eval("import('@google/genai')") as Promise<any>);
     const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-    console.log('Sending test request to gemini-2.0-flash...');
+    console.log('Sending test request to gemini-1.5-flash...');
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-1.5-flash',
       contents: 'Hello',
     });
     

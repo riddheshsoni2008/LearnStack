@@ -69,9 +69,9 @@ export const askTeacher = async (req, res, next) => {
       throw new Error('No valid user messages found.');
     }
 
-    // Generate content using gemini-2.0-flash
+    // Generate content using gemini-1.5-flash
     const responseStream = await ai.models.generateContentStream({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-1.5-flash',
       contents: formattedContents,
       config: {
         systemInstruction: "You are the LearnStack AI Teacher. You are an expert programming instructor. Your goal is to help the user learn coding concepts, debug their code, and provide accurate, up-to-date answers. IMPORTANT: KEEP YOUR ANSWERS CONCISE AND SHORT. Do not write long essays or overly long explanations unless explicitly asked. Be encouraging, supportive, and provide clear code examples where applicable. Use markdown to format your code blocks.",

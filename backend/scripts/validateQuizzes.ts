@@ -13,7 +13,7 @@ dotenv.config({ path: path.join(__dirname, '../.env') });
 let ai: any;
 const SIMILARITY_THRESHOLD = 0.70;
 
-async function generateSingleQuestion(lessonSummary, existingQuestionsPool) {
+async function generateSingleQuestion(lessonSummary: any, existingQuestionsPool:any) {
   const prompt = `
 Lesson Summary: ${JSON.stringify(lessonSummary)}
 Generate exactly ONE unique quiz question that does not overlap with existing questions.
@@ -22,7 +22,7 @@ Output ONLY a single JSON object:
 `;
   
   const response = await ai.models.generateContent({
-    model: 'gemini-2.0-flash',
+    model: 'gemini-1.5-flash',
     contents: prompt,
     config: {
       systemInstruction: "Output ONLY a single JSON object. No markdown.",
@@ -42,7 +42,7 @@ async function main() {
   try {
     const { GoogleGenAI } = await (eval("import('@google/genai')") as Promise<any>);
     ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-    await mongoose.connect(process.env.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI as any);
     console.log('✅ Connected to MongoDB');
 
     if (!process.env.GEMINI_API_KEY) {
