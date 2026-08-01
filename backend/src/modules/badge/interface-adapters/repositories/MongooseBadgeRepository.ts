@@ -21,7 +21,7 @@ export class MongooseBadgeRepository implements IBadgeRepository {
   async findByUserId(userId: string): Promise<BadgeEntity[]> {
     const user = await User.findById(userId).populate('badges').lean();
     if (!user || !user.badges) return [];
-    
+ 
     return (user.badges as any[]).map(doc => ({
       id: doc._id.toString(),
       name: doc.name,

@@ -38,11 +38,13 @@ export default function LessonPage({ params }: { params: any }) {
       try {
         const res = await fetch(`/api/lessons/${lessonId}`, {
           cache: "no-store",
-          credentials: "include"
+          credentials: "include",
         });
 
         if (!res.ok) {
-          const errData = res.headers.get("content-type")?.includes("application/json")
+          const errData = res.headers
+            .get("content-type")
+            ?.includes("application/json")
             ? await res.json()
             : { message: "Failed to load lesson details." };
           setError(errData.message || "Failed to load lesson details.");
@@ -66,7 +68,7 @@ export default function LessonPage({ params }: { params: any }) {
         // Fetch user progress to check if completed
         const progressRes = await fetch("/api/progress/me", {
           cache: "no-store",
-          credentials: "include"
+          credentials: "include",
         });
         if (progressRes.ok) {
           const progressData = await progressRes.json();
@@ -74,7 +76,7 @@ export default function LessonPage({ params }: { params: any }) {
             const completed = progressData.data.some(
               (p: any) =>
                 p.lessonId?._id?.toString() === lessonId ||
-                p.lessonId?.toString() === lessonId
+                p.lessonId?.toString() === lessonId,
             );
             setIsCompleted(completed);
           }
@@ -91,13 +93,11 @@ export default function LessonPage({ params }: { params: any }) {
     }
   }, [lessonId, user, authLoading, router]);
 
-
-
   const handleOptionSelect = (questionId: string, optionIndex: number) => {
     if (quizResult) return; // Disable changes after submission
     setSelectedAnswers({
       ...selectedAnswers,
-      [questionId]: optionIndex
+      [questionId]: optionIndex,
     });
   };
 
@@ -106,7 +106,9 @@ export default function LessonPage({ params }: { params: any }) {
     if (quizResult || submitting) return;
 
     // Check that all questions have answers
-    const unansweredCount = quiz.questions.filter((q: any) => selectedAnswers[q._id] === undefined).length;
+    const unansweredCount = quiz.questions.filter(
+      (q: any) => selectedAnswers[q._id] === undefined,
+    ).length;
     if (unansweredCount > 0) {
       alert("Please answer all questions before submitting.");
       return;
@@ -117,10 +119,10 @@ export default function LessonPage({ params }: { params: any }) {
       const res = await fetch(`/api/quiz/${lessonId}/submit`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         credentials: "include",
-        body: JSON.stringify({ answers: selectedAnswers })
+        body: JSON.stringify({ answers: selectedAnswers }),
       });
       const data = await res.json();
 
@@ -151,9 +153,9 @@ export default function LessonPage({ params }: { params: any }) {
       const res = await fetch(`/api/progress/complete/${lessonId}`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
-        credentials: "include"
+        credentials: "include",
       });
       const data = await res.json();
 
@@ -181,7 +183,9 @@ export default function LessonPage({ params }: { params: any }) {
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[var(--background)]">
-        <div className="text-[var(--text-muted)] text-lg animate-pulse">Loading lesson content...</div>
+        <div className="text-[var(--text-muted)] text-lg animate-pulse">
+          Loading lesson content...
+        </div>
       </div>
     );
   }
@@ -190,7 +194,9 @@ export default function LessonPage({ params }: { params: any }) {
     return (
       <div className="min-h-screen bg-[var(--background)] py-20 px-6">
         <div className="glass border border-red-500/30 rounded-2xl p-8 text-center max-w-lg mx-auto">
-          <p className="text-red-400 text-lg mb-6">{error || "Lesson not found."}</p>
+          <p className="text-red-400 text-lg mb-6">
+            {error || "Lesson not found."}
+          </p>
           <Link href="/tracks" className="btn-primary">
             Back to Tracks
           </Link>
@@ -207,19 +213,32 @@ export default function LessonPage({ params }: { params: any }) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Breadcrumb path */}
         <div className="mb-6 flex gap-2 text-xs text-[var(--text-muted)] uppercase tracking-wider">
-          <Link href="/tracks" className="hover:text-[var(--primary-light)]">Tracks</Link>
+          <Link href="/tracks" className="hover:text-[var(--primary-light)]">
+            Tracks
+          </Link>
           <span>/</span>
-          <Link href={`/course/${lesson.trackId?.slug}`} className="hover:text-[var(--primary-light)]">{lesson.trackId?.title}</Link>
+          <Link
+            href={`/course/${lesson.trackId?.slug}`}
+            className="hover:text-[var(--primary-light)]"
+          >
+            {lesson.trackId?.title}
+          </Link>
           <span>/</span>
-          <span className="text-[var(--foreground)] font-semibold">Lesson {lesson.order}</span>
+          <span className="text-[var(--foreground)] font-semibold">
+            Lesson {lesson.order}
+          </span>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column: Lesson Content (2/3 width) */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             <div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold mb-2 sm:mb-3">{lesson.title}</h1>
-              <p className="text-[var(--text-muted)] text-sm sm:text-base">{lesson.description}</p>
+              <h1 className="text-2xl sm:text-3xl font-extrabold mb-2 sm:mb-3">
+                {lesson.title}
+              </h1>
+              <p className="text-[var(--text-muted)] text-sm sm:text-base">
+                {lesson.description}
+              </p>
             </div>
 
             {/* Video Player Box */}
@@ -235,9 +254,10 @@ export default function LessonPage({ params }: { params: any }) {
               </div>
             )}
 
-            {/* Concept Explanation Markdown */}
             <div className="glass border border-[var(--border)] rounded-2xl p-5 sm:p-8 space-y-4 sm:space-y-6 overflow-hidden">
-              <h3 className="text-lg sm:text-xl font-bold border-b border-[var(--border)] pb-3">Concept Explanation</h3>
+              <h3 className="text-lg sm:text-xl font-bold border-b border-[var(--border)] pb-3">
+                Concept Explanation
+              </h3>
               <div className="text-[var(--foreground)] leading-relaxed space-y-4 whitespace-pre-line text-sm md:text-base">
                 {lesson.content}
               </div>
@@ -257,45 +277,82 @@ export default function LessonPage({ params }: { params: any }) {
             {/* Status Card */}
             <div className="glass border border-[var(--border)] rounded-2xl p-6 flex items-center justify-between">
               <div>
-                <span className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-semibold">Lesson Status</span>
-                <h4 className="text-lg font-bold">{isCompleted ? "Completed ✓" : "In Progress"}</h4>
+                <span className="text-xs text-[var(--text-muted)] uppercase tracking-wider font-semibold">
+                  Lesson Status
+                </span>
+                <h4 className="text-lg font-bold">
+                  {isCompleted ? "Completed ✓" : "In Progress"}
+                </h4>
               </div>
-              <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${isCompleted ? "bg-emerald-500/10 text-emerald-400" : "bg-orange-500/10 text-orange-400"
-                }`}>
+              <div
+                className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-lg ${
+                  isCompleted
+                    ? "bg-emerald-500/10 text-emerald-400"
+                    : "bg-orange-500/10 text-orange-400"
+                }`}
+              >
                 {isCompleted ? "✓" : "⏰"}
               </div>
             </div>
 
-            {/* Quiz Card */}
             {quiz ? (
               <div className="glass border border-[var(--border)] rounded-2xl p-5 sm:p-6">
                 <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
-                  🧪 Lesson Assessment Quiz
+                  Lesson Assessment Quiz
                 </h3>
 
                 {quizResult ? (
                   // Quiz Result screen
                   <div className="space-y-6">
-                    <div className={`p-4 rounded-xl border text-center ${quizResult.passed
-                      ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
-                      : "bg-red-500/10 border-red-500/30 text-red-400"
-                      }`}>
-                      <div className="text-3xl font-extrabold mb-1">{quizResult.score}%</div>
-                      <div className="text-sm font-semibold">{quizResult.passed ? "Passed!" : "Failed (Needs 60% to Pass)"}</div>
-                      {quizResult.passed && <div className="text-xs mt-2 text-emerald-500">+ {quizResult.xpEarned} XP Awarded</div>}
+                    <div
+                      className={`p-4 rounded-xl border text-center ${
+                        quizResult.passed
+                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                          : "bg-red-500/10 border-red-500/30 text-red-400"
+                      }`}
+                    >
+                      <div className="text-3xl font-extrabold mb-1">
+                        {quizResult.score}%
+                      </div>
+                      <div className="text-sm font-semibold">
+                        {quizResult.passed
+                          ? "Passed!"
+                          : "Failed (Needs 60% to Pass)"}
+                      </div>
+                      {quizResult.passed && (
+                        <div className="text-xs mt-2 text-emerald-500">
+                          + {quizResult.xpEarned} XP Awarded
+                        </div>
+                      )}
                     </div>
 
                     <div className="space-y-4">
                       {quizResult.results.map((qResult: any, idx: number) => (
-                        <div key={qResult.questionId} className="border-t border-[var(--border)] pt-4">
-                          <p className="text-xs font-semibold mb-2">{idx + 1}. {qResult.question}</p>
+                        <div
+                          key={qResult.questionId}
+                          className="border-t border-[var(--border)] pt-4"
+                        >
+                          <p className="text-xs font-semibold mb-2">
+                            {idx + 1}. {qResult.question}
+                          </p>
                           <div className="flex flex-col gap-1 text-xs mb-2">
-                            <span className={qResult.isCorrect ? "text-emerald-400" : "text-red-400 font-bold"}>
+                            <span
+                              className={
+                                qResult.isCorrect
+                                  ? "text-emerald-400"
+                                  : "text-red-400 font-bold"
+                              }
+                            >
                               {qResult.isCorrect ? "Correct ✓" : "Incorrect ✗"}
                             </span>
                             {!qResult.isCorrect && (
                               <span className="text-emerald-400 font-medium">
-                                Correct Answer: {quiz.questions.find((q: any) => q._id === qResult.questionId)?.options[qResult.correctAnswer]}
+                                Correct Answer:{" "}
+                                {
+                                  quiz.questions.find(
+                                    (q: any) => q._id === qResult.questionId,
+                                  )?.options[qResult.correctAnswer]
+                                }
                               </span>
                             )}
                           </div>
@@ -307,7 +364,10 @@ export default function LessonPage({ params }: { params: any }) {
                     </div>
 
                     {!quizResult.passed ? (
-                      <button onClick={handleRetryQuiz} className="btn-primary w-full text-center">
+                      <button
+                        onClick={handleRetryQuiz}
+                        className="btn-primary w-full text-center"
+                      >
                         Try Again
                       </button>
                     ) : (
@@ -332,10 +392,11 @@ export default function LessonPage({ params }: { params: any }) {
                                 key={oIdx}
                                 type="button"
                                 onClick={() => handleOptionSelect(q._id, oIdx)}
-                                className={`w-full text-left p-3 rounded-xl border text-xs transition-colors select-none ${isSelected
-                                  ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary-light)] font-medium"
-                                  : "bg-[var(--surface-light)] border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--primary)]"
-                                  }`}
+                                className={`w-full text-left p-3 rounded-xl border text-xs transition-colors select-none ${
+                                  isSelected
+                                    ? "bg-[var(--primary)]/10 border-[var(--primary)] text-[var(--primary-light)] font-medium"
+                                    : "bg-[var(--surface-light)] border-[var(--border)] text-[var(--text-muted)] hover:border-[var(--primary)]"
+                                }`}
                               >
                                 {opt}
                               </button>
@@ -360,15 +421,23 @@ export default function LessonPage({ params }: { params: any }) {
               <div className="glass border border-[var(--border)] rounded-2xl p-6 text-center">
                 <h3 className="text-lg font-bold mb-2">No Quiz Assessment</h3>
                 <p className="text-xs text-[var(--text-muted)] mb-6">
-                  This is a reading / resource lesson. Mark it as completed to claim your XP and unlock the next lesson.
+                  This is a reading / resource lesson. Mark it as completed to
+                  claim your XP and unlock the next lesson.
                 </p>
                 <button
                   onClick={handleCompleteDirect}
                   disabled={isCompleted || submitting}
-                  className={`btn-primary w-full text-center !py-3 ${isCompleted ? "!bg-[var(--surface-light)] !border !border-[var(--border)] !text-[var(--text-muted)] !cursor-not-allowed" : ""
-                    }`}
+                  className={`btn-primary w-full text-center !py-3 ${
+                    isCompleted
+                      ? "!bg-[var(--surface-light)] !border !border-[var(--border)] !text-[var(--text-muted)] !cursor-not-allowed"
+                      : ""
+                  }`}
                 >
-                  {isCompleted ? "Already Completed" : submitting ? "Saving..." : "Mark as Complete (+10 XP)"}
+                  {isCompleted
+                    ? "Already Completed"
+                    : submitting
+                      ? "Saving..."
+                      : "Mark as Complete (+10 XP)"}
                 </button>
               </div>
             )}

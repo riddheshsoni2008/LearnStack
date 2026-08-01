@@ -8,6 +8,9 @@ dotenv.config();
 async function run() {
 
   try {
+    if (!process.env.MONGO_URI) {
+      throw new Error('MONGO_URI environment variable is not defined.');
+    }
     await mongoose.connect(process.env.MONGO_URI);
     console.log('Connected to MongoDB. Starting XP History Migration...');
 
@@ -15,9 +18,6 @@ async function run() {
     console.log(`Found ${xpRecords.length} old XP History records to migrate.`);
 
     let migrated = 0;
-
-    // Optional: We can clear existing xpHistory arrays to avoid duplicates if running multiple times
-    // await ExerciseHistoryDaily.updateMany({}, { $set: { xpHistory: [], totalXpEarnedToday: 0 } });
 
     for (const record of xpRecords) {
       const dateStr = record.createdAt.toISOString().split('T')[0];

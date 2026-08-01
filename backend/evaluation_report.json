@@ -9,16 +9,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fb9f4555769096134e77d",
@@ -29,16 +23,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fa0725b2f3acadf3134a2",
@@ -49,16 +37,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fbfc1bd35f556f76f758a",
@@ -69,16 +51,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fbfc1bd35f556f76f758a",
@@ -99,9 +75,7 @@
         "Monthly report feature missing",
         "Basic or missing style layout"
       ],
-      "criticalErrors": [
-        "Empty files detected in submission"
-      ],
+      "criticalErrors": ["Empty files detected in submission"],
       "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
       "failureReasons": [
         "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
@@ -139,9 +113,7 @@
         "Monthly report feature missing",
         "Basic or missing style layout"
       ],
-      "criticalErrors": [
-        "Empty files detected in submission"
-      ],
+      "criticalErrors": ["Empty files detected in submission"],
       "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
       "failureReasons": [
         "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
@@ -245,16 +217,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fb9f4555769096134e77d",
@@ -265,16 +231,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fa0725b2f3acadf3134a2",
@@ -285,16 +245,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fbfc1bd35f556f76f758a",
@@ -305,16 +259,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fbfc1bd35f556f76f758a",
@@ -335,9 +283,7 @@
         "Monthly report feature missing",
         "Basic or missing style layout"
       ],
-      "criticalErrors": [
-        "Empty files detected in submission"
-      ],
+      "criticalErrors": ["Empty files detected in submission"],
       "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
       "failureReasons": [
         "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
@@ -375,9 +321,7 @@
         "Monthly report feature missing",
         "Basic or missing style layout"
       ],
-      "criticalErrors": [
-        "Empty files detected in submission"
-      ],
+      "criticalErrors": ["Empty files detected in submission"],
       "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
       "failureReasons": [
         "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
@@ -453,9 +397,7 @@
         "Monthly report feature missing",
         "Basic or missing style layout"
       ],
-      "criticalErrors": [
-        "Empty files detected in submission"
-      ],
+      "criticalErrors": ["Empty files detected in submission"],
       "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
       "failureReasons": [
         "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
@@ -493,9 +435,7 @@
         "Monthly report feature missing",
         "Basic or missing style layout"
       ],
-      "criticalErrors": [
-        "Empty files detected in submission"
-      ],
+      "criticalErrors": ["Empty files detected in submission"],
       "summary": "Automatic Audit Summary: Received 10/60 points. Disqualified due to score below threshold of 20 points.",
       "failureReasons": [
         "Authentication endpoints use local mock checks or hardcoded return statements instead of connecting to MongoDB and validating credentials.",
@@ -523,16 +463,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fb9f4555769096134e77d",
@@ -543,16 +477,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fa0725b2f3acadf3134a2",
@@ -563,16 +491,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     },
     {
       "userId": "6a2fbfc1bd35f556f76f758a",
@@ -583,16 +505,10 @@
       "unlockRound3": false,
       "passedChecks": [],
       "failedChecks": [],
-      "criticalErrors": [
-        "No project files submitted."
-      ],
+      "criticalErrors": ["No project files submitted."],
       "summary": "Evaluation failed: Empty submission.",
-      "failureReasons": [
-        "Submission is completely empty."
-      ],
-      "suggestedFixes": [
-        "Submit your codebase via the Monaco workspace."
-      ]
+      "failureReasons": ["Submission is completely empty."],
+      "suggestedFixes": ["Submit your codebase via the Monaco workspace."]
     }
   ]
 }
